@@ -25,7 +25,8 @@ Src/main.o: ../Src/main.c C:/Users/user/workspace/uart_test/Inc/main.h \
  C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal_pwr.h \
  C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal_pwr_ex.h \
  C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal_uart.h \
- C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal_uart_ex.h
+ C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal_uart_ex.h \
+ ../Src/owcompletesearch.h ../Src/onewireio.h ../Src/search.h
 
 C:/Users/user/workspace/uart_test/Inc/main.h:
 
@@ -82,3 +83,9 @@ C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal
 C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal_uart.h:
 
 C:/Users/user/workspace/uart_test/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal_uart_ex.h:
+
+../Src/owcompletesearch.h:
+
+../Src/onewireio.h:
+
+../Src/search.h:

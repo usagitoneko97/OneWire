@@ -31,7 +31,7 @@ endif
 all: uart_test.elf
 
 # Tool invocations
-uart_test.elf: $(OBJS) $(USER_OBJS)
+uart_test.elf: $(OBJS) $(USER_OBJS) ../STM32L053R8Tx_FLASH.ld
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
 	arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -mfloat-abi=soft -specs=nosys.specs -specs=nano.specs -T"../STM32L053R8Tx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "uart_test.elf" @"objects.list" $(USER_OBJS) $(LIBS)

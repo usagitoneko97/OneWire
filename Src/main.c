@@ -33,6 +33,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32l0xx_hal.h"
+#include "owcompletesearch.h"
+#include "onewireio.h"
+#include "search.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -45,8 +48,12 @@ DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+uint8_t SEND_1 = 0xff;
+uint8_t SEND_0 = 0;
+uint8_t UartRx;
+uint8_t uartTempRx;
 uint8_t pData;
-volatile uint8_t pDataTR[2] = {0x88, 0x22};
+volatile uint8_t pDataTR[2] = {0xf0, 0x22};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,7 +102,7 @@ int main(void)
   //HAL_UART_Receive_IT(&huart1, &pData, 1);
   //HAL_UART_Transmit(&huart1, &pDataTR, 1, 100);
 
-  HAL_UART_Transmit_DMA(&huart1, pDataTR, 2);
+  //HAL_UART_Transmit_DMA(&huart1, pDataTR, 2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,6 +112,8 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+	  HAL_UART_Receive_IT(&huart1, &pData, 1);
+	  HAL_UART_Transmit_DMA(&huart1,pDataTR, 1);
 	  volatile int i = 0;
 	  i++;
 
@@ -178,7 +187,7 @@ static void MX_USART1_UART_Init(void)
 {
 
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -257,9 +266,48 @@ HAL_StatusTypeDef HAL_HalfDuplex_EnableTxRx(UART_HandleTypeDef *huart)
   return HAL_OK;
 }
 
+
+void Write(uint8_t byte){
+	if(byte > 0)
+		HAL_UART_Transmit_DMA(&huart1, &SEND_1, 1);
+	else
+		HAL_UART_Transmit_DMA(&huart1, &SEND_0, 1);
+}
+
+uint8_t Read(){
+	HAL_UART_Receive(&huart1, &UartRx, 1, 50);
+	if(UartRx != 0xff)
+		return 1;
+	else
+		return 0;
+}
+
+void Write_SendArray(uint8_t* data, int length){
+  int i;
+  for(i =0;i<length;i++){
+    Write(data[i]);
+  }
+}
+
+void OW_UartTx(uint8_t data){
+	HAL_UART_Transmit_DMA(&huart1, &data, 1);
+}
+uint8_t OW_UartRx(){
+	HAL_UART_Receive(&huart1, &uartTempRx, 1, 50);
+	return uartTempRx;
+}
+
+
+
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+	//completeSearch_OW();
 	volatile int i =0;
 	i++;
+}
+
+int isUartFrameError(){
+	//TODO: future implementation here
+	return 0;
 }
 /* USER CODE END 4 */
 
@@ -282,7 +330,7 @@ void Error_Handler(void)
 
 /**
    * @brief Reports the name of the source file and the source line number
-   * where the assert_param error has occurred.
+    * where the assert_param error has occurred.
    * @param file: pointer to the source file name
    * @param line: assert_param error line source number
    * @retval None
