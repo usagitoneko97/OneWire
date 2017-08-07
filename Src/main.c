@@ -275,8 +275,8 @@ void Write(uint8_t byte){
 }
 
 uint8_t Read(){
-	HAL_UART_Receive_IT(&huart1, &owRxCallBackData, 1, 50);
 	HAL_UART_Transmit(&huart1, &send1, 1, 50);
+	HAL_UART_Receive(&huart1, &owRxCallBackData, 1, 50);
 	volatile int i = 0;
 	i++;
 	if(owRxCallBackData == 0xff)
