@@ -118,8 +118,6 @@ int main(void)
 	  //HAL_UART_Receive_IT(&huart1, &pData, 1);
 	 // HAL_UART_Transmit_DMA(&huart1,pDataTR, 1);
 
-
-
   }
   /* USER CODE END 3 */
 
@@ -210,7 +208,7 @@ static void MX_USART2_UART_Init(void)
 {
 
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_7B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -271,9 +269,9 @@ HAL_StatusTypeDef HAL_HalfDuplex_EnableTxRx(UART_HandleTypeDef *huart)
 
 void Write(uint8_t byte){
 	if(byte > 0)
-		HAL_UART_Transmit_DMA(&huart1, &send1, 1);
+		HAL_UART_Transmit(&huart1, &send1, 1, 500);
 	else
-		HAL_UART_Transmit_DMA(&huart1, &send0, 1);
+		HAL_UART_Transmit(&huart1, &send0, 1, 500);
 }
 
 uint8_t Read(){
@@ -287,7 +285,7 @@ uint8_t Read(){
 void Write_SendArray(uint8_t* data, int length){
   int i;
   for(i =0;i<length;i++){
-    Write(data[i]);
+    Write(*(data+i));
   }
 }
 
@@ -295,8 +293,22 @@ void owSetUpRxIT(){
 	HAL_UART_Receive_IT(&huart1, &owRxCallBackData, 1);
 }
 
-void OW_UartTx(uint8_t data){
-	HAL_UART_Transmit_DMA(&huart1, &data, 1);
+void owUartTxDma(uint8_t data){
+	//HAL_UART_AbortTransmit(&huart1);
+	while(HAL_UART_Transmit_DMA(&huart1, &data, 1) == HAL_BUSY){
+		volatile int i = 0;
+		i++;
+	}
+}
+
+void owUartTx(uint8_t data){
+	if(HAL_UART_Transmit(&huart1, &data, 1, 50)!=HAL_OK){
+		volatile int i = 0;
+			i++;
+	}
+
+	volatile int j = 0;
+	j++;
 }
 uint8_t OW_UartRx(){
 	HAL_UART_Receive(&huart1, &uartTempRx, 1, 50);
@@ -306,20 +318,32 @@ uint8_t OW_UartRx(){
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	//completeSearch_OW();
+	completeSearch_OW();
 	volatile int i =0;
 	i++;
-	completeSearch_OW();
+
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	volatile int i = 0;
 	i++;
+	//completeSearch_OW();
 }
 
 int isUartFrameError(){
 	//TODO: future implementation here
 	return 0;
+}
+
+void setUartBaudRate(int baudRate){
+	huart1.Init.BaudRate = baudRate;
+	if (HAL_HalfDuplex_Init(&huart1) != HAL_OK)
+	{
+		Error_Handler();
+	}
+}
+void uartDelay(int delay){
+	HAL_Delay(delay);
 }
 /* USER CODE END 4 */
 
