@@ -33,13 +33,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32l0xx_hal.h"
+
+/* USER CODE BEGIN Includes */
 #include "owcompletesearch.h"
 #include "onewireio.h"
 #include "search.h"
 #include "owvariable.h"
-
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -187,7 +186,7 @@ static void MX_USART1_UART_Init(void)
 {
 
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -195,7 +194,8 @@ static void MX_USART1_UART_Init(void)
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
   huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_RXOVERRUNDISABLE_INIT;
+  huart1.AdvancedInit.OverrunDisable = UART_ADVFEATURE_OVERRUN_DISABLE;
   if (HAL_HalfDuplex_Init(&huart1) != HAL_OK)
   {
     Error_Handler();
@@ -208,7 +208,7 @@ static void MX_USART2_UART_Init(void)
 {
 
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 9600;
+  huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_7B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -275,8 +275,8 @@ void Write(uint8_t byte){
 }
 
 uint8_t Read(){
+	HAL_UART_Receive_IT(&huart1, &owRxCallBackData, 1, 50);
 	HAL_UART_Transmit(&huart1, &send1, 1, 50);
-	HAL_UART_Receive(&huart1, &owRxCallBackData, 1, 50);
 	volatile int i = 0;
 	i++;
 	if(owRxCallBackData == 0xff)
@@ -379,7 +379,7 @@ void Error_Handler(void)
 
 /**
    * @brief Reports the name of the source file and the source line number
-    * where the assert_param error has occurred.
+   * where the assert_param error has occurred.
    * @param file: pointer to the source file name
    * @param line: assert_param error line source number
    * @retval None

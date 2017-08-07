@@ -5,6 +5,8 @@
 #define SEND_ZERO		0x0
 #define SEND_ONE		0xff
 #define RESET     0
+
+#define SET_BIT(REG, BIT)     ((REG) |= (BIT))
 //#define SENDF0_DATA  {SEND_ONE, SEND_ONE, SEND_ONE,SEND_ONE, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO}
 //uint8_t sendF0_txData[] = {SEND_1, SEND_1, SEND_1,SEND_1, SEND_0, SEND_0, SEND_0, SEND_0};
 
