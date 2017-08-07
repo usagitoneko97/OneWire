@@ -85,14 +85,14 @@ void test_fake_read_return_idBit_cmpIdBit(void){
   TEST_ASSERT_EQUAL(1, fake_id_bits[0]);
   TEST_ASSERT_EQUAL(0, fake_cmp_id_bits[0]);
   LastDeviceFlag = FALSE;
-  TEST_ASSERT_EQUAL(1, fake_Read(NULL));
-  TEST_ASSERT_EQUAL(0, fake_Read(NULL));
+  TEST_ASSERT_EQUAL(1, fake_Read(0));
+  TEST_ASSERT_EQUAL(0, fake_Read(0));
 
-  TEST_ASSERT_EQUAL(1, fake_Read(NULL));
-  TEST_ASSERT_EQUAL(1, fake_Read(NULL));
+  TEST_ASSERT_EQUAL(1, fake_Read(0));
+  TEST_ASSERT_EQUAL(1, fake_Read(0));
 
-  TEST_ASSERT_EQUAL(0, fake_Read(NULL));
-  TEST_ASSERT_EQUAL(1, fake_Read(NULL));
+  TEST_ASSERT_EQUAL(0, fake_Read(0));
+  TEST_ASSERT_EQUAL(1, fake_Read(0));
 }
 
 /********************************************************
@@ -395,7 +395,6 @@ points to here so that next search will take the path with "1" (second path)
  *
  *should read these data <true>:<compliment>
  *00 00 00 01 |01 01 01 01....
- *should put in these to return in fake
  */
 
 /*

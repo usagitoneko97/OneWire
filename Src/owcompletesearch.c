@@ -29,15 +29,18 @@ int search_SM(Event event){
   uint8_t data;
   switch (event) {
     case RESET_OW:
+    	  owSetUpRxIT();
           OW_UartTx(0xf0);
           return TRUE;
 
-    case REPLY:
+    case REPLY:	//rxIt trigger here
           if(isUartFrameError()){
             //Throw()
             return FALSE;
           }
-          data = OW_UartRx();
+          data = owRxCallBackData;
+          volatile int i = 0;
+          i++;
           if(data == 0xF0){
             //no device response
             // Throw();
@@ -78,9 +81,12 @@ int completeSearch_OW(){
     case RESET:
         search_SM(RESET_OW);
         state = 1;  //assume that this fuc will be uart_tx callback
-        break;
+        return TRUE;
     case 1:
         if(search_SM(REPLY)){
+        	volatile int i;
+        	i++;
+
           search_SM(SEND_F0);
           state = 2;  //assume that this fuc will be uart_tx callback
           return TRUE;
@@ -100,6 +106,9 @@ int completeSearch_OW(){
           state = RESET;
           return FALSE; //process done
         }
-      }
+    default:
+      	return FALSE;
+   }
+
 
 }

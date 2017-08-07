@@ -13,7 +13,7 @@ void stack_dataBuffer_64(uint8_t data, int numberOfByte){
 void clearDataBuffer_64(){
   bufferDeviceNumber = 0;
   bufferByteNumber = 0;
-  int i, j;
+  int i = 0, j;
   while(i <MAX_OWDEVICE){
     for(j = 0;j<8;j++){
       RomDataBuffer[i][j] = 0;
@@ -28,7 +28,7 @@ int firstSearch() {
   LastDeviceFlag=FALSE;
   LastFamilyDiscrepancy = 0;
   int i;
-  for(i=0;i++;i<8)
+  for(i=0;i<8;i++)
     ROM_NO[i] = 0;
   return bitSearch();
 }
@@ -38,7 +38,7 @@ int _firstSearch(int numberOfByte) {
   LastDeviceFlag=FALSE;
   LastFamilyDiscrepancy = 0;
   int i;
-  for(i=0;i++;i<8)
+  for(i=0;i<8;i++)
     ROM_NO[i] = 0;
   return _bitSearch(numberOfByte);
 }
@@ -136,10 +136,10 @@ int _bitSearch(int numberOfByte){
 }
 
 int bitSearch(){
-  _bitSearch(8);
+  return _bitSearch(8);
 }
 
-int targetSetupSearch(unsigned char familyCode){
+void targetSetupSearch(unsigned char familyCode){
     int i;
     ROM_NO[0] = familyCode;
     for (i = 1; i < 8; i++)

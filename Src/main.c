@@ -36,6 +36,7 @@
 #include "owcompletesearch.h"
 #include "onewireio.h"
 #include "search.h"
+#include "owvariable.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -48,12 +49,12 @@ DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint8_t SEND_1 = 0xff;
-uint8_t SEND_0 = 0;
-uint8_t UartRx;
+uint8_t send1 = 0xff;
+uint8_t send0 = 0;
+uint8_t uartRx;
 uint8_t uartTempRx;
 uint8_t pData;
-volatile uint8_t pDataTR[2] = {0xf0, 0x22};
+uint8_t pDataTR[2] = {0xf0, 0x22};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,6 +104,8 @@ int main(void)
   //HAL_UART_Transmit(&huart1, &pDataTR, 1, 100);
 
   //HAL_UART_Transmit_DMA(&huart1, pDataTR, 2);
+  completeSearch_OW();
+  //HAL_UART_Receive_IT(&huart1, &pData, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -112,10 +115,9 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  HAL_UART_Receive_IT(&huart1, &pData, 1);
-	  HAL_UART_Transmit_DMA(&huart1,pDataTR, 1);
-	  volatile int i = 0;
-	  i++;
+	  //HAL_UART_Receive_IT(&huart1, &pData, 1);
+	 // HAL_UART_Transmit_DMA(&huart1,pDataTR, 1);
+
 
 
   }
@@ -269,14 +271,14 @@ HAL_StatusTypeDef HAL_HalfDuplex_EnableTxRx(UART_HandleTypeDef *huart)
 
 void Write(uint8_t byte){
 	if(byte > 0)
-		HAL_UART_Transmit_DMA(&huart1, &SEND_1, 1);
+		HAL_UART_Transmit_DMA(&huart1, &send1, 1);
 	else
-		HAL_UART_Transmit_DMA(&huart1, &SEND_0, 1);
+		HAL_UART_Transmit_DMA(&huart1, &send0, 1);
 }
 
 uint8_t Read(){
-	HAL_UART_Receive(&huart1, &UartRx, 1, 50);
-	if(UartRx != 0xff)
+	HAL_UART_Receive(&huart1, &uartRx, 1, 50);
+	if(uartRx != 0xff)
 		return 1;
 	else
 		return 0;
@@ -287,6 +289,10 @@ void Write_SendArray(uint8_t* data, int length){
   for(i =0;i<length;i++){
     Write(data[i]);
   }
+}
+
+void owSetUpRxIT(){
+	HAL_UART_Receive_IT(&huart1, &owRxCallBackData, 1);
 }
 
 void OW_UartTx(uint8_t data){
@@ -302,6 +308,12 @@ uint8_t OW_UartRx(){
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 	//completeSearch_OW();
 	volatile int i =0;
+	i++;
+	completeSearch_OW();
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	volatile int i = 0;
 	i++;
 }
 

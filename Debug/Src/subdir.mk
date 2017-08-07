@@ -7,6 +7,7 @@ C_SRCS += \
 ../Src/main.c \
 ../Src/onewireio.c \
 ../Src/owcompletesearch.c \
+../Src/owvariable.c \
 ../Src/search.c \
 ../Src/stm32l0xx_hal_msp.c \
 ../Src/stm32l0xx_it.c \
@@ -16,6 +17,7 @@ OBJS += \
 ./Src/main.o \
 ./Src/onewireio.o \
 ./Src/owcompletesearch.o \
+./Src/owvariable.o \
 ./Src/search.o \
 ./Src/stm32l0xx_hal_msp.o \
 ./Src/stm32l0xx_it.o \
@@ -25,6 +27,7 @@ C_DEPS += \
 ./Src/main.d \
 ./Src/onewireio.d \
 ./Src/owcompletesearch.d \
+./Src/owvariable.d \
 ./Src/search.d \
 ./Src/stm32l0xx_hal_msp.d \
 ./Src/stm32l0xx_it.d \

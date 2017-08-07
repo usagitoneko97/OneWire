@@ -17,7 +17,7 @@ InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW);
 int bitSearch();
 int _firstSearch(int numberOfByte);
 int _bitSearch(int numberOfByte);
-int targetSetupSearch(unsigned char familyCode);
+void targetSetupSearch(unsigned char familyCode);
 void familySkipSetupSearch();
 
 

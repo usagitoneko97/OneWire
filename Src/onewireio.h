@@ -10,6 +10,7 @@
 uint8_t Read();
 void Write(unsigned char byte);
 void Write_SendArray(uint8_t* data, int length);
+void owSetUpRxIT();
 void OW_UartTx(uint8_t data);
 uint8_t OW_UartRx();
 int isUartFrameError();
