@@ -274,12 +274,11 @@ void Write(uint8_t byte){
 		HAL_UART_Transmit(&huart1, &send0, 1, 500);
 }
 
-uint8_t Read(){
-	HAL_UART_Receive(&huart1, &uartRx, 1, 50);
-	if(uartRx != 0xff)
-		return 1;
-	else
-		return 0;
+void Read(){
+	HAL_UART_Transmit(&huart1, &send1, 1, 50);
+	HAL_UART_Receive(&huart1, &owRxCallBackData, 1, 50);
+	volatile int i = 0;
+	i++;
 }
 
 void Write_SendArray(uint8_t* data, int length){
@@ -318,9 +317,10 @@ uint8_t OW_UartRx(){
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	completeSearch_OW();
 	volatile int i =0;
 	i++;
+	completeSearch_OW();
+
 
 }
 
@@ -342,8 +342,13 @@ void setUartBaudRate(int baudRate){
 		Error_Handler();
 	}
 }
-void uartDelay(int delay){
-	HAL_Delay(delay);
+void resetUart(int baudRate){
+	MX_USART1_UART_Init();
+	huart1.Init.BaudRate = baudRate;
+	if (HAL_HalfDuplex_Init(&huart1) != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 /* USER CODE END 4 */
 

@@ -8,7 +8,7 @@ int result_reset;
 uint8_t result ;
 uint8_t txdata;
 int state;
-uint8_t sendF0_txData1[] = {SEND_ONE, SEND_ONE, SEND_ONE,SEND_ONE, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO};
+uint8_t sendF0_txData1[] = {SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ONE, SEND_ONE,SEND_ONE,SEND_ONE};
 /*deviceAvail resetOW(){
   //uart send F0 9600baud
   //expect receive 0x10 to 0x80
@@ -77,20 +77,43 @@ int search_SM(Event event){
 int completeSearch_OW(){
   switch (state) {
     case RESET:
+    	setUartBaudRate(9600);
     	state = 1;  //assume that this fuc will be uart_tx callback
         search_SM(RESET_OW);
         return TRUE;
     case 1:
         if(search_SM(REPLY)){
         	volatile int i;
+
         	i++;
         	setUartBaudRate(115200);
         	/*Write(0);
         	Write(1);
         	Write(1);*/
         	search_SM(SEND_F0);
-        	state = 2;  //assume that this fuc will be uart_tx callback
-        	return TRUE;
+        	owRxCallBackData = 0;
+        	i++;
+        	resetUart(115200);
+        	owUartTx(0xff);
+        	owRxCallBackData = OW_UartRx(0xff);
+        	i++;
+        	owUartTx(0xff);
+        	owRxCallBackData = OW_UartRx(0xff);
+        	i++;
+
+
+        	//state = 2;  //assume that this fuc will be uart_tx callback
+        	//return TRUE; //dont return to go to next case
+        	if(search_SM(BITSEARCH)){
+        		//success
+        		state = RESET;
+        		return TRUE;
+        	}
+        	else{
+        		// throw();
+        		state = RESET;
+        		return FALSE; //process done
+        	}
         	}
         else{
           //throw();

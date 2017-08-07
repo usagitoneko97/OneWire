@@ -44,8 +44,12 @@ int _firstSearch(int numberOfByte) {
 }
 
 InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW){
-  innerVAR_OW.id_bit = Read();
-  innerVAR_OW.cmp_id_bit = Read();
+  Read();
+  innerVAR_OW.id_bit =  owRxCallBackData;
+  Read();
+  innerVAR_OW.cmp_id_bit = owRxCallBackData;
+  volatile int i = 0;
+  i++;
   if(innerVAR_OW.id_bit == 1 && innerVAR_OW.cmp_id_bit == 1){  //no devices
     innerVAR_OW.noDevice = TRUE;
     return innerVAR_OW;
@@ -101,7 +105,6 @@ int _bitSearch(int numberOfByte){
     innerVAR_OW.noDevice = FALSE;
     crc8 = 0;
 
-    //Write(0xF0);
     do{
         innerVAR_OW = processOWData(innerVAR_OW);
         //checking of a complete byte
