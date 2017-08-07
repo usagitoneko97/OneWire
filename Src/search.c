@@ -44,10 +44,8 @@ int _firstSearch(int numberOfByte) {
 }
 
 InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW){
-  Read();
-  innerVAR_OW.id_bit =  owRxCallBackData;
-  Read();
-  innerVAR_OW.cmp_id_bit = owRxCallBackData;
+  innerVAR_OW.id_bit = Read();
+  innerVAR_OW.cmp_id_bit = Read();
   volatile int i = 0;
   i++;
   if(innerVAR_OW.id_bit == 1 && innerVAR_OW.cmp_id_bit == 1){  //no devices
@@ -76,16 +74,19 @@ InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW){
 
       }
     }
-    if(innerVAR_OW.search_direction == 1)
+    if(innerVAR_OW.search_direction == 1){
       ROM_NO[innerVAR_OW.rom_byte_num] |= innerVAR_OW.rom_byte_mask; //set the current bit to be 1
-    else
+      Write(1);
+    }
+    else{
       ROM_NO[innerVAR_OW.rom_byte_num] &= ~innerVAR_OW.rom_byte_mask; //set current bit to be 0
-    //write()
+      Write(0);
+    }
+
 
     //preparation for next bit search
     innerVAR_OW.id_bit_number++;
     innerVAR_OW.rom_byte_mask <<=1;
-
 
   }
   return innerVAR_OW;

@@ -7,7 +7,7 @@
 
 
 
-void Read();
+uint8_t Read();
 void Write(unsigned char byte);
 void Write_SendArray(uint8_t* data, int length);
 void owSetUpRxIT();
@@ -17,4 +17,5 @@ uint8_t OW_UartRx();
 int isUartFrameError();
 void setUartBaudRate(int baudRate);
 void resetUart(int baudRate);
+void uartDelay(int delay);
 #endif // _ONEWIREIO_H

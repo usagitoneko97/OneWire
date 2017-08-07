@@ -274,11 +274,15 @@ void Write(uint8_t byte){
 		HAL_UART_Transmit(&huart1, &send0, 1, 500);
 }
 
-void Read(){
+uint8_t Read(){
 	HAL_UART_Transmit(&huart1, &send1, 1, 50);
 	HAL_UART_Receive(&huart1, &owRxCallBackData, 1, 50);
 	volatile int i = 0;
 	i++;
+	if(owRxCallBackData == 0xff)
+		return 1;
+	else
+		return 0;
 }
 
 void Write_SendArray(uint8_t* data, int length){
@@ -349,6 +353,10 @@ void resetUart(int baudRate){
 	{
 		Error_Handler();
 	}
+}
+
+void uartDelay(int delay){
+	HAL_Delay(delay);
 }
 /* USER CODE END 4 */
 
