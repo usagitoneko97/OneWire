@@ -2,6 +2,11 @@
 #include "onewireio.h"
 #include "owvariable.h"
 
+/**
+ * store 1 byte of data in a
+ * @param data         1 byte of data that need to store
+ * @param numberOfByte total number of byte of device rom number
+ */
 void stack_dataBuffer_64(uint8_t data, int numberOfByte){
   RomDataBuffer[bufferDeviceNumber][bufferByteNumber++] = data;
   if(bufferByteNumber == numberOfByte){
@@ -10,6 +15,9 @@ void stack_dataBuffer_64(uint8_t data, int numberOfByte){
   }
 }
 
+/**
+ * clear data buffer
+ */
 void clearDataBuffer_64(){
   bufferDeviceNumber = 0;
   bufferByteNumber = 0;
@@ -22,6 +30,10 @@ void clearDataBuffer_64(){
   }
 }
 
+/**
+ * Initialize to initial condition and perform bit searching
+ * @return status of bitSearch
+ */
 int firstSearch() {
   clearDataBuffer_64();
   LastDiscrepancy = 0;
@@ -32,6 +44,12 @@ int firstSearch() {
     ROM_NO[i] = 0;
   return bitSearch();
 }
+/**
+ * initialize to initial condition and perform bitsearching with specific
+ * number of byte of rom
+ * @param  numberOfByte number of byte of rom number to be search
+ * @return              status of bitSearch
+ */
 int _firstSearch(int numberOfByte) {
   clearDataBuffer_64();
   LastDiscrepancy = 0;

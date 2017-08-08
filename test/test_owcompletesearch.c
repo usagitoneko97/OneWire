@@ -91,6 +91,7 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
   setUartBaudRate_Expect(9600);
   owSetUpRxIT_Expect();
   owUartTxDma_Expect(0xf0);
+  /*uart receive it will trigger after uart tx, data will update to below*/
   ((OwData*)(eventOw.data))->uartRxVal = 0xe0;
   //owRxCallBackData = 0xE0;  //data that received in interrupt
   /*Callback from 1 wire receive*/
@@ -113,6 +114,7 @@ void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
   setUartBaudRate_Expect(9600);
   owSetUpRxIT_Expect();
   owUartTxDma_Expect(0xf0);
+  /*uart receive it will trigger after uart tx, data will update to below*/
   ((OwData*)(eventOw.data))->uartRxVal = 0xf0;
   //owRxCallBackData = 0xf0;  //data that received in interrupt
   /*Callback from 1 wire receive*/
@@ -127,6 +129,7 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
   setUartBaudRate_Expect(9600);
   owSetUpRxIT_Expect();
   owUartTxDma_Expect(0xf0);
+  /*uart receive it will trigger after uart tx, data will update to below*/
   ((OwData*)(eventOw.data))->uartRxVal = 0xf0;
   /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(TRUE);
