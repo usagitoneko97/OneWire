@@ -60,17 +60,17 @@ int search_SM(Event event){
           return TRUE;
 
     case BITSEARCH:
-         /* if(_firstSearch(1)== FALSE){
+          if(_firstSearch(1)== FALSE){
             return FALSE;
           }
           while(LastDeviceFlag != TRUE){
             if(_bitSearch(1) == FALSE)
               return FALSE;
-          }*/
-    	  if(firstSearch())
+          }
+    	  /*if(firstSearch())
     		  return TRUE;
     	  else
-    		  return FALSE;
+    		  return FALSE;*/
     default:
     	// dump system error
     	return FALSE;
@@ -96,7 +96,6 @@ int completeSearch_OW(){
         	search_SM(SEND_F0);
         	owRxCallBackData = 0;
         	i++;
-        	resetUart(115200);
 
         	//state = 2;  //assume that this fuc will be uart_tx callback
         	//return TRUE; //dont return to go to next case

@@ -184,8 +184,8 @@ void test_processOWData_IdBit_cmpBit_10(void){
 }
 
 /********************************************************
- * Id_bit     = 0                                       *
  * cmp_id_bit = 0                                       *
+ * Id_bit     = 0                                       *
  *                                                      *
  * EXPECTED:                                            *
  * last_zero = remains                                  *
@@ -197,6 +197,36 @@ void test_processOWData_IdBit_cmpBit_11(void){
     /*initialize test*/
   uint8_t fake_id_bit_VAL []=       {1};
   uint8_t fake_cmp_id_bit_VAL[] =   {1};
+  init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
+  InnerVAR_OW innerVAR_OW;
+  innerVAR_OW = initSearchTest(innerVAR_OW);
+  /*initialize condition for test*/
+  LastDiscrepancy = 0;
+  innerVAR_OW = processOWData(innerVAR_OW);
+    /*checking results*/
+  int ROM_bit_val = ROM_NO[0] &0x01;
+  TEST_ASSERT_EQUAL(0, innerVAR_OW.last_zero);
+  TEST_ASSERT_EQUAL(1, innerVAR_OW.id_bit_number);
+  TEST_ASSERT_EQUAL(0, innerVAR_OW.search_direction);
+  TEST_ASSERT_EQUAL(FALSE, innerVAR_OW.search_result);
+  TEST_ASSERT_EQUAL(0, ROM_bit_val);
+
+}
+
+/********************************************************
+ * Id_bit     = 2                                       *
+ * cmp_id_bit = 4                                       *
+ *                                                      *
+ * EXPECTED:                                            *
+ * last_zero = remains                                  *
+ * id_bit_number = remains                              *
+ * search_direction = remains                           *
+ * search_result = FALSE                                *
+ ********************************************************/
+void test_processOWData_IdBit_cmpBit_24_returnFalse(void){
+    /*initialize test*/
+  uint8_t fake_id_bit_VAL []=       {2};
+  uint8_t fake_cmp_id_bit_VAL[] =   {4};
   init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
   InnerVAR_OW innerVAR_OW;
   innerVAR_OW = initSearchTest(innerVAR_OW);
