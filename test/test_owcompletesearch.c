@@ -106,9 +106,12 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
 
 void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
   /*Mocking*/
-  owUartTx_Expect(0xf0);
+  setUartBaudRate_Expect(9600);
+  owSetUpRxIT_Expect();
+  owUartTxDma_Expect(0xf0);
+  owRxCallBackData = 0xf0;  //data that received in interrupt
+  /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(FALSE);
-  OW_UartRx_ExpectAndReturn(0xf0);
 
   clear_OWSm();
   completeSearch_OW();
@@ -116,7 +119,11 @@ void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
 }
 
 void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
-  owUartTx_Expect(0xf0);
+  setUartBaudRate_Expect(9600);
+  owSetUpRxIT_Expect();
+  owUartTxDma_Expect(0xf0);
+  owRxCallBackData = 0xf0;  //data that received in interrupt
+  /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(TRUE);
   // OW_Rx_ExpectAndReturn(-1);
   clear_OWSm();
