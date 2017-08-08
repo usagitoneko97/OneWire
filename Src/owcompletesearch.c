@@ -2,7 +2,7 @@
 #include "onewireio.h"
 #include "search.h"
 #include "owvariable.h"
-
+#include <stdio.h>
 
 int result_reset;
 uint8_t result ;
@@ -25,11 +25,11 @@ void clear_OWSm(){
 }
 
 
-int search_SM(Event event){
+int search_SM(Event* event){
   uint8_t data;
-  switch (event) {
+  switch (event->eventType) {
     case RESET_OW:
-    	  owSetUpRxIT();
+    	  owSetUpRxIT(event);
     	  owUartTxDma(0xf0);
           return TRUE;
 
@@ -38,15 +38,15 @@ int search_SM(Event event){
             //Throw()
             return FALSE;
           }
-          data = owRxCallBackData;
-          if(data == 0xF0){
+          // data = owRxCallBackData;
+          if(((OwData*)(event->data))->uartRxVal == 0xF0){
             //no device response
             // Throw();
             return FALSE;
           }
           // else if(data >= 0x10 && data <= 0x90){
           /*if the higher bit has response */
-          else if ((data & 0xf0) != 0xf){
+          else if ((((OwData*)(event->data))->uartRxVal & 0xf0) != 0xf){
             //device is there
             return TRUE;
           }
@@ -78,14 +78,17 @@ int search_SM(Event event){
 }
 
 int completeSearch_OW(){
+
   switch (state) {
     case RESET:
-    	setUartBaudRate(9600);
-    	state = 1;  //assume that this fuc will be uart_tx callback
-        search_SM(RESET_OW);
+    	 setUartBaudRate(9600);
+    	  state = 1;  //assume that this fuc will be uart_tx callback
+        eventOw.eventType = RESET_OW;
+        search_SM(&eventOw);
         return TRUE;
     case 1:
-        if(search_SM(REPLY)){
+        eventOw.eventType = REPLY;
+        if(search_SM(&eventOw)){
         	volatile int i;
 
         	i++;
@@ -93,13 +96,15 @@ int completeSearch_OW(){
         	/*Write(0);
         	Write(1);
         	Write(1);*/
-        	search_SM(SEND_F0);
+          eventOw.eventType = SEND_F0;
+        	search_SM(&eventOw);
         	owRxCallBackData = 0;
         	i++;
 
         	//state = 2;  //assume that this fuc will be uart_tx callback
         	//return TRUE; //dont return to go to next case
-        	if(search_SM(BITSEARCH)){
+        	eventOw.eventType = BITSEARCH;
+        	if(search_SM(&eventOw)){
         		//success
         		state = RESET;
         		return TRUE;
@@ -114,17 +119,7 @@ int completeSearch_OW(){
           //throw();
           return FALSE;
         }
-    case 2:
-        if(search_SM(BITSEARCH)){
-          //success
-          state = RESET;
-          return TRUE;
-        }
-        else{
-          // throw();
-          state = RESET;
-          return FALSE; //process done
-        }
+
     default:
       	return FALSE;
    }

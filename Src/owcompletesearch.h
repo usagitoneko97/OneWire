@@ -20,11 +20,22 @@ typedef enum{
   REPLY = 1,
   SEND_F0 = 2,
   BITSEARCH = 3
-}Event;
+}EventType;
+
+typedef struct Event Event;
+struct Event {
+  EventType eventType;
+  void *data;
+};
+
+typedef struct OwData OwData;
+struct OwData {
+  int idBit, cmpIdBit;
+  uint8_t uartRxVal;
+};
 void clear_OWSm();
-int search_SM(Event event);
+int search_SM(Event* event);
 void OW_Tx_SendArray(uint8_t* data, int length);
 deviceAvail resetOW();
 int completeSearch_OW();
 #endif // _OWCOMPLETESEARCH_H
-
