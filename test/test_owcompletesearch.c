@@ -109,6 +109,7 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
 
 }
 
+
 void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
   /*Mocking*/
   setUartBaudRate_Expect(9600);

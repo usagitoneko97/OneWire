@@ -88,7 +88,7 @@ int completeSearch_OW(){
         return TRUE;
     case 1:
         eventOw.eventType = REPLY;
-        if(search_SM(&eventOw)){
+        if(search_SM(&eventOw)){  //return true if 1 wire device is detected
         	volatile int i;
 
         	i++;
@@ -98,7 +98,6 @@ int completeSearch_OW(){
         	Write(1);*/
           eventOw.eventType = SEND_F0;
         	search_SM(&eventOw);
-        	owRxCallBackData = 0;
         	i++;
 
         	//state = 2;  //assume that this fuc will be uart_tx callback
@@ -115,14 +114,48 @@ int completeSearch_OW(){
         		return FALSE; //process done
         	}
         	}
-        else{
           //throw();
           return FALSE;
-        }
+
 
     default:
+        state = RESET;
       	return FALSE;
    }
+}
 
+int resetOw(Event *evt){
+  switch (evt->eventType) {
+    case RESET:
+      setUartBaudRate(9600);
+      owSetUpRxIT(evt);
+      owUartTxDma(0xf0);
+      break;
+    case REPLY:
+      if(isUartFrameError()){
+        //Throw()
+        return FALSE;
+      }
+      // data = owRxCallBackData;
+      if(((OwData*)(event->data))->uartRxVal == 0xF0){
+        //no device response
+        // Throw();
+        return FALSE;
+      }
+      // else if(data >= 0x10 && data <= 0x90){
+      /*if the higher bit has response */
+      else if ((((OwData*)(event->data))->uartRxVal & 0xf0) != 0xf){
+        //device is there
+        return TRUE;
+      }
+      else{
+        //unknown state
+        return FALSE;
+      }
 
+  }
+}
+
+void romSearch(Event *evt){
+  
 }
