@@ -165,6 +165,8 @@ int bitSearch(){
  * The 'TARGET SETUP' operation is a way to preset the search state to first
  * find a particular family type
  * @param familyCode 1 byte of family code. Usually is the lsb of the rom numbers.
+ * @NOTE this function only modify the state to perform specific search variations
+ * and does not perform search itself
  */
 void targetSetupSearch(unsigned char familyCode){
     int i;
@@ -179,6 +181,9 @@ void targetSetupSearch(unsigned char familyCode){
 /**
  * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
  * devices that have the family code that was found in the previous search.
+ *
+ * @NOTE this function only modify the state to perform specific search variations
+ *       and does not perform search itself
  */
 void familySkipSetupSearch()
 {
@@ -196,6 +201,8 @@ void familySkipSetupSearch()
  *
  * @param romNumbers        rom number(s) to verify with
  * @param Bytelength        length in byte of romNumbers
+ * @NOTE this function only modify the state to perform specific search variations
+ * and does not perform search itself
  */
 void verify(unsigned char *romNumbers, int Bytelength){
   LastDiscrepancy = 64;
