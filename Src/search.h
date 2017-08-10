@@ -3,10 +3,10 @@
 #include <stdint.h>
 typedef struct InnerVAR_OW InnerVAR_OW;
 struct InnerVAR_OW {
-  int id_bit_number;
-  int last_zero, rom_byte_num, search_result;
-  int id_bit, cmp_id_bit;
-  unsigned char search_direction;
+  int idBitNumber;
+  int lastZero, romByteNum, searchResult;
+  int idBit, cmpIdBit;
+  unsigned char searchDirection;
   unsigned char rom_byte_mask;
   int noDevice;
 };

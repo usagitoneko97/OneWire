@@ -267,7 +267,7 @@ HAL_StatusTypeDef HAL_HalfDuplex_EnableTxRx(UART_HandleTypeDef *huart)
 }
 
 
-void Write(uint8_t byte){
+void write(uint8_t byte){
 	if(byte > 0)
 		HAL_UART_Transmit(&huart1, &send1, 1, 500);
 	else
@@ -288,7 +288,7 @@ uint8_t Read(){
 void Write_SendArray(uint8_t* data, int length){
   int i;
   for(i =0;i<length;i++){
-    Write(*(data+i));
+    write(*(data+i));
   }
 }
 

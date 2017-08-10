@@ -4,12 +4,12 @@
 #define _OWVARIABLE_H
 #define MAX_OWDEVICE  64
 extern unsigned char romNo[];
-extern unsigned char RomDataBuffer[][8];
+extern unsigned char romDataBuffer[][8];
 extern int bufferByteNumber;
 extern int bufferDeviceNumber;
 extern int lastDiscrepancy;
-extern int LastFamilyDiscrepancy;
-extern int LastDeviceFlag;
+extern int lastFamilyDiscrepancy;
+extern int lastDeviceFlag;
 extern unsigned char crc8;
 extern uint8_t owRxCallBackData;
 extern Event eventOw;

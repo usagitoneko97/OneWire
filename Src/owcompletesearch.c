@@ -30,14 +30,14 @@ void initRomSearching(Event* evt, void* owdata){
 
 void romSearch(Event *evt){
   setUartBaudRate(115200);
-  /*Write(0);
-  Write(1);
-  Write(1);*/
+  /*write(0);
+  write(1);
+  write(1);*/
   Write_SendArray(sendF0_txData1, 8);
   if(_firstSearch(1)== FALSE){
 
   }
-  while(LastDeviceFlag != TRUE){
+  while(lastDeviceFlag != TRUE){
     if(_bitSearch(1) == FALSE){
 
     }

@@ -9,29 +9,29 @@
 
 uint8_t owRxVal;
 unsigned char bitPos = 0;
-uint8_t *fake_id_bits = NULL;
-uint8_t *fake_cmp_id_bits = NULL;
-int state_fakeRead = 0;
+uint8_t *fakeIdBits = NULL;
+uint8_t *fakeCmpIdBits = NULL;
+int fakeReadState = 0;
 
-uint8_t sendF0_txData_test[] = {SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ONE, SEND_ONE,SEND_ONE,SEND_ONE};
+uint8_t sendF0txDataTest[] = {SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ONE, SEND_ONE,SEND_ONE,SEND_ONE};
 
 void init64BitId(uint8_t *id,uint8_t *cmp_id, uint8_t startBit) {
-  fake_id_bits = id;
-  fake_cmp_id_bits = cmp_id;
+  fakeIdBits = id;
+  fakeCmpIdBits = cmp_id;
   bitPos = startBit;
 }
 
 uint8_t fake_Read(int numOfCalls){
     uint8_t result_bit;
-    if(!LastDeviceFlag){
+    if(!lastDeviceFlag){
       while(bitPos < 64){
-        switch (state_fakeRead) {
-          case 0: result_bit = fake_id_bits[bitPos];
-                  state_fakeRead = 1;
+        switch (fakeReadState) {
+          case 0: result_bit = fakeIdBits[bitPos];
+                  fakeReadState = 1;
                   return result_bit;
                   break;
-          case 1: result_bit = fake_cmp_id_bits[bitPos++];
-                  state_fakeRead = 0;
+          case 1: result_bit = fakeCmpIdBits[bitPos++];
+                  fakeReadState = 0;
                   return result_bit;
                   break;
         }
@@ -54,14 +54,14 @@ uint8_t fake_OW_Rx(int numOfCalls){
 void setUp(void){
   // OW_Rx_StubWithCallback(fake_OW_Rx);
   Read_StubWithCallback(fake_Read);
-  Write_StubWithCallback(fake_Write);
+  write_StubWithCallback(fake_Write);
   Write_SendArray_StubWithCallback(fake_Write_SendArray);
   eventOw.data = &owdata;
 }
 
 void tearDown(void){
-  fake_id_bits = NULL;
-  fake_cmp_id_bits = NULL;
+  fakeIdBits = NULL;
+  fakeCmpIdBits = NULL;
 
   ((OwData*)(eventOw.data))->uartRxVal = 0;
 }
@@ -84,9 +84,9 @@ void tearDown(void){
  *       67fi
  */
 void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void){
-  uint8_t fake_id_bit_VAL []=       {0, 1, 0, 0, 0, 1, 1, 1,  0, 1, 0, 1, 0, 0, 1, 0,  0, 1, 0, 0, 0, 1, 1, 0};
-  uint8_t fake_cmp_id_bit_VAL[] =   {0, 0, 1, 1, 1, 0, 0, 0,  0, 0, 0, 0, 1, 1, 0, 1,  0, 0, 0, 1, 1, 0, 0, 1};
-  init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
+  uint8_t fakeIdBitVal []=       {0, 1, 0, 0, 0, 1, 1, 1,  0, 1, 0, 1, 0, 0, 1, 0,  0, 1, 0, 0, 0, 1, 1, 0};
+  uint8_t fakeCmpIdBitVal[] =   {0, 0, 1, 1, 1, 0, 0, 0,  0, 0, 0, 0, 1, 1, 0, 1,  0, 0, 0, 1, 1, 0, 0, 1};
+  init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
   /*Mocking*/
   setUartBaudRate_Expect(9600);
   owSetUpRxIT_Expect();
@@ -97,16 +97,16 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
   /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(FALSE);
   setUartBaudRate_Expect(115200);
-  Write_SendArray_Expect(sendF0_txData_test, 8);
+  Write_SendArray_Expect(sendF0txDataTest, 8);
   //OW_Tx_Expect(sendF0_txData);
 
   initRomSearching(&eventOw, &owdata);
   eventOw.eventType = REPLY;
   resetOw(&eventOw);    //uartRxCallback will check the reply
   romSearch(&eventOw);  //uartRxCallback will call this function
-  TEST_ASSERT_EQUAL(0xe2, RomDataBuffer[0][0]);
-  TEST_ASSERT_EQUAL(0x4b, RomDataBuffer[1][0]);
-  TEST_ASSERT_EQUAL(TRUE, LastDeviceFlag);
+  TEST_ASSERT_EQUAL(0xe2, romDataBuffer[0][0]);
+  TEST_ASSERT_EQUAL(0x4b, romDataBuffer[1][0]);
+  TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
   TEST_ASSERT_EQUAL(0, lastDiscrepancy);
 
 }

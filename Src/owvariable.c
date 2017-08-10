@@ -1,11 +1,11 @@
 #include "owvariable.h"
 unsigned char romNo[8];
-unsigned char RomDataBuffer[MAX_OWDEVICE][8];
+unsigned char romDataBuffer[MAX_OWDEVICE][8];
 int bufferByteNumber;
 int bufferDeviceNumber;
 int lastDiscrepancy;
-int LastFamilyDiscrepancy;
-int LastDeviceFlag;
+int lastFamilyDiscrepancy;
+int lastDeviceFlag;
 unsigned char crc8;
 Event eventOw;
 OwData owdata;

@@ -8,7 +8,7 @@
 
 
 uint8_t Read();
-void Write(unsigned char byte);
+void write(unsigned char byte);
 void Write_SendArray(uint8_t* data, int length);
 void owSetUpRxIT();
 void owUartTxDma(uint8_t data);
