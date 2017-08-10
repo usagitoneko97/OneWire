@@ -329,10 +329,19 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	volatile int i = 0;
-	i++;
-	//completeSearch_OW();
-	//TODO jump to the function pointer decalre in evt
+  switch (eventOw.eventType) {
+    case RESET:
+      eventOw.eventType = REPLY;
+      if(resetOw(&eventOw)){  //TODO better names?
+        eventOw.commandFunction(&eventOw);  //execute function based on user
+      }
+      else{
+        // throw();
+      }
+      break;
+    default:
+      // throw();
+  }
 }
 
 int isUartFrameError(){
