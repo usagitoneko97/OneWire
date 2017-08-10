@@ -100,8 +100,10 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
   Write_SendArray_Expect(sendF0_txData_test, 8);
   //OW_Tx_Expect(sendF0_txData);
 
-  completeSearch_OW();
-  completeSearch_OW();  //callback of uartTx from reset and presence pulse
+  initRomSearching(&eventOw, &owdata);
+  eventOw.eventType = REPLY;
+  resetOw(&eventOw);    //uartRxCallback will check the reply
+  romSearch(&eventOw);  //uartRxCallback will call this function
   TEST_ASSERT_EQUAL(0xe2, RomDataBuffer[0][0]);
   TEST_ASSERT_EQUAL(0x4b, RomDataBuffer[1][0]);
   TEST_ASSERT_EQUAL(TRUE, LastDeviceFlag);
@@ -121,9 +123,9 @@ void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
   /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(FALSE);
 
-  clear_OWSm();
-  completeSearch_OW();
-  TEST_ASSERT_EQUAL(FALSE, completeSearch_OW()); //callback of uartTx from reset
+  initRomSearching(&eventOw, &owdata);
+  eventOw.eventType = REPLY;
+  TEST_ASSERT_EQUAL(FALSE, resetOw(&eventOw)); //callback of uartTx from reset
 }
 
 void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
@@ -135,7 +137,7 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
   /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(TRUE);
   // OW_Rx_ExpectAndReturn(-1);
-  clear_OWSm();
-  completeSearch_OW();
-  TEST_ASSERT_EQUAL(FALSE, completeSearch_OW()); //callback of uartTx from reset
+  initRomSearching(&eventOw, &owdata);
+  eventOw.eventType = REPLY;
+  TEST_ASSERT_EQUAL(FALSE, resetOw(&eventOw)); //callback of uartTx from reset
 }

@@ -20,108 +20,30 @@ uint8_t sendF0_txData1[] = {SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ONE
     return DEVICE_AVAILABLE;
 }*/
 
-void clear_OWSm(){
-  state = 0;
+
+void initRomSearching(Event* evt, void* owdata){
+  evt->commandFunction = romSearch;
+  evt->data = owdata;
+  evt->eventType = RESET_OW;
+  resetOw(evt);
 }
 
+void romSearch(Event *evt){
+  setUartBaudRate(115200);
+  /*Write(0);
+  Write(1);
+  Write(1);*/
+  Write_SendArray(sendF0_txData1, 8);
+  if(_firstSearch(1)== FALSE){
 
-int search_SM(Event* event){
-  uint8_t data;
-  switch (event->eventType) {
-    case RESET_OW:
-    	  owSetUpRxIT(event);
-    	  owUartTxDma(0xf0);
-          return TRUE;
-
-    case REPLY:	//rxIt trigger here
-          if(isUartFrameError()){
-            //Throw()
-            return FALSE;
-          }
-          // data = owRxCallBackData;
-          if(((OwData*)(event->data))->uartRxVal == 0xF0){
-            //no device response
-            // Throw();
-            return FALSE;
-          }
-          // else if(data >= 0x10 && data <= 0x90){
-          /*if the higher bit has response */
-          else if ((((OwData*)(event->data))->uartRxVal & 0xf0) != 0xf){
-            //device is there
-            return TRUE;
-          }
-          else{
-            //unknown state
-            return FALSE;
-          }
-
-    case SEND_F0:
-          Write_SendArray(sendF0_txData1, 8);
-          return TRUE;
-
-    case BITSEARCH:
-          if(_firstSearch(1)== FALSE){
-            return FALSE;
-          }
-          while(LastDeviceFlag != TRUE){
-            if(_bitSearch(1) == FALSE)
-              return FALSE;
-          }
-    	  /*if(firstSearch())
-    		  return TRUE;
-    	  else
-    		  return FALSE;*/
-    default:
-    	// dump system error
-    	return FALSE;
   }
-}
+  while(LastDeviceFlag != TRUE){
+    if(_bitSearch(1) == FALSE){
 
-int completeSearch_OW(){
+    }
 
-  switch (state) {
-    case RESET:
-    	 setUartBaudRate(9600);
-    	  state = 1;  //assume that this fuc will be uart_tx callback
-        eventOw.eventType = RESET_OW;
-        search_SM(&eventOw);
-        return TRUE;
-    case 1:
-        eventOw.eventType = REPLY;
-        if(search_SM(&eventOw)){  //return true if 1 wire device is detected
-        	volatile int i;
+  }
 
-        	i++;
-        	setUartBaudRate(115200);
-        	/*Write(0);
-        	Write(1);
-        	Write(1);*/
-          eventOw.eventType = SEND_F0;
-        	search_SM(&eventOw);
-        	i++;
-
-        	//state = 2;  //assume that this fuc will be uart_tx callback
-        	//return TRUE; //dont return to go to next case
-        	eventOw.eventType = BITSEARCH;
-        	if(search_SM(&eventOw)){
-        		//success
-        		state = RESET;
-        		return TRUE;
-        	}
-        	else{
-        		// throw();
-        		state = RESET;
-        		return FALSE; //process done
-        	}
-        	}
-          //throw();
-          return FALSE;
-
-
-    default:
-        state = RESET;
-      	return FALSE;
-   }
 }
 
 int resetOw(Event *evt){
@@ -137,14 +59,14 @@ int resetOw(Event *evt){
         return FALSE;
       }
       // data = owRxCallBackData;
-      if(((OwData*)(event->data))->uartRxVal == 0xF0){
+      if(((OwData*)(evt->data))->uartRxVal == 0xF0){
         //no device response
         // Throw();
         return FALSE;
       }
       // else if(data >= 0x10 && data <= 0x90){
       /*if the higher bit has response */
-      else if ((((OwData*)(event->data))->uartRxVal & 0xf0) != 0xf){
+      else if ((((OwData*)(evt->data))->uartRxVal & 0xf0) != 0xf){
         //device is there
         return TRUE;
       }
@@ -154,8 +76,4 @@ int resetOw(Event *evt){
       }
 
   }
-}
-
-void romSearch(Event *evt){
-  
 }

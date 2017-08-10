@@ -22,10 +22,12 @@ typedef enum{
   BITSEARCH = 3
 }EventType;
 
-typedef struct Event Event;
-struct Event {
+
+typedef struct EventStruct Event;
+struct EventStruct {
   EventType eventType;
   void *data;
+  void (*commandFunction)(Event*);
 };
 
 typedef struct OwData OwData;
@@ -33,9 +35,11 @@ struct OwData {
   int idBit, cmpIdBit;
   uint8_t uartRxVal;
 };
-void clear_OWSm();
-int search_SM(Event* event);
 void OW_Tx_SendArray(uint8_t* data, int length);
 deviceAvail resetOW();
-int completeSearch_OW();
+
+void initRomSearching(Event* evt, void* owdata);
+int resetOw(Event *evt);
+void romSearch(Event *evt);
+
 #endif // _OWCOMPLETESEARCH_H

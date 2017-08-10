@@ -332,6 +332,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	volatile int i = 0;
 	i++;
 	//completeSearch_OW();
+	//TODO jump to the function pointer decalre in evt
 }
 
 int isUartFrameError(){
