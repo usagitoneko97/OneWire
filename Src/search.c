@@ -161,6 +161,11 @@ int bitSearch(){
   return _bitSearch(8);
 }
 
+/**
+ * The 'TARGET SETUP' operation is a way to preset the search state to first
+ * find a particular family type
+ * @param familyCode 1 byte of family code. Usually is the lsb of the rom numbers.
+ */
 void targetSetupSearch(unsigned char familyCode){
     int i;
     ROM_NO[0] = familyCode;
@@ -171,6 +176,10 @@ void targetSetupSearch(unsigned char familyCode){
     LastDeviceFlag = FALSE;
 }
 
+/**
+ * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
+ * devices that have the family code that was found in the previous search.
+ */
 void familySkipSetupSearch()
 {
    // set the Last discrepancy to last family discrepancy
@@ -182,7 +191,13 @@ void familySkipSetupSearch()
       LastDeviceFlag = TRUE;
 }
 
-void verify(unsigned char *romNumberToVerify, int Bytelength){
+/**
+ * verifies if a device with a known ROM is currently connected to the 1-Wire
+ *
+ * @param romNumbers        rom number(s) to verify with
+ * @param Bytelength        length in byte of romNumbers
+ */
+void verify(unsigned char *romNumbers, int Bytelength){
   LastDiscrepancy = 64;
   LastFamilyDiscrepancy = 0;
   LastDeviceFlag = FALSE;
