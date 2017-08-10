@@ -7,7 +7,7 @@
 
 
 
-uint8_t OW_Rx_val;
+uint8_t owRxVal;
 unsigned char bitPos = 0;
 uint8_t *fake_id_bits = NULL;
 uint8_t *fake_cmp_id_bits = NULL;
@@ -47,7 +47,7 @@ void fake_Write_SendArray(uint8_t* data, int length, int numOfCalls){
 }
 
 uint8_t fake_OW_Rx(int numOfCalls){
-  return OW_Rx_val;
+  return owRxVal;
 }
 
 
@@ -69,7 +69,7 @@ void tearDown(void){
 
 /*void test_owcompletesearch_given_RX_F0_expect_DeviceNA(void)
 {
-  OW_Rx_val = 0xf0;
+  owRxVal = 0xf0;
   TEST_ASSERT_EQUAL(DEVICE_NA, resetOW());
 }*/
 
@@ -107,7 +107,7 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
   TEST_ASSERT_EQUAL(0xe2, RomDataBuffer[0][0]);
   TEST_ASSERT_EQUAL(0x4b, RomDataBuffer[1][0]);
   TEST_ASSERT_EQUAL(TRUE, LastDeviceFlag);
-  TEST_ASSERT_EQUAL(0, LastDiscrepancy);
+  TEST_ASSERT_EQUAL(0, lastDiscrepancy);
 
 }
 

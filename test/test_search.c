@@ -58,12 +58,12 @@ void tearDown(void) {
 }
 
 InnerVAR_OW initSearchTest(InnerVAR_OW innerVAR_OW){
-  LastDiscrepancy = 0;
+  lastDiscrepancy = 0;
   LastDeviceFlag=FALSE;
   LastFamilyDiscrepancy = 0;
   int i = 0;
   while(i<8){
-    ROM_NO[i++] = 0;
+    romNo[i++] = 0;
   }
   innerVAR_OW.id_bit_number = 1;
   innerVAR_OW.last_zero = 0;
@@ -103,7 +103,7 @@ void test_fake_read_return_idBit_cmpIdBit(void){
  * last_zero = 1                                        *
  * id_bit_number ++                                     *
  * search_direction = id_bit                            *
- * first bit of first byte of ROM_NO = search_direction *
+ * first bit of first byte of romNo = search_direction *
  ********************************************************/
 void test_processOWData_IdBit_cmpBit_00(void){
   /*initialize test*/
@@ -118,7 +118,7 @@ void test_processOWData_IdBit_cmpBit_00(void){
   innerVAR_OW = processOWData(innerVAR_OW);
 
   /*checking results*/
-  int ROM_bit_val = ROM_NO[0] &0x01; //the 0th bit
+  int ROM_bit_val = romNo[0] &0x01; //the 0th bit
   TEST_ASSERT_EQUAL(1, innerVAR_OW.last_zero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.id_bit_number);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.search_direction);
@@ -134,7 +134,7 @@ void test_processOWData_IdBit_cmpBit_00(void){
  * last_zero = 0                                        *
  * id_bit_number ++                                     *
  * search_direction = id_bit                            *
- * first bit of first byte of ROM_NO = search_direction *
+ * first bit of first byte of romNo = search_direction *
  ********************************************************/
 void test_processOWData_IdBit_cmpBit_01(void){
   /*initialize test*/
@@ -144,9 +144,9 @@ void test_processOWData_IdBit_cmpBit_01(void){
   InnerVAR_OW innerVAR_OW;
   innerVAR_OW = initSearchTest(innerVAR_OW);
   /*initialize condition for test*/
-  LastDiscrepancy = 0;
+  lastDiscrepancy = 0;
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = ROM_NO[0] &0x01; //the 0th bit
+  int ROM_bit_val = romNo[0] &0x01; //the 0th bit
   /*checking results*/
   TEST_ASSERT_EQUAL(0, innerVAR_OW.last_zero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.id_bit_number);
@@ -163,7 +163,7 @@ void test_processOWData_IdBit_cmpBit_01(void){
  * last_zero = 0                                        *
  * id_bit_number ++                                     *
  * search_direction = id_bit                            *
- * first bit of first byte of ROM_NO = search_direction *
+ * first bit of first byte of romNo = search_direction *
  ********************************************************/
 void test_processOWData_IdBit_cmpBit_10(void){
   /*initialize test*/
@@ -173,10 +173,10 @@ void test_processOWData_IdBit_cmpBit_10(void){
   InnerVAR_OW innerVAR_OW;
   innerVAR_OW = initSearchTest(innerVAR_OW);
   /*initialize condition for test*/
-  LastDiscrepancy = 0;
+  lastDiscrepancy = 0;
   innerVAR_OW = processOWData(innerVAR_OW);
   /*checking results*/
-  int ROM_bit_val = ROM_NO[0] &0x01;
+  int ROM_bit_val = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, innerVAR_OW.last_zero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.id_bit_number);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.search_direction);
@@ -201,10 +201,10 @@ void test_processOWData_IdBit_cmpBit_11(void){
   InnerVAR_OW innerVAR_OW;
   innerVAR_OW = initSearchTest(innerVAR_OW);
   /*initialize condition for test*/
-  LastDiscrepancy = 0;
+  lastDiscrepancy = 0;
   innerVAR_OW = processOWData(innerVAR_OW);
     /*checking results*/
-  int ROM_bit_val = ROM_NO[0] &0x01;
+  int ROM_bit_val = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, innerVAR_OW.last_zero);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.id_bit_number);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.search_direction);
@@ -218,14 +218,14 @@ void test_processOWData_IdBit_cmpBit_11(void){
 /********************************************************
  * Id_bit     = 0                                       *
  * cmp_id_bit = 0                                       *
- * LastDiscrepancy = 1                                  *
+ * lastDiscrepancy = 1                                  *
  * id_bit_number = 1                                    *
  *                                                      *
  * EXPECT:                                              *
  * last_zero = 0                                        *
  * id_bit_number++                                      *
  * search_direction = 1                                 *
- * first bit of first byte of ROM_NO = search_direction *
+ * first bit of first byte of romNo = search_direction *
  ********************************************************/
 void test_processOWData_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searchDir_1(void){
   /*initialize test*/
@@ -236,11 +236,11 @@ void test_processOWData_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searc
   innerVAR_OW = initSearchTest(innerVAR_OW);
   /*Initialize condition of test*/
   //id_bit = cmp_id_bit = 0
-  LastDiscrepancy = 1;
+  lastDiscrepancy = 1;
   innerVAR_OW.id_bit_number = 1;
   /*checking results*/
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = ROM_NO[0] &0x01;
+  int ROM_bit_val = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(1, ROM_bit_val);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.last_zero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.id_bit_number);
@@ -250,7 +250,7 @@ void test_processOWData_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searc
 /********************************************************
  * id_bit = 1                                           *
  * cmp_id_bit = 0                                       *
- * LastDiscrepancy = 3                                  *
+ * lastDiscrepancy = 3                                  *
  * id_bit_number = 1                                    *
  * ROM[0] |= 0x01 (set bi0 if ROM[0] to 1)              *
  *                                                      *
@@ -258,7 +258,7 @@ void test_processOWData_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searc
  * last_zero = 0                                        *
  * id_bit_number++                                      *
  * search_direction = 1                                 *
- * first bit of first byte of ROM_NO = search_direction *
+ * first bit of first byte of romNo = search_direction *
  ********************************************************/
 void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_value_eq_1(void){
   /*initialize test*/
@@ -269,12 +269,12 @@ void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_f
   innerVAR_OW = initSearchTest(innerVAR_OW);
   /*Initialize condition of test*/
   //id_bit = cmp_id_bit = 0
-  LastDiscrepancy = 3;
+  lastDiscrepancy = 3;
   innerVAR_OW.id_bit_number = 1;
-  ROM_NO[0] |= 0x01;  //set bit 0 to '1'
+  romNo[0] |= 0x01;  //set bit 0 to '1'
   /*checking results*/
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = ROM_NO[0] &0x01;
+  int ROM_bit_val = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(1, ROM_bit_val);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.last_zero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.id_bit_number);
@@ -285,7 +285,7 @@ void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_f
 /********************************************************
  * id_bit = 1                                           *
  * cmp_id_bit = 0                                       *
- * LastDiscrepancy = 3                                  *
+ * lastDiscrepancy = 3                                  *
  * id_bit_number = 1                                    *
  * ROM[0] |= 0x01 (set bi0 if ROM[0] to 0)              *
  *                                                      *
@@ -293,9 +293,9 @@ void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_f
  * last_zero = 0                                        *
  * id_bit_number++                                      *
  * search_direction = 0                                 *
- * first bit of first byte of ROM_NO = search_direction *
+ * first bit of first byte of romNo = search_direction *
  ********************************************************/
-void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_ROM_NO_value_eq_0(void){
+void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_romNo_value_eq_0(void){
   /*initialize test*/
   uint8_t fake_id_bit_VAL []=       {0};
   uint8_t fake_cmp_id_bit_VAL[] =   {0};
@@ -304,12 +304,12 @@ void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_f
   innerVAR_OW = initSearchTest(innerVAR_OW);
   /*Initialize condition of test*/
   //id_bit = cmp_id_bit = 0
-  LastDiscrepancy = 3;
+  lastDiscrepancy = 3;
   innerVAR_OW.id_bit_number = 1;
-  ROM_NO[0] &= 0xfe;  //set bit 0 to '0'
+  romNo[0] &= 0xfe;  //set bit 0 to '0'
   /*checking results*/
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = ROM_NO[0] &0x01;
+  int ROM_bit_val = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, ROM_bit_val);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.last_zero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.id_bit_number);
@@ -340,7 +340,7 @@ void test_search_bit_given_idBit_cmp_idBit_11_expect_SearchFail(void)
  * 0 0 1 0            -third data
  * 0 0 0 1            -forth data
 
- * LastDiscrepancy = 0
+ * lastDiscrepancy = 0
 
  *(after running through search)...
 
@@ -349,7 +349,7 @@ void test_search_bit_given_idBit_cmp_idBit_11_expect_SearchFail(void)
  *0000...0 0 1 0
  *0000...0 0 0 1
            ^
-     LastDiscrepancy
+     lastDiscrepancy
 points to here so that next search will take the path with "1" (second path)
  *should read these data <true>:<compliment>
  *00 00 00 10 |01 01 01 01....
@@ -358,7 +358,7 @@ points to here so that next search will take the path with "1" (second path)
  *FIRST
  *-----
  *Data retrieved: 0x08 (1.)
- *LastDiscrepancy = 3
+ *lastDiscrepancy = 3
  *LastDeviceFlag = FALSE
 */
 void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
@@ -368,8 +368,8 @@ void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
   uint8_t fake_cmp_id_bit_VAL[] =   {0, 0, 0, 0, 1, 1, 1, 1};
   init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
   TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-  TEST_ASSERT_EQUAL_INT64(0x08, ROM_NO[0]);
-  TEST_ASSERT_EQUAL(3, LastDiscrepancy);
+  TEST_ASSERT_EQUAL_INT64(0x08, romNo[0]);
+  TEST_ASSERT_EQUAL(3, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
 }
 
@@ -383,7 +383,7 @@ void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
  *0 0 1 0            -third data
  *0 0 0 1            -forth data
  *  ^
-*LastDiscrepancy
+*lastDiscrepancy
  *
 *(after running through search).....
 
@@ -392,7 +392,7 @@ void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
  0000...0 0 1 0
  0000...0 0 0 1
             ^
-     LastDiscrepancy
+     lastDiscrepancy
 points to here so that next search will take the path with "1" (second path)
  *
  *should read these data <true>:<compliment>
@@ -404,7 +404,7 @@ points to here so that next search will take the path with "1" (second path)
  *NEXT
  *-----
  *Data to be retrieved: 0x04 (second data)
- *LastDiscrepancy = 2
+ *lastDiscrepancy = 2
  *LastDeviceFlag = FALSE
 */
 void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
@@ -414,12 +414,12 @@ void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
   uint8_t fake_cmp_id_bit_VAL[] =   {0, 0, 0, 1, 1, 1, 1, 1};
   init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
 
-  LastDiscrepancy = 3;
+  lastDiscrepancy = 3;
   LastDeviceFlag = FALSE;
-  ROM_NO[0] = 0x08;
+  romNo[0] = 0x08;
   TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-  TEST_ASSERT_EQUAL_INT64(0x04, ROM_NO[0]);
-  TEST_ASSERT_EQUAL(2, LastDiscrepancy);
+  TEST_ASSERT_EQUAL_INT64(0x04, romNo[0]);
+  TEST_ASSERT_EQUAL(2, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
 }
 
@@ -431,7 +431,7 @@ void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
  *0 0 1 0            -third data
  *0 0 0 1            -forth data
       ^
- * LastDiscrepancy
+ * lastDiscrepancy
  *
  *(after running through search)  ...
 
@@ -440,7 +440,7 @@ void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
  *0000...0 0 1 0    <---- This path is chosen, data read is 0x04
  *0000...0 0 0 1
                ^
-       LastDiscrepancy
+       lastDiscrepancy
  *points to here so that next search will take the path with "1" (second path)
  *should read these data <true>:<compliment>
  *00 00 01 01 |01 01 01 01....
@@ -448,7 +448,7 @@ void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
  *NEXT
  *-----
  *Data to be retrieved: 0x02 (third data)
- *LastDiscrepancy = 2
+ *lastDiscrepancy = 2
  *LastDeviceFlag = FALSE
 */
 void test_search_bit_expect_ThirdData_LastDisprecancy_1(void)
@@ -458,12 +458,12 @@ void test_search_bit_expect_ThirdData_LastDisprecancy_1(void)
   uint8_t fake_cmp_id_bit_VAL[] =   {0, 0, 1, 1, 1, 1, 1, 1};
   init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
 
-  LastDiscrepancy = 2;
+  lastDiscrepancy = 2;
   LastDeviceFlag = FALSE;
-  ROM_NO[0] = 0x04;
+  romNo[0] = 0x04;
   TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-  TEST_ASSERT_EQUAL_INT64(0x02, ROM_NO[0]);
-  TEST_ASSERT_EQUAL(1, LastDiscrepancy);
+  TEST_ASSERT_EQUAL_INT64(0x02, romNo[0]);
+  TEST_ASSERT_EQUAL(1, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
 }
 
@@ -475,7 +475,7 @@ void test_search_bit_expect_ThirdData_LastDisprecancy_1(void)
  *                                   0 0 1 0            -third data (READ)
  *                                   0 0 0 1            -forth data
                                            ^
- *                                  LastDiscrepancy
+ *                                  lastDiscrepancy
 
  *(after running through search)  ...
  *
@@ -484,7 +484,7 @@ void test_search_bit_expect_ThirdData_LastDisprecancy_1(void)
  *0000...0 0 1 0
  *0000...0 0 0 1    <---- This path is chosen, data read is 0x04
 
-       LastDiscrepancy  = 0
+       lastDiscrepancy  = 0
 points to zero so that it will return TRUE to LastDeviceFlag
  *should read these data <true>:<compliment>
  *00 01 01 01 |01 01 01 01.... *Note:Lsb comes first
@@ -493,7 +493,7 @@ points to zero so that it will return TRUE to LastDeviceFlag
  *-----
  *Data to be retrieved: 0x02 (third data)
  *Expected:
- *LastDiscrepancy = 2
+ *lastDiscrepancy = 2
  *LastDeviceFlag = FALSE
 */
 void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
@@ -503,12 +503,12 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
   uint8_t fake_cmp_id_bit_VAL[] =   {0, 1, 1, 1, 1, 1, 1, 1};
   init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
 
-  LastDiscrepancy = 1;
+  lastDiscrepancy = 1;
   LastDeviceFlag = FALSE;
-  ROM_NO[0] = 0x02;
+  romNo[0] = 0x02;
   TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-  TEST_ASSERT_EQUAL_INT64(0x01, ROM_NO[0]);
-  TEST_ASSERT_EQUAL(0, LastDiscrepancy);
+  TEST_ASSERT_EQUAL_INT64(0x01, romNo[0]);
+  TEST_ASSERT_EQUAL(0, lastDiscrepancy);
   TEST_ASSERT_EQUAL(TRUE, LastDeviceFlag);
 }
 
@@ -529,8 +529,8 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
 
    TEST_ASSERT_EQUAL(TRUE, _firstSearch(1));
-   TEST_ASSERT_EQUAL_INT8(0x26, ROM_NO[0]); //0010 0110
-   TEST_ASSERT_EQUAL(1, LastDiscrepancy);
+   TEST_ASSERT_EQUAL_INT8(0x26, romNo[0]); //0010 0110
+   TEST_ASSERT_EQUAL(1, lastDiscrepancy);
    TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
  }
 
@@ -551,11 +551,11 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
     init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
 
     LastDeviceFlag = FALSE;
-    LastDiscrepancy=1;
-    ROM_NO[0] = 0x26;
+    lastDiscrepancy=1;
+    romNo[0] = 0x26;
     TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-    TEST_ASSERT_EQUAL_INT8(0x59, ROM_NO[0]);
-    TEST_ASSERT_EQUAL(3, LastDiscrepancy);
+    TEST_ASSERT_EQUAL_INT8(0x59, romNo[0]);
+    TEST_ASSERT_EQUAL(3, lastDiscrepancy);
     TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
   }
 
@@ -575,11 +575,11 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
 
      LastDeviceFlag = FALSE;
-     LastDiscrepancy=3;
-     ROM_NO[0] = 0x59;
+     lastDiscrepancy=3;
+     romNo[0] = 0x59;
      TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-     TEST_ASSERT_EQUAL_INT8(0x35, ROM_NO[0]);
-     TEST_ASSERT_EQUAL(0, LastDiscrepancy);
+     TEST_ASSERT_EQUAL_INT8(0x35, romNo[0]);
+     TEST_ASSERT_EQUAL(0, lastDiscrepancy);
      TEST_ASSERT_EQUAL(TRUE, LastDeviceFlag);
    }
 
@@ -602,10 +602,10 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
 
      targetSetupSearch(0xc5);
      TEST_ASSERT_EQUAL(TRUE, _bitSearch(2));
-     TEST_ASSERT_EQUAL(10, LastDiscrepancy);
+     TEST_ASSERT_EQUAL(10, lastDiscrepancy);
      TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
-     TEST_ASSERT_EQUAL(0xc5, ROM_NO[0]);
-     TEST_ASSERT_EQUAL(0x05, ROM_NO[1]);
+     TEST_ASSERT_EQUAL(0xc5, romNo[0]);
+     TEST_ASSERT_EQUAL(0x05, romNo[1]);
    }
 
    /*Target Setup search (2/3)
@@ -621,9 +621,9 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    *
    * * due to we load specific family code, the algorithm couldn't find the device
    * that has different family code. So there is no part 3 (3/3)
-   * Expected:  LastDiscrepancy = 0
+   * Expected:  lastDiscrepancy = 0
    *            LastDeviceFlag = TRUE
-   *            ROM_NO[1] = 0xb
+   *            romNo[1] = 0xb
    */
 
    void test_targetSetupSearch_cont_givenAboveData_expect_dataTwo(void){
@@ -631,29 +631,29 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      uint8_t fake_cmp_id_bit_VAL[] =   {0, 1, 0, 1,  1, 1, 0, 0,  0, 0, 1, 0,  1, 1, 1, 1};
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
      //initialize value to continue the targetSetupSearch above
-     LastDiscrepancy = 10;
+     lastDiscrepancy = 10;
      LastFamilyDiscrepancy = 0;
      LastDeviceFlag = FALSE;
-     ROM_NO[0] = 0xc5; //family code
-     ROM_NO[1] = 0x05;
+     romNo[0] = 0xc5; //family code
+     romNo[1] = 0x05;
      TEST_ASSERT_EQUAL(TRUE, _bitSearch(2));
-     TEST_ASSERT_EQUAL(0, LastDiscrepancy);
+     TEST_ASSERT_EQUAL(0, lastDiscrepancy);
      TEST_ASSERT_EQUAL(TRUE, LastDeviceFlag);
-     TEST_ASSERT_EQUAL(0xc5, ROM_NO[0]);
-     TEST_ASSERT_EQUAL(0xb, ROM_NO[1]);
+     TEST_ASSERT_EQUAL(0xc5, romNo[0]);
+     TEST_ASSERT_EQUAL(0xb, romNo[1]);
    }
 
 /**
  * The 'VERIFY' operation verifies if a device with a known ROM number is currently connected to the 1-Wire.
  * 'VERIFY' can be perform by:
  * -Suplying the ROM number
- * -set LastDiscrepancy to 64 (8 in this case)
+ * -set lastDiscrepancy to 64 (8 in this case)
  * -and doing a target search
  * ------------------------------------------------------------
  * Test on 8 bit
  * -------------
  * Given:
- * ROM_NO:   0011 0100
+ * romNo:   0011 0100
  *          0x34
  * other devices :
  *          0111  1011
@@ -672,16 +672,16 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      unsigned char romNumberToVerify = 0x34;
      verify(&romNumberToVerify, 1);
      TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-     TEST_ASSERT_EQUAL(0x34, ROM_NO[0]);
+     TEST_ASSERT_EQUAL(0x34, romNo[0]);
 
    }
 /**
- * Verify certain ROM_NO but given different ROM_NO
+ * Verify certain romNo but given different romNo
  * ------------
  * Test on 8 bitPos
  * ------------
  * Given:
- * ROM_NO to search: 1011 1110
+ * romNo to search: 1011 1110
  *                   0xbe
  *Given devices:    0110 1101
  *                  0x6d
@@ -695,13 +695,13 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      uint8_t fake_id_bit_VAL []=       {0, 1, 1, 1, 0, 0, 0, 1};
      uint8_t fake_cmp_id_bit_VAL[] =   {0, 0, 0, 0, 1, 1, 1, 0};
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
-     LastDiscrepancy = 8;
+     lastDiscrepancy = 8;
      LastFamilyDiscrepancy = 0;
      LastDeviceFlag = FALSE;
-     ROM_NO[0] = 0xbe;
+     romNo[0] = 0xbe;
      TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
-     TEST_ASSERT_NOT_EQUAL(0xbe, ROM_NO[0]);
-     TEST_ASSERT_EQUAL(0x8e, ROM_NO[0]);
+     TEST_ASSERT_NOT_EQUAL(0xbe, romNo[0]);
+     TEST_ASSERT_EQUAL(0x8e, romNo[0]);
    }
 /**
  * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
@@ -735,7 +735,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  *            path taken:1000 1011 1111 1110
  *                       ^
  *                       |
- *         (path taken is 1 because LastDiscrepancy = 1)
+ *         (path taken is 1 because lastDiscrepancy = 1)
  */
    void test_FamilySkipSetup_Search(void){
      /*first search*/
@@ -745,11 +745,11 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
      /*TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
      TEST_ASSERT_EQUAL(1, LastFamilyDiscrepancy);
-     TEST_ASSERT_EQUAL(11, LastDiscrepancy);*/
+     TEST_ASSERT_EQUAL(11, lastDiscrepancy);*/
 
      TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
      TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
-     TEST_ASSERT_EQUAL(0x6A, ROM_NO[0]);
+     TEST_ASSERT_EQUAL(0x6A, romNo[0]);
      /*second search*/
      //----------------------------------------------------
 
@@ -758,8 +758,8 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      init64BitId(fake_id_bit_VAL_2, fake_cmp_id_bit_VAL_2, 0);
      familySkipSetupSearch();
      TEST_ASSERT_EQUAL(TRUE ,_bitSearch(2));
-     TEST_ASSERT_EQUAL(0x7f, ROM_NO[1]);
-     TEST_ASSERT_EQUAL(0xd1, ROM_NO[0]);
+     TEST_ASSERT_EQUAL(0x7f, romNo[1]);
+     TEST_ASSERT_EQUAL(0xd1, romNo[0]);
 
 
 

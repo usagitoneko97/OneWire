@@ -36,12 +36,12 @@ void clearDataBuffer_64(){
  */
 int firstSearch() {
   clearDataBuffer_64();
-  LastDiscrepancy = 0;
+  lastDiscrepancy = 0;
   LastDeviceFlag=FALSE;
   LastFamilyDiscrepancy = 0;
   int i;
   for(i=0;i<8;i++)
-    ROM_NO[i] = 0;
+    romNo[i] = 0;
   return bitSearch();
 }
 /**
@@ -52,12 +52,12 @@ int firstSearch() {
  */
 int _firstSearch(int numberOfByte) {
   clearDataBuffer_64();
-  LastDiscrepancy = 0;
+  lastDiscrepancy = 0;
   LastDeviceFlag=FALSE;
   LastFamilyDiscrepancy = 0;
   int i;
   for(i=0;i<8;i++)
-    ROM_NO[i] = 0;
+    romNo[i] = 0;
   return _bitSearch(numberOfByte);
 }
 
@@ -75,14 +75,14 @@ InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW){
       innerVAR_OW.search_direction = innerVAR_OW.id_bit;
     }
     else{
-      if(innerVAR_OW.id_bit_number == LastDiscrepancy){
+      if(innerVAR_OW.id_bit_number == lastDiscrepancy){
         innerVAR_OW.search_direction = 1;
       }
-      else if(innerVAR_OW.id_bit_number > LastDiscrepancy){
+      else if(innerVAR_OW.id_bit_number > lastDiscrepancy){
         innerVAR_OW.search_direction = 0;
       }
       else{
-        innerVAR_OW.search_direction = ((ROM_NO[innerVAR_OW.rom_byte_num] & innerVAR_OW.rom_byte_mask)>0);  //if there is "1" on any bit, load 1 to search_direction
+        innerVAR_OW.search_direction = ((romNo[innerVAR_OW.rom_byte_num] & innerVAR_OW.rom_byte_mask)>0);  //if there is "1" on any bit, load 1 to search_direction
       }
       if(!innerVAR_OW.search_direction){
         innerVAR_OW.last_zero = innerVAR_OW.id_bit_number;
@@ -93,11 +93,11 @@ InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW){
       }
     }
     if(innerVAR_OW.search_direction == 1){
-      ROM_NO[innerVAR_OW.rom_byte_num] |= innerVAR_OW.rom_byte_mask; //set the current bit to be 1
+      romNo[innerVAR_OW.rom_byte_num] |= innerVAR_OW.rom_byte_mask; //set the current bit to be 1
       Write(1);
     }
     else{
-      ROM_NO[innerVAR_OW.rom_byte_num] &= ~innerVAR_OW.rom_byte_mask; //set current bit to be 0
+      romNo[innerVAR_OW.rom_byte_num] &= ~innerVAR_OW.rom_byte_mask; //set current bit to be 0
       Write(0);
     }
 
@@ -129,7 +129,7 @@ int _bitSearch(int numberOfByte){
         //checking of a complete byte
 
         if(innerVAR_OW.rom_byte_mask == 0){
-          stack_dataBuffer_64(ROM_NO[innerVAR_OW.rom_byte_num],numberOfByte);
+          stack_dataBuffer_64(romNo[innerVAR_OW.rom_byte_num],numberOfByte);
           innerVAR_OW.rom_byte_mask = 1;
           innerVAR_OW.rom_byte_num++;
         }
@@ -139,8 +139,8 @@ int _bitSearch(int numberOfByte){
     //done searching
     //if successful
     if(innerVAR_OW.id_bit_number > (numberOfByte<<3)){
-    LastDiscrepancy = innerVAR_OW.last_zero;
-    if(LastDiscrepancy == 0){
+    lastDiscrepancy = innerVAR_OW.last_zero;
+    if(lastDiscrepancy == 0){
       LastDeviceFlag = TRUE;
     }
     innerVAR_OW.search_result = TRUE;
@@ -149,7 +149,7 @@ int _bitSearch(int numberOfByte){
   }
     /*last device flag is true*/
     if(!innerVAR_OW.search_result){
-      LastDiscrepancy = 0;
+      lastDiscrepancy = 0;
       LastDeviceFlag = FALSE;
       LastFamilyDiscrepancy = 0;
       innerVAR_OW.search_result = FALSE;
@@ -170,10 +170,10 @@ int bitSearch(){
  */
 void targetSetupSearch(unsigned char familyCode){
     int i;
-    ROM_NO[0] = familyCode;
+    romNo[0] = familyCode;
     for (i = 1; i < 8; i++)
-      ROM_NO[i] = 0;
-    LastDiscrepancy = 64;
+      romNo[i] = 0;
+    lastDiscrepancy = 64;
     LastFamilyDiscrepancy = 0;
     LastDeviceFlag = FALSE;
 }
@@ -188,11 +188,11 @@ void targetSetupSearch(unsigned char familyCode){
 void familySkipSetupSearch()
 {
    // set the Last discrepancy to last family discrepancy
-   LastDiscrepancy = LastFamilyDiscrepancy;
+   lastDiscrepancy = LastFamilyDiscrepancy;
    LastFamilyDiscrepancy = 0;
 
    // check for end of list
-   if (LastDiscrepancy == 0)
+   if (lastDiscrepancy == 0)
       LastDeviceFlag = TRUE;
 }
 
@@ -205,10 +205,10 @@ void familySkipSetupSearch()
  * and does not perform search itself
  */
 void verify(unsigned char *romNumbers, int Bytelength){
-  LastDiscrepancy = 64;
+  lastDiscrepancy = 64;
   LastFamilyDiscrepancy = 0;
   LastDeviceFlag = FALSE;
   int i;
   for(i = 0;i<Bytelength;i++)
-    ROM_NO[i] = *(romNumberToVerify+i);
+    romNo[i] = *(romNumbers+i);
 }
