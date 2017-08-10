@@ -181,3 +181,12 @@ void familySkipSetupSearch()
    if (LastDiscrepancy == 0)
       LastDeviceFlag = TRUE;
 }
+
+void verify(unsigned char *romNumberToVerify, int Bytelength){
+  LastDiscrepancy = 64;
+  LastFamilyDiscrepancy = 0;
+  LastDeviceFlag = FALSE;
+  int i;
+  for(i = 0;i<Bytelength;i++)
+    ROM_NO[i] = *(romNumberToVerify+i);
+}

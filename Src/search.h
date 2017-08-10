@@ -19,6 +19,6 @@ int _firstSearch(int numberOfByte);
 int _bitSearch(int numberOfByte);
 void targetSetupSearch(unsigned char familyCode);
 void familySkipSetupSearch();
-
+void verify(unsigned char *romNumberToVerify, int Bytelength);
 
 #endif // _SEARCH_H

@@ -600,10 +600,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      uint8_t fake_cmp_id_bit_VAL[] =   {0, 1, 0, 1,  1, 1, 0, 0,  0, 0, 0, 1,  1, 1, 1, 1};
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
 
-     LastDiscrepancy = 64;
-     LastFamilyDiscrepancy = 0;
-     LastDeviceFlag = FALSE;
-     ROM_NO[0] = 0xc5; //family code
+     targetSetupSearch(0xc5);
      TEST_ASSERT_EQUAL(TRUE, _bitSearch(2));
      TEST_ASSERT_EQUAL(10, LastDiscrepancy);
      TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
@@ -629,10 +626,11 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    *            ROM_NO[1] = 0xb
    */
 
-   void test_targetSetupSearch_givenAboveData_expect_dataTwo(void){
+   void test_targetSetupSearch_cont_givenAboveData_expect_dataTwo(void){
      uint8_t fake_id_bit_VAL []=       {0, 0, 1, 0,  0, 0, 1, 1,  1, 0, 0, 1,  0, 0, 0, 0};
      uint8_t fake_cmp_id_bit_VAL[] =   {0, 1, 0, 1,  1, 1, 0, 0,  0, 0, 1, 0,  1, 1, 1, 1};
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
+     //initialize value to continue the targetSetupSearch above
      LastDiscrepancy = 10;
      LastFamilyDiscrepancy = 0;
      LastDeviceFlag = FALSE;
@@ -671,10 +669,8 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      uint8_t fake_id_bit_VAL []=       {0, 0, 0, 0, 1, 1, 0, 0};
      uint8_t fake_cmp_id_bit_VAL[] =   {0, 1, 0, 1, 0, 0, 1, 1};
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
-     LastDiscrepancy = 8;
-     LastFamilyDiscrepancy = 0;
-     LastDeviceFlag = FALSE;
-     ROM_NO[0] = 0x34;
+     unsigned char romNumberToVerify = 0x34;
+     verify(&romNumberToVerify, 1);
      TEST_ASSERT_EQUAL(TRUE, _bitSearch(1));
      TEST_ASSERT_EQUAL(0x34, ROM_NO[0]);
 
@@ -760,8 +756,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      uint8_t fake_id_bit_VAL_2 []=       {0, 0, 0, 0,  1, 0, 1, 1,  1, 1, 1, 1,  1, 1, 1, 0};
      uint8_t fake_cmp_id_bit_VAL_2[] =   {0, 1, 1, 1,  0, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0, 1};
      init64BitId(fake_id_bit_VAL_2, fake_cmp_id_bit_VAL_2, 0);
-     LastDiscrepancy = LastFamilyDiscrepancy;
-     LastFamilyDiscrepancy = 0;
+     familySkipSetupSearch();
      TEST_ASSERT_EQUAL(TRUE ,_bitSearch(2));
      TEST_ASSERT_EQUAL(0x7f, ROM_NO[1]);
      TEST_ASSERT_EQUAL(0xd1, ROM_NO[0]);
