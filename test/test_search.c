@@ -720,30 +720,53 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  * ->first we perform 1wire first search, and it will found data no.1
  * ->perform familySkipSetupSearch and it will found data no.3 instead of data no.2
  *
- * 1wire firstSearch
+ *                          ...(after the first search)
+ *            0011 1001 0110 1010       -> same family code   -->data no.1
+ *            1110 0101 0110 1010       ---|                  -->data no.2
+ *            0111 1111 1101 0001                             -->data no.3 -------> this data will chosen in next search
+ *                              ^
+ *                              |
+ *                     LastFamilyDiscrepancy
+ * 1wire firstSearch -------------> (1st)
  * ------------------
  * MOCK data: id_bit     :0101 0110 1001 1000
  *           cmp_id_bit  :0010 1001 0100 0011
- *           path taken  :0101 0110 1001 1001
+ *           path taken  :0101 0110 1001 1000
  *
- * 1wire familySkipSetupSearch
- *----------------------------
- *MOCK data:  id_bit    :
- *            cmp_id_bit:
- *            path taken:
+ * 1wire familySkipSetupSearch -------------> (2nd)
+ *MOCK data:  id_bit    :0000 1011 1111 1110
+ *            cmp_id_bit:0111 0100 0000 0001
+ *            path taken:1000 1011 1111 1110
+ *                       ^
+ *                       |
+ *         (path taken is 1 because LastDiscrepancy = 1)
  */
    void test_FamilySkipSetup_Search(void){
-     uint8_t fake_id_bit_VAL []=       {0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 0, 1,  1, 0, 0, 1};
+     /*first search*/
+     //----------------------------------------------------
+     uint8_t fake_id_bit_VAL []=       {0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 0, 1,  1, 0, 0, 0};
      uint8_t fake_cmp_id_bit_VAL[] =   {0, 0, 1, 0,  1, 0, 0, 1,  0, 1, 0, 0,  0, 0, 1, 1};
      init64BitId(fake_id_bit_VAL, fake_cmp_id_bit_VAL, 0);
      /*TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
      TEST_ASSERT_EQUAL(1, LastFamilyDiscrepancy);
      TEST_ASSERT_EQUAL(11, LastDiscrepancy);*/
 
+     TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
+     TEST_ASSERT_EQUAL(FALSE, LastDeviceFlag);
+     TEST_ASSERT_EQUAL(0x6A, ROM_NO[0]);
+     /*second search*/
+     //----------------------------------------------------
 
+     uint8_t fake_id_bit_VAL_2 []=       {0, 0, 0, 0,  1, 0, 1, 1,  1, 1, 1, 1,  1, 1, 1, 0};
+     uint8_t fake_cmp_id_bit_VAL_2[] =   {0, 1, 1, 1,  0, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0, 1};
+     init64BitId(fake_id_bit_VAL_2, fake_cmp_id_bit_VAL_2, 0);
      LastDiscrepancy = LastFamilyDiscrepancy;
      LastFamilyDiscrepancy = 0;
-     LastDeviceFlag = FALSE;
+     TEST_ASSERT_EQUAL(TRUE ,_bitSearch(2));
+     TEST_ASSERT_EQUAL(0x7f, ROM_NO[1]);
+     TEST_ASSERT_EQUAL(0xd1, ROM_NO[0]);
+
+
 
    }
 
