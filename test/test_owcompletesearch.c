@@ -57,6 +57,7 @@ void setUp(void){
   write_StubWithCallback(fakeWrite);
   writeSendArray_StubWithCallback(fakewriteSendArray);
   eventOw.data = &owdata;
+
 }
 
 void tearDown(void){
@@ -87,6 +88,7 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
   uint8_t fakeIdBitVal []=       {0, 1, 0, 0, 0, 1, 1, 1,  0, 1, 0, 1, 0, 0, 1, 0,  0, 1, 0, 0, 0, 1, 1, 0};
   uint8_t fakeCmpIdBitVal[] =   {0, 0, 1, 1, 1, 0, 0, 0,  0, 0, 0, 0, 1, 1, 0, 1,  0, 0, 0, 1, 1, 0, 0, 1};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
+
   /*Mocking*/
   setUartBaudRate_Expect(9600);
   owSetUpRxIT_Expect();
@@ -100,10 +102,11 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
   writeSendArray_Expect(sendF0txDataTest, 8);
   //OW_Tx_Expect(sendF0_txData);
 
-  initRomSearching(&eventOw, &owdata);
-  eventOw.eventType = REPLY;
-  resetOw(&eventOw);    //uartRxCallback will check the reply
-  romSearch(&eventOw);  //uartRxCallback will call this function
+  initRomSearching(&eventOw,&owdata);
+  eventOw.byteLength = 1;
+  owHandler(&eventOw);
+  owHandler(&eventOw); //uartRxCallback will call this function
+
   TEST_ASSERT_EQUAL(0xe2, romDataBuffer[0][0]);
   TEST_ASSERT_EQUAL(0x4b, romDataBuffer[1][0]);
   TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
@@ -123,9 +126,10 @@ void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
   /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(FALSE);
 
-  initRomSearching(&eventOw, &owdata);
-  eventOw.eventType = REPLY;
-  TEST_ASSERT_EQUAL(FALSE, resetOw(&eventOw)); //callback of uartTx from reset
+  initRomSearching(&eventOw,&owdata);
+  eventOw.byteLength = 1;
+  owHandler(&eventOw);
+  TEST_ASSERT_EQUAL(FALSE, owHandler(&eventOw)); //callback of uartTx from reset
 }
 
 void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
@@ -137,7 +141,8 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
   /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(TRUE);
   // OW_Rx_ExpectAndReturn(-1);
-  initRomSearching(&eventOw, &owdata);
-  eventOw.eventType = REPLY;
-  TEST_ASSERT_EQUAL(FALSE, resetOw(&eventOw)); //callback of uartTx from reset
+  initRomSearching(&eventOw,&owdata);
+  eventOw.byteLength = 1;
+  owHandler(&eventOw);
+  TEST_ASSERT_EQUAL(FALSE, owHandler(&eventOw)); //callback of uartTx from reset
 }

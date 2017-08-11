@@ -25,6 +25,7 @@ void initRomSearching(Event* evt, void* owdata){
   evt->commandFunction = romSearch;
   evt->data = owdata;
   evt->eventType = RESET_OW;
+  evt->byteLength = 8;
 }
 
 void romSearch(Event *evt){
@@ -33,11 +34,11 @@ void romSearch(Event *evt){
   write(1);
   write(1);*/
   writeSendArray(sendF0_txData1, 8);
-  if(_firstSearch(8)== FALSE){
+  if(_firstSearch(evt->byteLength) == FALSE){
 
   }
   while(lastDeviceFlag != TRUE){
-    if(_bitSearch(8) == FALSE){
+    if(_bitSearch(evt->byteLength) == FALSE){
 
     }
 
@@ -81,7 +82,7 @@ int isOwDeviceAvail(Event *evt){
 	}
 }
 
-void owHandler(Event *evt){
+int owHandler(Event *evt){
 	switch(evt->eventType){
 	case RESET:
 		evt->eventType = REPLY;
@@ -93,10 +94,10 @@ void owHandler(Event *evt){
 			evt->commandFunction(&eventOw);
 		}
 		else{
-			while(1){
-
-			}
+			return FALSE;
 		}
+		break;
+	default: return FALSE;
 	}
-
+	return FALSE;
 }

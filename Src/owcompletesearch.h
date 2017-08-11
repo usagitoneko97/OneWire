@@ -27,6 +27,7 @@ struct EventStruct {
   EventType eventType;
   void *data;
   void (*commandFunction)(Event*);
+  int byteLength ;
 };
 
 typedef struct OwData OwData;
@@ -41,6 +42,6 @@ void resetOw(Event *evt);
 void romSearch(Event *evt);
 
 int isOwDeviceAvail(Event *evt);
-void owHandler(Event *evt);
+int owHandler(Event *evt);
 
 #endif // _OWCOMPLETESEARCH_H
