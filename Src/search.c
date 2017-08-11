@@ -6,6 +6,7 @@
  * store 1 byte of data in a
  * @param data         1 byte of data that need to store
  * @param numberOfByte total number of byte of device rom number
+ * @test test_stackDataBuffer64
  */
 void stackDataBuffer64(uint8_t data, int numberOfByte){
   romDataBuffer[bufferDeviceNumber][bufferByteNumber++] = data;
@@ -66,7 +67,6 @@ int _firstSearch(int numberOfByte) {
  * romNo bit by bit
  * @param  bitSearchInformation structure that contain all the information
  *                              about the bit searching
- * @return                      [description]
  */
 void process1BitRom(BitSearchInformation *bitSearchInformation){
   bitSearchInformation->idBit = Read();
