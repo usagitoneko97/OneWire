@@ -104,7 +104,11 @@ int main(void)
 
   //HAL_UART_Transmit_DMA(&huart1, pDataTR, 2);
   //HAL_UART_Receive_IT(&huart1, &pData, 1);
-  initRomSearching(&eventOw, &owdata);
+
+  initRomSearching(&eventOw,&owdata);
+  owHandler(&eventOw);
+
+  //initRomSearching(&eventOw, &owdata);
 
   /* USER CODE END 2 */
 
@@ -329,20 +333,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-  switch (eventOw.eventType) {
-    case RESET:
-      eventOw.eventType = REPLY;
-      if(resetOw(&eventOw)){	//TODO better names?
-    	Event *tempEventOw = &eventOw;
-    	tempEventOw->commandFunction(&eventOw);  //execute function based on user
-      }
-      else{
-        // throw();
-      }
-      break;
-    default:
-      Error_Handler();
-  }
+  owHandler(&eventOw);
 }
 
 int isUartFrameError(){

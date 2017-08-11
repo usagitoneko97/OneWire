@@ -25,7 +25,6 @@ void initRomSearching(Event* evt, void* owdata){
   evt->commandFunction = romSearch;
   evt->data = owdata;
   evt->eventType = RESET_OW;
-  resetOw(evt);
 }
 
 void romSearch(Event *evt){
@@ -48,38 +47,56 @@ void romSearch(Event *evt){
 
 }
 
-int resetOw(Event *evt){
-  switch (evt->eventType) {
-    case RESET:
-      setUartBaudRate(9600);
-      owSetUpRxIT(evt);
-      owUartTxDma(0xf0);
-      break;
-    case REPLY:
-      if(isUartFrameError()){
-        //Throw()
-        return FALSE;
-      }
-      // data = owRxCallBackData;
-      if(((OwData*)(evt->data))->uartRxVal == 0xF0){
-        //no device response
-        // Throw();
-        return FALSE;
-      }
-      // else if(data >= 0x10 && data <= 0x90){
-      /*if the higher bit has response */
-      else if ((((OwData*)(evt->data))->uartRxVal & 0xf0) != 0xf){
-        //device is there
-        return TRUE;
-      }
-      else{
-        //unknown state
-        return FALSE;
-      }
+void resetOw(Event *evt){
 
-  }
+    setUartBaudRate(9600);
+    owSetUpRxIT(evt);
+    owUartTxDma(0xf0);
 }
 
 int initConvertT(){
-  writeSendArray()
+  return 0;
+}
+
+int isOwDeviceAvail(Event *evt){
+	if(isUartFrameError()){
+		//Throw()
+		return FALSE;
+	}
+	// data = owRxCallBackData;
+	if(((OwData*)(evt->data))->uartRxVal == 0xF0){
+		//no device response
+		// Throw();
+		return FALSE;
+	}
+	// else if(data >= 0x10 && data <= 0x90){
+	/*if the higher bit has response */
+	else if ((((OwData*)(evt->data))->uartRxVal & 0xf0) != 0xf){
+		//device is there
+		return TRUE;
+	}
+	else{
+		//unknown state
+		return FALSE;
+	}
+}
+
+void owHandler(Event *evt){
+	switch(evt->eventType){
+	case RESET:
+		evt->eventType = REPLY;
+		resetOw(evt);
+		break;
+	case REPLY:
+		evt->eventType = RESET;
+		if(isOwDeviceAvail(evt)){
+			evt->commandFunction(&eventOw);
+		}
+		else{
+			while(1){
+
+			}
+		}
+	}
+
 }

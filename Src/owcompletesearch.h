@@ -10,6 +10,7 @@
 //#define SENDF0_DATA  {SEND_ONE, SEND_ONE, SEND_ONE,SEND_ONE, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO}
 //uint8_t sendF0_txData[] = {SEND_1, SEND_1, SEND_1,SEND_1, SEND_0, SEND_0, SEND_0, SEND_0};
 
+
 typedef enum {
   DEVICE_AVAILABLE = 0,
   DEVICE_NA = 1
@@ -18,8 +19,6 @@ typedef enum {
 typedef enum{
   RESET_OW =0,
   REPLY = 1,
-  SEND_F0 = 2,
-  BITSEARCH = 3
 }EventType;
 
 
@@ -36,10 +35,12 @@ struct OwData {
   uint8_t uartRxVal;
 };
 void OW_Tx_SendArray(uint8_t* data, int length);
-deviceAvail resetOW();
 
 void initRomSearching(Event* evt, void* owdata);
-int resetOw(Event *evt);
+void resetOw(Event *evt);
 void romSearch(Event *evt);
+
+int isOwDeviceAvail(Event *evt);
+void owHandler(Event *evt);
 
 #endif // _OWCOMPLETESEARCH_H
