@@ -33,7 +33,7 @@ void romSearch(Event *evt){
   /*write(0);
   write(1);
   write(1);*/
-  Write_SendArray(sendF0_txData1, 8);
+  writeSendArray(sendF0_txData1, 8);
   if(_firstSearch(1)== FALSE){
 
   }

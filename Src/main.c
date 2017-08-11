@@ -285,7 +285,7 @@ uint8_t Read(){
 		return 0;
 }
 
-void Write_SendArray(uint8_t* data, int length){
+void writeSendArray(uint8_t* data, int length){
   int i;
   for(i =0;i<length;i++){
     write(*(data+i));
@@ -313,7 +313,7 @@ void owUartTx(uint8_t data){
 	volatile int j = 0;
 	j++;
 }
-uint8_t OW_UartRx(){
+uint8_t owUartRx(){
 	HAL_UART_Receive(&huart1, &uartTempRx, 1, 50);
 	return uartTempRx;
 }

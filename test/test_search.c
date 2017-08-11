@@ -2,9 +2,8 @@
 #include "search.h"
 #include "mock_onewireio.h"
 #include "owvariable.h"
+#include "common.h"
 
-#define TRUE  1
-#define FALSE 0
 // #define NO_OF_DEVICE  4
 
 unsigned char bitPos = 0x01;
@@ -21,18 +20,18 @@ void init64BitId(uint8_t *id,uint8_t *cmp_id, uint8_t startBit) {
   bitPos = startBit;
 }
 
-uint8_t fake_Read(int numOfCalls){
-    uint8_t result_bit;
+uint8_t fakeRead(int numOfCalls){
+    uint8_t resultBit;
     if(!lastDeviceFlag){
       while(bitPos < 64){
         switch (state) {
-          case 0: result_bit = fakeIdBits[bitPos];
+          case 0: resultBit = fakeIdBits[bitPos];
                   state = 1;
-                  return result_bit;
+                  return resultBit;
                   break;
-          case 1: result_bit = fakeCmpIdBits[bitPos++];
+          case 1: resultBit = fakeCmpIdBits[bitPos++];
                   state = 0;
-                  return result_bit;
+                  return resultBit;
                   break;
         }
       }
@@ -41,15 +40,15 @@ uint8_t fake_Read(int numOfCalls){
 
 }
 
-void fake_Write(unsigned char byte, int numOfCalls){
+void fakeWrite(unsigned char byte, int numOfCalls){
   printf("OW Write function is being called..\n");
 }
 
 
 void setUp(void)
 {
-  Read_StubWithCallback(fake_Read);
-  write_StubWithCallback(fake_Write);
+  Read_StubWithCallback(fakeRead);
+  write_StubWithCallback(fakeWrite);
 }
 
 void tearDown(void) {
@@ -85,14 +84,14 @@ void test_fake_read_return_idBit_cmpIdBit(void){
   TEST_ASSERT_EQUAL(1, fakeIdBits[0]);
   TEST_ASSERT_EQUAL(0, fakeCmpIdBits[0]);
   lastDeviceFlag = FALSE;
-  TEST_ASSERT_EQUAL(1, fake_Read(0));
-  TEST_ASSERT_EQUAL(0, fake_Read(0));
+  TEST_ASSERT_EQUAL(1, fakeRead(0));
+  TEST_ASSERT_EQUAL(0, fakeRead(0));
 
-  TEST_ASSERT_EQUAL(1, fake_Read(0));
-  TEST_ASSERT_EQUAL(1, fake_Read(0));
+  TEST_ASSERT_EQUAL(1, fakeRead(0));
+  TEST_ASSERT_EQUAL(1, fakeRead(0));
 
-  TEST_ASSERT_EQUAL(0, fake_Read(0));
-  TEST_ASSERT_EQUAL(1, fake_Read(0));
+  TEST_ASSERT_EQUAL(0, fakeRead(0));
+  TEST_ASSERT_EQUAL(1, fakeRead(0));
 }
 
 /********************************************************
@@ -118,11 +117,11 @@ void test_processOWData_IdBit_cmpBit_00(void){
   innerVAR_OW = processOWData(innerVAR_OW);
 
   /*checking results*/
-  int ROM_bit_val = romNo[0] &0x01; //the 0th bit
+  int romBitVal = romNo[0] &0x01; //the 0th bit
   TEST_ASSERT_EQUAL(1, innerVAR_OW.lastZero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.idBitNumber);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.searchDirection);
-  TEST_ASSERT_EQUAL(0, ROM_bit_val);
+  TEST_ASSERT_EQUAL(0, romBitVal);
 
 }
 
@@ -146,12 +145,12 @@ void test_processOWData_IdBit_cmpBit_01(void){
   /*initialize condition for test*/
   lastDiscrepancy = 0;
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = romNo[0] &0x01; //the 0th bit
+  int romBitVal = romNo[0] &0x01; //the 0th bit
   /*checking results*/
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.idBitNumber);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.searchDirection);
-  TEST_ASSERT_EQUAL(0, ROM_bit_val);
+  TEST_ASSERT_EQUAL(0, romBitVal);
 
 }
 
@@ -176,11 +175,11 @@ void test_processOWData_IdBit_cmpBit_10(void){
   lastDiscrepancy = 0;
   innerVAR_OW = processOWData(innerVAR_OW);
   /*checking results*/
-  int ROM_bit_val = romNo[0] &0x01;
+  int romBitVal = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.idBitNumber);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.searchDirection);
-  TEST_ASSERT_EQUAL(1, ROM_bit_val);
+  TEST_ASSERT_EQUAL(1, romBitVal);
 }
 
 /********************************************************
@@ -204,12 +203,12 @@ void test_processOWData_IdBit_cmpBit_11(void){
   lastDiscrepancy = 0;
   innerVAR_OW = processOWData(innerVAR_OW);
     /*checking results*/
-  int ROM_bit_val = romNo[0] &0x01;
+  int romBitVal = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.idBitNumber);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.searchDirection);
   TEST_ASSERT_EQUAL(FALSE, innerVAR_OW.searchResult);
-  TEST_ASSERT_EQUAL(0, ROM_bit_val);
+  TEST_ASSERT_EQUAL(0, romBitVal);
 
 }
 
@@ -240,8 +239,8 @@ void test_processOWData_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searc
   innerVAR_OW.idBitNumber = 1;
   /*checking results*/
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = romNo[0] &0x01;
-  TEST_ASSERT_EQUAL(1, ROM_bit_val);
+  int romBitVal = romNo[0] &0x01;
+  TEST_ASSERT_EQUAL(1, romBitVal);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.idBitNumber);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.searchDirection);
@@ -274,8 +273,8 @@ void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_f
   romNo[0] |= 0x01;  //set bit 0 to '1'
   /*checking results*/
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = romNo[0] &0x01;
-  TEST_ASSERT_EQUAL(1, ROM_bit_val);
+  int romBitVal = romNo[0] &0x01;
+  TEST_ASSERT_EQUAL(1, romBitVal);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.idBitNumber);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.searchDirection);
@@ -309,8 +308,8 @@ void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_f
   romNo[0] &= 0xfe;  //set bit 0 to '0'
   /*checking results*/
   innerVAR_OW = processOWData(innerVAR_OW);
-  int ROM_bit_val = romNo[0] &0x01;
-  TEST_ASSERT_EQUAL(0, ROM_bit_val);
+  int romBitVal = romNo[0] &0x01;
+  TEST_ASSERT_EQUAL(0, romBitVal);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.lastZero);
   TEST_ASSERT_EQUAL(2, innerVAR_OW.idBitNumber);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.searchDirection);

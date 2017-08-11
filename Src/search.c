@@ -7,7 +7,7 @@
  * @param data         1 byte of data that need to store
  * @param numberOfByte total number of byte of device rom number
  */
-void stack_dataBuffer_64(uint8_t data, int numberOfByte){
+void stackDataBuffer64(uint8_t data, int numberOfByte){
   romDataBuffer[bufferDeviceNumber][bufferByteNumber++] = data;
   if(bufferByteNumber == numberOfByte){
     bufferDeviceNumber++;
@@ -18,7 +18,7 @@ void stack_dataBuffer_64(uint8_t data, int numberOfByte){
 /**
  * clear data buffer
  */
-void clearDataBuffer_64(){
+void clearDataBuffer64(){
   bufferDeviceNumber = 0;
   bufferByteNumber = 0;
   int i = 0, j;
@@ -35,7 +35,7 @@ void clearDataBuffer_64(){
  * @return status of bitSearch
  */
 int firstSearch() {
-  clearDataBuffer_64();
+  clearDataBuffer64();
   lastDiscrepancy = 0;
   lastDeviceFlag=FALSE;
   lastFamilyDiscrepancy = 0;
@@ -51,7 +51,7 @@ int firstSearch() {
  * @return              status of bitSearch
  */
 int _firstSearch(int numberOfByte) {
-  clearDataBuffer_64();
+  clearDataBuffer64();
   lastDiscrepancy = 0;
   lastDeviceFlag=FALSE;
   lastFamilyDiscrepancy = 0;
@@ -129,7 +129,7 @@ int _bitSearch(int numberOfByte){
         //checking of a complete byte
 
         if(innerVAR_OW.rom_byte_mask == 0){
-          stack_dataBuffer_64(romNo[innerVAR_OW.romByteNum],numberOfByte);
+          stackDataBuffer64(romNo[innerVAR_OW.romByteNum],numberOfByte);
           innerVAR_OW.rom_byte_mask = 1;
           innerVAR_OW.romByteNum++;
         }

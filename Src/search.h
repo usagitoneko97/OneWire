@@ -10,8 +10,8 @@ struct InnerVAR_OW {
   unsigned char rom_byte_mask;
   int noDevice;
 };
-void stack_dataBuffer_64(uint8_t data, int numberOfByte);
-void clearDataBuffer_64();
+void stackDataBuffer64(uint8_t data, int numberOfByte);
+void clearDataBuffer64();
 int firstSearch();
 InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW);
 int bitSearch();

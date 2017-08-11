@@ -9,11 +9,11 @@
 
 uint8_t Read();
 void write(unsigned char byte);
-void Write_SendArray(uint8_t* data, int length);
+void writeSendArray(uint8_t* data, int length);
 void owSetUpRxIT();
 void owUartTxDma(uint8_t data);
 void owUartTx(uint8_t data);
-uint8_t OW_UartRx();
+uint8_t owUartRx();
 int isUartFrameError();
 void setUartBaudRate(int baudRate);
 void resetUart(int baudRate);

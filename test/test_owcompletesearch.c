@@ -21,28 +21,28 @@ void init64BitId(uint8_t *id,uint8_t *cmp_id, uint8_t startBit) {
   bitPos = startBit;
 }
 
-uint8_t fake_Read(int numOfCalls){
-    uint8_t result_bit;
+uint8_t fakeRead(int numOfCalls){
+    uint8_t resultBit;
     if(!lastDeviceFlag){
       while(bitPos < 64){
         switch (fakeReadState) {
-          case 0: result_bit = fakeIdBits[bitPos];
+          case 0: resultBit = fakeIdBits[bitPos];
                   fakeReadState = 1;
-                  return result_bit;
+                  return resultBit;
                   break;
-          case 1: result_bit = fakeCmpIdBits[bitPos++];
+          case 1: resultBit = fakeCmpIdBits[bitPos++];
                   fakeReadState = 0;
-                  return result_bit;
+                  return resultBit;
                   break;
         }
       }
   }
 }
 
-void fake_Write(unsigned char byte, int numOfCalls){
+void fakeWrite(unsigned char byte, int numOfCalls){
 }
 
-void fake_Write_SendArray(uint8_t* data, int length, int numOfCalls){
+void fakewriteSendArray(uint8_t* data, int length, int numOfCalls){
 
 }
 
@@ -53,9 +53,9 @@ uint8_t fake_OW_Rx(int numOfCalls){
 
 void setUp(void){
   // OW_Rx_StubWithCallback(fake_OW_Rx);
-  Read_StubWithCallback(fake_Read);
-  write_StubWithCallback(fake_Write);
-  Write_SendArray_StubWithCallback(fake_Write_SendArray);
+  Read_StubWithCallback(fakeRead);
+  write_StubWithCallback(fakeWrite);
+  writeSendArray_StubWithCallback(fakewriteSendArray);
   eventOw.data = &owdata;
 }
 
@@ -97,7 +97,7 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
   /*Callback from 1 wire receive*/
   isUartFrameError_ExpectAndReturn(FALSE);
   setUartBaudRate_Expect(115200);
-  Write_SendArray_Expect(sendF0txDataTest, 8);
+  writeSendArray_Expect(sendF0txDataTest, 8);
   //OW_Tx_Expect(sendF0_txData);
 
   initRomSearching(&eventOw, &owdata);
