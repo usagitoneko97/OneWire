@@ -332,7 +332,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   switch (eventOw.eventType) {
     case RESET:
       eventOw.eventType = REPLY;
-      if(resetOw(&eventOw)){  //TODO better names?
+      if(resetOw(&eventOw)){	//TODO better names?
     	Event *tempEventOw = &eventOw;
     	tempEventOw->commandFunction(&eventOw);  //execute function based on user
       }

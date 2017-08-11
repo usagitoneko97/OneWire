@@ -34,15 +34,17 @@ void romSearch(Event *evt){
   write(1);
   write(1);*/
   writeSendArray(sendF0_txData1, 8);
-  if(_firstSearch(1)== FALSE){
+  if(_firstSearch(8)== FALSE){
 
   }
   while(lastDeviceFlag != TRUE){
-    if(_bitSearch(1) == FALSE){
+    if(_bitSearch(8) == FALSE){
 
     }
 
   }
+  	volatile int i;
+  	i++;
 
 }
 
@@ -76,4 +78,8 @@ int resetOw(Event *evt){
       }
 
   }
+}
+
+int initConvertT(){
+  writeSendArray()
 }
