@@ -56,7 +56,7 @@ void tearDown(void) {
   fakeCmpIdBits = NULL;
 }
 
-InnerVAR_OW initSearchTest(InnerVAR_OW innerVAR_OW){
+void initSearchTest(BitSearchInformation *innerVAR_OW){
   lastDiscrepancy = 0;
   lastDeviceFlag=FALSE;
   lastFamilyDiscrepancy = 0;
@@ -64,15 +64,14 @@ InnerVAR_OW initSearchTest(InnerVAR_OW innerVAR_OW){
   while(i<8){
     romNo[i++] = 0;
   }
-  innerVAR_OW.idBitNumber = 1;
-  innerVAR_OW.lastZero = 0;
-  innerVAR_OW.romByteNum = 0;
-  innerVAR_OW.rom_byte_mask = 1;
-  innerVAR_OW.searchResult = 0;
-  innerVAR_OW.idBit = -1;
-  innerVAR_OW.cmpIdBit = -1;
-  innerVAR_OW.searchDirection = 0;
-  return innerVAR_OW;
+  innerVAR_OW->idBitNumber = 1;
+  innerVAR_OW->lastZero = 0;
+  innerVAR_OW->romByteNum = 0;
+  innerVAR_OW->byteMask = 1;
+  innerVAR_OW->searchResult = 0;
+  innerVAR_OW->idBit = -1;
+  innerVAR_OW->cmpIdBit = -1;
+  innerVAR_OW->searchDirection = 0;
 }
 /*Testing return value of fake_read is correct*/
 void test_fake_read_return_idBit_cmpIdBit(void){
@@ -104,17 +103,17 @@ void test_fake_read_return_idBit_cmpIdBit(void){
  * searchDirection = idBit                            *
  * first bit of first byte of romNo = searchDirection *
  ********************************************************/
-void test_processOWData_IdBit_cmpBit_00(void){
+void test_process1BitRom_IdBit_cmpBit_00(void){
   /*initialize test*/
-  uint8_t fakeIdBitVal []=       {0};
+  uint8_t fakeIdBitVal []=      {0};
   uint8_t fakeCmpIdBitVal[] =   {0};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
 
-  InnerVAR_OW innerVAR_OW;
-  innerVAR_OW = initSearchTest(innerVAR_OW);
+  BitSearchInformation innerVAR_OW;
+  initSearchTest(&innerVAR_OW);
   /*initialize condition for test*/
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  innerVAR_OW = processOWData(innerVAR_OW);
+  process1BitRom(&innerVAR_OW);
 
   /*checking results*/
   int romBitVal = romNo[0] &0x01; //the 0th bit
@@ -135,16 +134,16 @@ void test_processOWData_IdBit_cmpBit_00(void){
  * searchDirection = idBit                            *
  * first bit of first byte of romNo = searchDirection *
  ********************************************************/
-void test_processOWData_IdBit_cmpBit_01(void){
+void test_process1BitRom_IdBit_cmpBit_01(void){
   /*initialize test*/
   uint8_t fakeIdBitVal []=       {0};
   uint8_t fakeCmpIdBitVal[] =   {1};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  InnerVAR_OW innerVAR_OW;
-  innerVAR_OW = initSearchTest(innerVAR_OW);
+  BitSearchInformation innerVAR_OW;
+  initSearchTest(&innerVAR_OW);
   /*initialize condition for test*/
   lastDiscrepancy = 0;
-  innerVAR_OW = processOWData(innerVAR_OW);
+   process1BitRom(&innerVAR_OW);
   int romBitVal = romNo[0] &0x01; //the 0th bit
   /*checking results*/
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
@@ -164,16 +163,16 @@ void test_processOWData_IdBit_cmpBit_01(void){
  * searchDirection = idBit                            *
  * first bit of first byte of romNo = searchDirection *
  ********************************************************/
-void test_processOWData_IdBit_cmpBit_10(void){
+void test_process1BitRom_IdBit_cmpBit_10(void){
   /*initialize test*/
   uint8_t fakeIdBitVal []=       {1};
   uint8_t fakeCmpIdBitVal[] =   {0};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  InnerVAR_OW innerVAR_OW;
-  innerVAR_OW = initSearchTest(innerVAR_OW);
+  BitSearchInformation innerVAR_OW;
+  initSearchTest(&innerVAR_OW);
   /*initialize condition for test*/
   lastDiscrepancy = 0;
-  innerVAR_OW = processOWData(innerVAR_OW);
+   process1BitRom(&innerVAR_OW);
   /*checking results*/
   int romBitVal = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
@@ -192,16 +191,16 @@ void test_processOWData_IdBit_cmpBit_10(void){
  * searchDirection = remains                           *
  * searchResult = FALSE                                *
  ********************************************************/
-void test_processOWData_IdBit_cmpBit_11(void){
+void test_process1BitRom_IdBit_cmpBit_11(void){
     /*initialize test*/
   uint8_t fakeIdBitVal []=       {1};
   uint8_t fakeCmpIdBitVal[] =   {1};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  InnerVAR_OW innerVAR_OW;
-  innerVAR_OW = initSearchTest(innerVAR_OW);
+  BitSearchInformation innerVAR_OW;
+  initSearchTest(&innerVAR_OW);
   /*initialize condition for test*/
   lastDiscrepancy = 0;
-  innerVAR_OW = processOWData(innerVAR_OW);
+   process1BitRom(&innerVAR_OW);
     /*checking results*/
   int romBitVal = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
@@ -226,19 +225,19 @@ void test_processOWData_IdBit_cmpBit_11(void){
  * searchDirection = 1                                 *
  * first bit of first byte of romNo = searchDirection *
  ********************************************************/
-void test_processOWData_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searchDir_1(void){
+void test_process1BitRom_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searchDir_1(void){
   /*initialize test*/
   uint8_t fakeIdBitVal []=       {0};
   uint8_t fakeCmpIdBitVal[] =   {0};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  InnerVAR_OW innerVAR_OW;
-  innerVAR_OW = initSearchTest(innerVAR_OW);
+  BitSearchInformation innerVAR_OW;
+  initSearchTest(&innerVAR_OW);
   /*Initialize condition of test*/
   //idBit = cmpIdBit = 0
   lastDiscrepancy = 1;
   innerVAR_OW.idBitNumber = 1;
   /*checking results*/
-  innerVAR_OW = processOWData(innerVAR_OW);
+   process1BitRom(&innerVAR_OW);
   int romBitVal = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(1, romBitVal);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
@@ -259,20 +258,20 @@ void test_processOWData_given_00_lastDiscrepency_sameAs_IDBitNumber_expect_searc
  * searchDirection = 1                                 *
  * first bit of first byte of romNo = searchDirection *
  ********************************************************/
-void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_value_eq_1(void){
+void test_process1BitRom_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_value_eq_1(void){
   /*initialize test*/
   uint8_t fakeIdBitVal []=       {1};
   uint8_t fakeCmpIdBitVal[] =   {0};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  InnerVAR_OW innerVAR_OW;
-  innerVAR_OW = initSearchTest(innerVAR_OW);
+  BitSearchInformation innerVAR_OW;
+  initSearchTest(&innerVAR_OW);
   /*Initialize condition of test*/
   //idBit = cmpIdBit = 0
   lastDiscrepancy = 3;
   innerVAR_OW.idBitNumber = 1;
   romNo[0] |= 0x01;  //set bit 0 to '1'
   /*checking results*/
-  innerVAR_OW = processOWData(innerVAR_OW);
+   process1BitRom(&innerVAR_OW);
   int romBitVal = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(1, romBitVal);
   TEST_ASSERT_EQUAL(0, innerVAR_OW.lastZero);
@@ -294,20 +293,20 @@ void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_f
  * searchDirection = 0                                 *
  * first bit of first byte of romNo = searchDirection *
  ********************************************************/
-void test_processOWData_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_romNo_value_eq_0(void){
+void test_process1BitRom_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_romNo_value_eq_0(void){
   /*initialize test*/
   uint8_t fakeIdBitVal []=       {0};
   uint8_t fakeCmpIdBitVal[] =   {0};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  InnerVAR_OW innerVAR_OW;
-  innerVAR_OW = initSearchTest(innerVAR_OW);
+  BitSearchInformation innerVAR_OW;
+  initSearchTest(&innerVAR_OW);
   /*Initialize condition of test*/
   //idBit = cmpIdBit = 0
   lastDiscrepancy = 3;
   innerVAR_OW.idBitNumber = 1;
   romNo[0] &= 0xfe;  //set bit 0 to '0'
   /*checking results*/
-  innerVAR_OW = processOWData(innerVAR_OW);
+   process1BitRom(&innerVAR_OW);
   int romBitVal = romNo[0] &0x01;
   TEST_ASSERT_EQUAL(0, romBitVal);
   TEST_ASSERT_EQUAL(1, innerVAR_OW.lastZero);

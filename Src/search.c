@@ -61,100 +61,110 @@ int _firstSearch(int numberOfByte) {
   return _bitSearch(numberOfByte);
 }
 
-InnerVAR_OW processOWData(InnerVAR_OW innerVAR_OW){
-  innerVAR_OW.idBit = Read();
-  innerVAR_OW.cmpIdBit = Read();
+/**
+ * read an idBitNumber and cmpIdBit, and write to 1 wire device as well as
+ * romNo bit by bit
+ * @param  bitSearchInformation structure that contain all the information
+ *                              about the bit searching
+ * @return                      [description]
+ */
+void process1BitRom(BitSearchInformation *bitSearchInformation){
+  bitSearchInformation->idBit = Read();
+  bitSearchInformation->cmpIdBit = Read();
   volatile int i = 0;
   i++;
-  if(innerVAR_OW.idBit == 1 && innerVAR_OW.cmpIdBit == 1){  //no devices
-    innerVAR_OW.noDevice = TRUE;
-    return innerVAR_OW;
+  if(bitSearchInformation->idBit == 1 && bitSearchInformation->cmpIdBit == 1){  //no devices
+    bitSearchInformation->noDevice = TRUE;
   }
   else{
-    if(innerVAR_OW.idBit != innerVAR_OW.cmpIdBit){
-      innerVAR_OW.searchDirection = innerVAR_OW.idBit;
+    if(bitSearchInformation->idBit != bitSearchInformation->cmpIdBit){
+      bitSearchInformation->searchDirection = bitSearchInformation->idBit;
     }
     else{
-      if(innerVAR_OW.idBitNumber == lastDiscrepancy){
-        innerVAR_OW.searchDirection = 1;
+      if(bitSearchInformation->idBitNumber == lastDiscrepancy){
+        bitSearchInformation->searchDirection = 1;
       }
-      else if(innerVAR_OW.idBitNumber > lastDiscrepancy){
-        innerVAR_OW.searchDirection = 0;
+      else if(bitSearchInformation->idBitNumber > lastDiscrepancy){
+        bitSearchInformation->searchDirection = 0;
       }
       else{
-        innerVAR_OW.searchDirection = ((romNo[innerVAR_OW.romByteNum] & innerVAR_OW.rom_byte_mask)>0);  //if there is "1" on any bit, load 1 to searchDirection
+        bitSearchInformation->searchDirection = ((romNo[bitSearchInformation->romByteNum] & bitSearchInformation->byteMask)>0);  //if there is "1" on any bit, load 1 to searchDirection
       }
-      if(!innerVAR_OW.searchDirection){
-        innerVAR_OW.lastZero = innerVAR_OW.idBitNumber;
-        if(innerVAR_OW.lastZero<9){
-          lastFamilyDiscrepancy = innerVAR_OW.lastZero;
+      if(!bitSearchInformation->searchDirection){
+        bitSearchInformation->lastZero = bitSearchInformation->idBitNumber;
+        if(bitSearchInformation->lastZero<9){
+          lastFamilyDiscrepancy = bitSearchInformation->lastZero;
         }
 
       }
     }
-    if(innerVAR_OW.searchDirection == 1){
-      romNo[innerVAR_OW.romByteNum] |= innerVAR_OW.rom_byte_mask; //set the current bit to be 1
+    if(bitSearchInformation->searchDirection == 1){
+      romNo[bitSearchInformation->romByteNum] |= bitSearchInformation->byteMask; //set the current bit to be 1
       write(1);
     }
     else{
-      romNo[innerVAR_OW.romByteNum] &= ~innerVAR_OW.rom_byte_mask; //set current bit to be 0
+      romNo[bitSearchInformation->romByteNum] &= ~bitSearchInformation->byteMask; //set current bit to be 0
       write(0);
     }
 
 
     //preparation for next bit search
-    innerVAR_OW.idBitNumber++;
-    innerVAR_OW.rom_byte_mask <<=1;
+    bitSearchInformation->idBitNumber++;
+    bitSearchInformation->byteMask <<=1;
 
   }
-  return innerVAR_OW;
 }
 
+/**
+ * custom bitsearch that takes in number of byte
+ * @param  numberOfByte number of byte of the rom device
+ * @return the search result
+ */
 int _bitSearch(int numberOfByte){
-  InnerVAR_OW innerVAR_OW;
+  BitSearchInformation bitSearchInformation;
 
   if(!lastDeviceFlag){
 
     /*Initialize inner variables*/
-    innerVAR_OW.idBitNumber = 1;
-    innerVAR_OW.lastZero = 0;
-    innerVAR_OW.romByteNum = 0;
-    innerVAR_OW.rom_byte_mask = 1;
-    innerVAR_OW.searchResult = 0;
-    innerVAR_OW.noDevice = FALSE;
+    bitSearchInformation.idBitNumber = 1;
+    bitSearchInformation.lastZero = 0;
+    bitSearchInformation.romByteNum = 0;
+    bitSearchInformation.byteMask = 1;
+    bitSearchInformation.searchResult = 0;
+    bitSearchInformation.noDevice = FALSE;
     crc8 = 0;
 
     do{
-        innerVAR_OW = processOWData(innerVAR_OW);
+        process1BitRom(&bitSearchInformation);
         //checking of a complete byte
 
-        if(innerVAR_OW.rom_byte_mask == 0){
-          stackDataBuffer64(romNo[innerVAR_OW.romByteNum],numberOfByte);
-          innerVAR_OW.rom_byte_mask = 1;
-          innerVAR_OW.romByteNum++;
+        if(bitSearchInformation.byteMask == 0){
+          stackDataBuffer64(romNo[bitSearchInformation.romByteNum],numberOfByte);
+          bitSearchInformation.byteMask = 1;
+          bitSearchInformation.romByteNum++;
         }
-        if(innerVAR_OW.noDevice == TRUE)
+        if(bitSearchInformation.noDevice == TRUE)
           break;
-  }while(innerVAR_OW.romByteNum<numberOfByte);
+  }while(bitSearchInformation.romByteNum<numberOfByte);
     //done searching
     //if successful
-    if(innerVAR_OW.idBitNumber > (numberOfByte<<3)){
-    lastDiscrepancy = innerVAR_OW.lastZero;
+    if(bitSearchInformation.idBitNumber > (numberOfByte<<3)){
+    lastDiscrepancy = bitSearchInformation.lastZero;
     if(lastDiscrepancy == 0){
       lastDeviceFlag = TRUE;
     }
-    innerVAR_OW.searchResult = TRUE;
+    bitSearchInformation.searchResult = TRUE;
     }
     //no device found (break from idBitNumber = cmpIdBit =1)
   }
     /*last device flag is true*/
-    if(!innerVAR_OW.searchResult){
+    if(!bitSearchInformation.searchResult){
       lastDiscrepancy = 0;
       lastDeviceFlag = FALSE;
       lastFamilyDiscrepancy = 0;
-      innerVAR_OW.searchResult = FALSE;
+      bitSearchInformation.searchResult = FALSE;
     }
-    return innerVAR_OW.searchResult;
+    return bitSearchInformation.searchResult;
 }
 
 int bitSearch(){
