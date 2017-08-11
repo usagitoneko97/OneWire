@@ -103,8 +103,9 @@ int main(void)
   //HAL_UART_Transmit(&huart1, &pDataTR, 1, 100);
 
   //HAL_UART_Transmit_DMA(&huart1, pDataTR, 2);
-  completeSearch_OW();
   //HAL_UART_Receive_IT(&huart1, &pData, 1);
+  initRomSearching(&eventOw, &owdata);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -323,7 +324,6 @@ uint8_t owUartRx(){
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 	volatile int i =0;
 	i++;
-	completeSearch_OW();
 
 
 }
@@ -333,14 +333,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
     case RESET:
       eventOw.eventType = REPLY;
       if(resetOw(&eventOw)){  //TODO better names?
-        eventOw.commandFunction(&eventOw);  //execute function based on user
+    	Event *tempEventOw = &eventOw;
+    	tempEventOw->commandFunction(&eventOw);  //execute function based on user
       }
       else{
         // throw();
       }
       break;
     default:
-      // throw();
+      Error_Handler();
   }
 }
 
