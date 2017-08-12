@@ -11,4 +11,5 @@ EventStruct eventOw;
 OwData owdata;
 uint8_t owRxCallBackData;
 
+TxRxCallbackList txRxList;
 OwResetPrivate owResetPrivate;

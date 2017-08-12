@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "owcompletesearch.h"
+#include "linkedlist.h"
 #ifndef _OWVARIABLE_H
 #define _OWVARIABLE_H
 #define MAX_OWDEVICE  64
@@ -15,5 +16,7 @@ extern uint8_t owRxCallBackData;
 extern EventStruct eventOw;
 extern OwData owdata;
 extern OwResetPrivate owResetPrivate;
+
+extern TxRxCallbackList txRxList;
 
 #endif // _OWVARIABLE_H

@@ -158,7 +158,7 @@ void test_resetOw_given_state_REPLY_OW_event_UART_FRAME_ERROR_expect_systemError
   resetAndVerifyOw(&evt);
 }
 
-void xtest_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(void){
+void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(void){
   Event evt;
   evt.evtType = UART_TIMEOUT;
   evt.data = NULL;
@@ -168,12 +168,16 @@ void xtest_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(vo
   resetAndVerifyOw(&evt);
 }
 
-void xtest_resetOw_given_state_REPLY_OW_event_UART_RX_SUCCESS_expect_systemError(void){
+void test_resetOw_given_state_REPLY_OW_event_UART_RX_SUCCESS_expect_systemError(void){
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = NULL;
   owResetPrivate.state = REPLY_OW;
-  systemError_Expect(evt.evtType);
+  TxRxCallbackList txRxNext;
+  TxRxCallbackList *txRxListPointer;
+  txRxListPointer = &txRxNext;
+  txRxListPointer->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointer;
 
   resetAndVerifyOw(&evt);
 }

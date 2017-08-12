@@ -56,24 +56,29 @@ void resetOw(EventStruct *evt){
 
 
 void resetAndVerifyOw(Event *evt){
+    static Event generateResetEv;
     switch (owResetPrivate.state) {
       case RESET_OW:
         //register callback
         break;
       case REPLY_OW:
-        evt->evtType = RESET_OW;
+        owResetPrivate.state = RESET_OW;
         switch (evt->evtType){
           case UART_FRAME_ERROR:
           case UART_TIMEOUT:
-            printf("here%s\n");
             systemError(evt->evtType);
             break;
           case UART_RX_SUCCESS:
-            //get back by calling callback->next(&evt);
+            generateResetEv.evtType = RESET_DEVICE_AVAILABLE;
+            txRxList.next->txRxCallbackFuncP(&generateResetEv);
             break;
         }
         break;
     }
+}
+
+void doRomSearch(Event *evt){
+  printf("successful%s\n");
 }
 
 int initConvertT(){
