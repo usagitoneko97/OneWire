@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "common.h"
+#include "owcompletesearch.h"
 /*Global variables*/
 
 
@@ -18,4 +19,6 @@ int isUartFrameError();
 void setUartBaudRate(int baudRate);
 void resetUart(int baudRate);
 void uartDelay(int delay);
+
+void systemError(EventType evtType);
 #endif // _ONEWIREIO_H

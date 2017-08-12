@@ -21,14 +21,14 @@ uint8_t sendF0_txData1[] = {SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ONE
 }*/
 
 
-void initRomSearching(Event* evt, void* owdata){
+void initRomSearching(EventStruct* evt, void* owdata){
   evt->commandFunction = romSearch;
   evt->data = owdata;
   evt->eventType = RESET_OW;
   evt->byteLength = 8;
 }
 
-void romSearch(Event *evt){
+void romSearch(EventStruct *evt){
   setUartBaudRate(115200);
   /*write(0);
   write(1);
@@ -48,18 +48,39 @@ void romSearch(Event *evt){
 
 }
 
-void resetOw(Event *evt){
-
+void resetOw(EventStruct *evt){
     setUartBaudRate(9600);
     owSetUpRxIT(evt);
     owUartTxDma(0xf0);
+}
+
+
+void resetAndVerifyOw(Event *evt){
+    switch (owResetPrivate.state) {
+      case RESET_OW:
+        //register callback
+        break;
+      case REPLY_OW:
+        evt->evtType = RESET_OW;
+        switch (evt->evtType){
+          case UART_FRAME_ERROR:
+          case UART_TIMEOUT:
+            printf("here%s\n");
+            systemError(evt->evtType);
+            break;
+          case UART_RX_SUCCESS:
+            //get back by calling callback->next(&evt);
+            break;
+        }
+        break;
+    }
 }
 
 int initConvertT(){
   return 0;
 }
 
-int isOwDeviceAvail(Event *evt){
+int isOwDeviceAvail(EventStruct *evt){
 	if(isUartFrameError()){
 		//Throw()
 		return FALSE;
@@ -82,7 +103,7 @@ int isOwDeviceAvail(Event *evt){
 	}
 }
 
-int owHandler(Event *evt){
+int owHandler(EventStruct *evt){
 	switch(evt->eventType){
 	case RESET:
 		evt->eventType = REPLY;

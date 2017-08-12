@@ -3990,11 +3990,11 @@ OUTPUT(uart_test.elf elf32-littlearm)
  .debug_str     0x000740c8      0x185 Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_uart_ex.o
                               0x727a9 (size before relaxing)
  .debug_str     0x0007424d      0x295 Src/main.o
-                              0x72dc0 (size before relaxing)
+                              0x72dba (size before relaxing)
  .debug_str     0x000744e2       0xa0 Src/owcompletesearch.o
-                               0x6f98 (size before relaxing)
+                               0x6f92 (size before relaxing)
  .debug_str     0x00074582       0x77 Src/owvariable.o
-                               0x33f0 (size before relaxing)
+                               0x33ea (size before relaxing)
  .debug_str     0x000745f9      0x119 Src/search.o
                                0x34e0 (size before relaxing)
  .debug_str     0x00074712       0x2b Src/stm32l0xx_hal_msp.o

@@ -41,7 +41,7 @@ uint8_t fakeRead(int numOfCalls){
 }
 
 void fakeWrite(unsigned char byte, int numOfCalls){
-  printf("OW Write function is being called..\n");
+
 }
 
 

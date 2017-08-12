@@ -297,7 +297,7 @@ void writeSendArray(uint8_t* data, int length){
   }
 }
 
-void owSetUpRxIT(Event *event){
+void owSetUpRxIT(EventStruct *event){
 	HAL_UART_Receive_IT(&huart1, &(((OwData*)(event->data))->uartRxVal), 1);
 }
 

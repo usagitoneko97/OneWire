@@ -12,7 +12,8 @@ extern int lastFamilyDiscrepancy;
 extern int lastDeviceFlag;
 extern unsigned char crc8;
 extern uint8_t owRxCallBackData;
-extern Event eventOw;
+extern EventStruct eventOw;
 extern OwData owdata;
+extern OwResetPrivate owResetPrivate;
 
 #endif // _OWVARIABLE_H

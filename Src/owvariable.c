@@ -7,6 +7,8 @@ int lastDiscrepancy;
 int lastFamilyDiscrepancy;
 int lastDeviceFlag;
 unsigned char crc8;
-Event eventOw;
+EventStruct eventOw;
 OwData owdata;
 uint8_t owRxCallBackData;
+
+OwResetPrivate owResetPrivate;

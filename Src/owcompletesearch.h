@@ -17,16 +17,18 @@ typedef enum {
 }deviceAvail;
 
 typedef enum{
-  RESET_OW =0,
   REPLY = 1,
+  UART_FRAME_ERROR = 2,
+  UART_TIMEOUT = 3,
+  UART_RX_SUCCESS = 4,
 }EventType;
 
 
-typedef struct EventStruct Event;
+typedef struct EventStruct EventStruct;
 struct EventStruct {
   EventType eventType;
   void *data;
-  void (*commandFunction)(Event*);
+  void (*commandFunction)(EventStruct*);
   int byteLength ;
 };
 
@@ -35,13 +37,33 @@ struct OwData {
   int idBit, cmpIdBit;
   uint8_t uartRxVal;
 };
+
+/*Generic Event*/
+typedef struct Event{
+  EventType evtType;
+  void *data;
+}Event;
+
+/*Reset Ow Parameter*/
+typedef enum{
+  RESET_OW = 0,
+  REPLY_OW = 1
+}OwResetState;
+
+typedef struct OwResetPrivate{
+  OwResetState state;
+}OwResetPrivate;
+
+/**/
 void OW_Tx_SendArray(uint8_t* data, int length);
 
-void initRomSearching(Event* evt, void* owdata);
-void resetOw(Event *evt);
-void romSearch(Event *evt);
+void initRomSearching(EventStruct* evt, void* owdata);
+void resetOw(EventStruct *evt);
+void romSearch(EventStruct *evt);
 
-int isOwDeviceAvail(Event *evt);
-int owHandler(Event *evt);
+int isOwDeviceAvail(EventStruct *evt);
+int owHandler(EventStruct *evt);
+
+void resetAndVerifyOw(Event *evt);
 
 #endif // _OWCOMPLETESEARCH_H
