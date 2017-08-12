@@ -19,4 +19,6 @@ extern OwResetPrivate owResetPrivate;
 
 extern TxRxCallbackList txRxList;
 
+extern uint8_t *uartRxDataBuffer;
+extern RomSearchingPrivate romSearchingPrivate;
 #endif // _OWVARIABLE_H

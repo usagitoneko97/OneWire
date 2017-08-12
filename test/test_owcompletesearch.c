@@ -91,7 +91,7 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
 
   /*Mocking*/
   setUartBaudRate_Expect(9600);
-  owSetUpRxIT_Expect();
+  //owSetUpRxIT_Expect();
   owUartTxDma_Expect(0xf0);
   /*uart receive it will trigger after uart tx, data will update to below*/
   ((OwData*)(eventOw.data))->uartRxVal = 0xe0;
@@ -118,7 +118,7 @@ void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void)
 void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
   /*Mocking*/
   setUartBaudRate_Expect(9600);
-  owSetUpRxIT_Expect();
+  //owSetUpRxIT_Expect();
   owUartTxDma_Expect(0xf0);
   /*uart receive it will trigger after uart tx, data will update to below*/
   ((OwData*)(eventOw.data))->uartRxVal = 0xf0;
@@ -134,7 +134,7 @@ void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
 
 void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
   setUartBaudRate_Expect(9600);
-  owSetUpRxIT_Expect();
+  //owSetUpRxIT_Expect();
   owUartTxDma_Expect(0xf0);
   /*uart receive it will trigger after uart tx, data will update to below*/
   ((OwData*)(eventOw.data))->uartRxVal = 0xf0;
@@ -168,7 +168,7 @@ void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(voi
   resetAndVerifyOw(&evt);
 }
 
-void test_resetOw_given_state_REPLY_OW_event_UART_RX_SUCCESS_expect_systemError(void){
+void test_resetOw_given_state_REPLY_OW_event_UART_RX_SUCCESS_expect(void){
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = NULL;
@@ -180,4 +180,17 @@ void test_resetOw_given_state_REPLY_OW_event_UART_RX_SUCCESS_expect_systemError(
   txRxList.next = txRxListPointer;
 
   resetAndVerifyOw(&evt);
+}
+
+void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
+  Event evt;
+  // evt->evtType =
+
+  romSearchingPrivate.state = SEND_F0;
+  uartTxOw_Expect(sendF0txDataTest, 8);
+  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owUartTxDma_Expect(0xf0);
+  // writeSendArray_Expect(sendF0txDataTest, 8);
+  romSearching(&evt);
+
 }

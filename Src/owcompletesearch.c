@@ -50,7 +50,7 @@ void romSearch(EventStruct *evt){
 
 void resetOw(EventStruct *evt){
     setUartBaudRate(9600);
-    owSetUpRxIT(evt);
+    //owSetUpRxIT(evt);
     owUartTxDma(0xf0);
 }
 
@@ -75,6 +75,21 @@ void resetAndVerifyOw(Event *evt){
         }
         break;
     }
+}
+
+void romSearching(Event *evt){
+  switch (romSearchingPrivate.state) {
+    case SEND_F0:
+      evt->evtType = ROM_SEARCHING;
+      uartTxOw(sendF0_txData1, 8);
+      owSetUpRxIT(uartRxDataBuffer, 2);
+      owUartTxDma(0xf0);
+      // writeSendArray(sendF0_txData1, 8);
+      break;
+    case ROM_SEARCHING:
+
+      break;
+  }
 }
 
 void doRomSearch(Event *evt){

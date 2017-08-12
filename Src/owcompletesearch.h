@@ -55,7 +55,24 @@ typedef struct OwResetPrivate{
   OwResetState state;
 }OwResetPrivate;
 
-/**/
+/*romSearching parameter*/
+typedef enum {
+  SEND_F0 = 0,
+  ROM_SEARCHING = 1,
+}RomSearchingState;
+
+typedef struct RomSearchingPrivate {
+  RomSearchingState state;
+  uint8_t *romNo;
+  int bitNumber;
+  int idBitNumber, cmpIdBitNumber;
+}RomSearchingPrivate;
+
+typedef struct RomSearchingEvData{
+  uint8_t *romDataBuffer;
+  int lastDeviceFlag; //TODO change type to boolean
+}RomSearchingEvData;
+
 void OW_Tx_SendArray(uint8_t* data, int length);
 
 void initRomSearching(EventStruct* evt, void* owdata);
@@ -66,6 +83,7 @@ int isOwDeviceAvail(EventStruct *evt);
 int owHandler(EventStruct *evt);
 
 void resetAndVerifyOw(Event *evt);
+void romSearching(Event *evt);
 void doRomSearch();
 
 #endif // _OWCOMPLETESEARCH_H

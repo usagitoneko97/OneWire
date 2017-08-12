@@ -297,8 +297,15 @@ void writeSendArray(uint8_t* data, int length){
   }
 }
 
-void owSetUpRxIT(EventStruct *event){
-	HAL_UART_Receive_IT(&huart1, &(((OwData*)(event->data))->uartRxVal), 1);
+void uartTxOw(uint8_t* data, int length){
+  int i;
+  for(i =0;i<length;i++){
+    write(*(data+i));
+  }
+}
+
+void owSetUpRxIT(uint8_t* data, int bitLength){
+	HAL_UART_Receive_IT(&huart1, data, bitLength);
 }
 
 void owUartTxDma(uint8_t data){
