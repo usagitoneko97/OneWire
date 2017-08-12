@@ -45,6 +45,12 @@ typedef struct Event{
   void *data;
 }Event;
 
+/*uartTxRx Event data*/
+typedef struct TxRxCpltEvData {
+  uint8_t *uartRxVal;
+  int length;
+}TxRxCpltEvData;
+
 /*Reset Ow Parameter*/
 typedef enum{
   RESET_OW = 0,

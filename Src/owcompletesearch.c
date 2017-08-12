@@ -69,11 +69,26 @@ void resetAndVerifyOw(Event *evt){
             systemError(evt->evtType);
             break;
           case UART_RX_SUCCESS:
+            //checking..
+
+            if(((TxRxCpltEvData*)evt->data)->uartRxVal== 0xF0){
+          		//no device response
+          		// Throw();
+          	}
+          	// else if(data >= 0x10 && data <= 0x90){
+          	/*if the higher bit has response */
+          	else if ((((TxRxCpltEvData*)evt->data)->uartRxVal & 0xf0) != 0xf){
+          		//device is there
+          		return TRUE;
+          	}
+          	else{
+          		//unknown state
+          	}
             generateResetEv.evtType = RESET_DEVICE_AVAILABLE;
             txRxList.next->txRxCallbackFuncP(&generateResetEv);
             break;
-        }
-        break;
+          }
+          break;
     }
 }
 

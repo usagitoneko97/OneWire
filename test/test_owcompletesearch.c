@@ -168,10 +168,13 @@ void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(voi
   resetAndVerifyOw(&evt);
 }
 
-void test_resetOw_given_state_REPLY_OW_event_UART_RX_SUCCESS_expect(void){
+void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCESS_expect_DEVICE_AVAILABLE(void){
   Event evt;
+  TxRxCpltEvData  txRxCpltEvData;
+  *(txRxCpltEvData.uartRxVal) = 0xf0;
+  txRxCpltEvData.length = 1;
   evt.evtType = UART_RX_SUCCESS;
-  evt.data = NULL;
+  evt.data =
   owResetPrivate.state = REPLY_OW;
   TxRxCallbackList txRxNext;
   TxRxCallbackList *txRxListPointer;
@@ -192,5 +195,12 @@ void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
   owUartTxDma_Expect(0xf0);
   // writeSendArray_Expect(sendF0txDataTest, 8);
   romSearching(&evt);
+
+}
+void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_1_cmpIdBitNumber_0(void){
+  Event evt;
+  evt.evtType = UART_RX_SUCCESS;
+  romSearchingPrivate.state = ROM_SEARCHING;
+  evt
 
 }
