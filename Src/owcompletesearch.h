@@ -1,7 +1,6 @@
 #ifndef _OWCOMPLETESEARCH_H
 #define _OWCOMPLETESEARCH_H
 #include <stdint.h>
-
 #define SEND_ZERO		0x0
 #define SEND_ONE		0xff
 #define RESET     0
@@ -64,6 +63,16 @@ typedef struct OwResetPrivate{
 }OwResetPrivate;
 
 /*romSearching parameter*/
+typedef struct BitSearchInformation BitSearchInformation;
+struct BitSearchInformation {
+  int idBitNumber;
+  int lastZero, romByteNum, searchResult;
+  int idBit, cmpIdBit;
+  unsigned char searchDirection;
+  unsigned char byteMask;
+  int noDevice;
+};
+
 typedef enum {
   SEND_F0 = 0,
   ROM_SEARCHING = 1,
@@ -72,8 +81,7 @@ typedef enum {
 typedef struct RomSearchingPrivate {
   RomSearchingState state;
   uint8_t *romNo;
-  int bitNumber;
-  int idBitNumber, cmpIdBitNumber;
+  BitSearchInformation bitSearchInformation;
 }RomSearchingPrivate;
 
 typedef struct RomSearchingEvData{
@@ -91,7 +99,9 @@ void calcIdCmpId(uint8_t *uartRxVal, int *idBitNumber, int *cmpIdBitNumber);
 int isOwDeviceAvail(EventStruct *evt);
 int owHandler(EventStruct *evt);
 
+
 void resetAndVerifyOw(Event *evt);
+void initGetBitRom(RomSearchingPrivate *romSearchingPrivate);
 void romSearching(Event *evt);
 void doRomSearch(Event *evt);
 

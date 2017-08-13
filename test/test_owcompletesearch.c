@@ -229,7 +229,6 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_RX_SUCCES
 }
 
 void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
-  Event evt;
   // evt->evtType =
 
   romSearchingPrivate.state = SEND_F0;
@@ -257,18 +256,21 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   *(txRxEvData.uartRxVal) = 0xff;
   *(txRxEvData.uartRxVal + 1) = 0xfe;
 
-  romSearchingPrivate.bitNumber = 1;
+
 
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxEvData;
-  romSearchingPrivate.state = ROM_SEARCHING;
+
+  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  romSearchingPrivate.bitSearchInformation.idBitNumber = 1;
 
   romSearching(&evt);
   //TODO
-  TEST_ASSERT_EQUAL(1, romSearchingPrivate.idBitNumber);
-  TEST_ASSERT_EQUAL(0, romSearchingPrivate.cmpIdBitNumber);
-  TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitNumber);
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBit);
+  TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.cmpIdBit);
+  TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.idBitNumber);
+  TEST_ASSERT_EQUAL(0x01, *(romSearchingPrivate.romNo));
   free(txRxEvData.uartRxVal);
   // evt.data =
   // evt

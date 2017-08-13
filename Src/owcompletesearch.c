@@ -1,9 +1,9 @@
 #include "owcompletesearch.h"
 #include "onewireio.h"
-#include "search.h"
 #include "owvariable.h"
 #include <stdio.h>
-
+#include "search.h"
+#include <stdlib.h>
 int result_reset;
 uint8_t result ;
 uint8_t txdata;
@@ -96,27 +96,32 @@ void resetAndVerifyOw(Event *evt){
 void romSearching(Event *evt){
   switch (romSearchingPrivate.state) {
     case SEND_F0:
-      romSearchingPrivate.state = ROM_SEARCHING;
+      initGetBitRom(&romSearchingPrivate);
       uartTxOw(sendF0_txData1, 8);
       owSetUpRxIT(uartRxDataBuffer, 2);
       owUartTxDma(0xf0);
+
       break;
     case ROM_SEARCHING:
       switch (evt->evtType) {
         case UART_RX_SUCCESS:
-          //get uart rx data 2 bit
-          //calculate 0 or 1
-          //put inside bitSearch
-          //increment bitNumber by 1
           calcIdCmpId(((TxRxCpltEvData*)(evt->data))->uartRxVal,\
-                &romSearchingPrivate.idBitNumber, &romSearchingPrivate.cmpIdBitNumber);
-          //bitSearch();
-          romSearchingPrivate.bitNumber++;
+                &romSearchingPrivate.bitSearchInformation.idBit, &romSearchingPrivate.bitSearchInformation.cmpIdBit);
 
+
+          get1BitRom(&romSearchingPrivate);
+          //bitSearch();
+          //BitSearchInformation
           break;
         case UART_FRAME_ERROR:
         case UART_TIMEOUT:
+          //TODO
+          //report error
+          //free romNo
+          //go to systemError?
           break;
+
+          //TODO free romSearchingPrivate.romNo
       }
       break;
   }
@@ -129,6 +134,18 @@ void calcIdCmpId(uint8_t *uartRxVal, int *idBitNumber, int *cmpIdBitNumber){
   else{
     *cmpIdBitNumber = 0;
   }
+}
+
+void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
+  (romSearchingPrivate->bitSearchInformation).lastZero = 0;
+  (romSearchingPrivate->bitSearchInformation).romByteNum = 0;
+  (romSearchingPrivate->bitSearchInformation).byteMask = 1;
+  (romSearchingPrivate->bitSearchInformation).searchResult = 0;
+  (romSearchingPrivate->bitSearchInformation).noDevice = FALSE;
+
+  romSearchingPrivate->state = ROM_SEARCHING;
+  romSearchingPrivate->romNo = malloc(64);
+  *(romSearchingPrivate->romNo) = 0;
 }
 void doRomSearch(Event *evt){
   switch (evt->evtType) {
