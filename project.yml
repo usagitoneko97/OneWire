@@ -81,4 +81,5 @@
   :enabled:
     - stdout_pretty_tests_report
     - module_generator
+    #- fake_function_framework
 ...

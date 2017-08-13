@@ -4,6 +4,7 @@
 #include "search.h"
 #include "mock_onewireio.h"
 #include "owvariable.h"
+#include <stdlib.h>
 
 
 
@@ -183,6 +184,8 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCES
   txRxList.next = txRxListPointer;
 
   resetAndVerifyOw(&evt);
+  TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
+
   //TODO test Asserts
 }
 
@@ -203,6 +206,7 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xf0_event_UART_RX_SUCCES
 
   systemError_Expect(RESET_DEVICE_NOT_AVAILABLE);
   resetAndVerifyOw(&evt);
+  TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
 }
 
 void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_RX_SUCCESS_expect_DEVICE_UNKNOWN_ERROR(void){
@@ -221,6 +225,7 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_RX_SUCCES
 
   systemError_Expect(RESET_DEVICE_UNKNOWN_ERROR);
   resetAndVerifyOw(&evt);
+  TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
 }
 
 void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
@@ -231,14 +236,41 @@ void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
   uartTxOw_Expect(sendF0txDataTest, 8);
   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
   owUartTxDma_Expect(0xf0);
-  // writeSendArray_Expect(sendF0txDataTest, 8);
   romSearching(&evt);
+  TEST_ASSERT_EQUAL(ROM_SEARCHING, romSearchingPrivate.state);
 
 }
+void test_calcIdCmpId_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
+  uint8_t uartRxVal_[2];
+  uartRxVal_[0] = 0xff;
+  uartRxVal_[1] = 0xfe;
+
+  int idBitNumber_, cmpIdBitNumber_;
+  calcIdCmpId(uartRxVal_, &idBitNumber_, &cmpIdBitNumber_);
+
+  TEST_ASSERT_EQUAL(1, idBitNumber_);
+  TEST_ASSERT_EQUAL(0, cmpIdBitNumber_);
+}
 void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_1_cmpIdBitNumber_0(void){
+  TxRxCpltEvData txRxEvData;
+  txRxEvData.uartRxVal = malloc(2);
+  *(txRxEvData.uartRxVal) = 0xff;
+  *(txRxEvData.uartRxVal + 1) = 0xfe;
+
+  romSearchingPrivate.bitNumber = 1;
+
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
+  evt.data = &txRxEvData;
   romSearchingPrivate.state = ROM_SEARCHING;
+
+  romSearching(&evt);
+  //TODO
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.idBitNumber);
+  TEST_ASSERT_EQUAL(0, romSearchingPrivate.cmpIdBitNumber);
+  TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitNumber);
+  free(txRxEvData.uartRxVal);
+  // evt.data =
   // evt
 
 }

@@ -73,7 +73,6 @@ void resetAndVerifyOw(Event *evt){
             //checking..
 
             tempUartRxVal = *(((TxRxCpltEvData*)evt->data)->uartRxVal);
-            printf("tempUartRxVal = %d\n",tempUartRxVal);
             if(tempUartRxVal == 0xF0){
               generateResetEv.evtType = RESET_DEVICE_NOT_AVAILABLE;
               txRxList.next->txRxCallbackFuncP(&generateResetEv);
@@ -101,14 +100,36 @@ void romSearching(Event *evt){
       uartTxOw(sendF0_txData1, 8);
       owSetUpRxIT(uartRxDataBuffer, 2);
       owUartTxDma(0xf0);
-      // writeSendArray(sendF0_txData1, 8);
       break;
     case ROM_SEARCHING:
+      switch (evt->evtType) {
+        case UART_RX_SUCCESS:
+          //get uart rx data 2 bit
+          //calculate 0 or 1
+          //put inside bitSearch
+          //increment bitNumber by 1
+          calcIdCmpId(((TxRxCpltEvData*)(evt->data))->uartRxVal,\
+                &romSearchingPrivate.idBitNumber, &romSearchingPrivate.cmpIdBitNumber);
+          //bitSearch();
+          romSearchingPrivate.bitNumber++;
 
+          break;
+        case UART_FRAME_ERROR:
+        case UART_TIMEOUT:
+          break;
+      }
       break;
   }
 }
 
+void calcIdCmpId(uint8_t *uartRxVal, int *idBitNumber, int *cmpIdBitNumber){
+  if(*uartRxVal == 0xff){
+    *idBitNumber = 1;
+  }
+  else{
+    *cmpIdBitNumber = 0;
+  }
+}
 void doRomSearch(Event *evt){
   switch (evt->evtType) {
     case RESET_DEVICE_AVAILABLE:
