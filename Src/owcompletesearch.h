@@ -22,6 +22,8 @@ typedef enum{
   UART_TIMEOUT = 3,
   UART_RX_SUCCESS = 4,
   RESET_DEVICE_AVAILABLE = 5,
+  RESET_DEVICE_NOT_AVAILABLE = 6,
+  RESET_DEVICE_UNKNOWN_ERROR = 7,
 }EventType;
 
 
@@ -90,6 +92,6 @@ int owHandler(EventStruct *evt);
 
 void resetAndVerifyOw(Event *evt);
 void romSearching(Event *evt);
-void doRomSearch();
+void doRomSearch(Event *evt);
 
 #endif // _OWCOMPLETESEARCH_H

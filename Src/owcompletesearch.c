@@ -56,6 +56,7 @@ void resetOw(EventStruct *evt){
 
 
 void resetAndVerifyOw(Event *evt){
+    uint8_t tempUartRxVal;
     static Event generateResetEv;
     switch (owResetPrivate.state) {
       case RESET_OW:
@@ -71,21 +72,22 @@ void resetAndVerifyOw(Event *evt){
           case UART_RX_SUCCESS:
             //checking..
 
-            if(((TxRxCpltEvData*)evt->data)->uartRxVal== 0xF0){
-          		//no device response
-          		// Throw();
+            tempUartRxVal = *(((TxRxCpltEvData*)evt->data)->uartRxVal);
+            printf("tempUartRxVal = %d\n",tempUartRxVal);
+            if(tempUartRxVal == 0xF0){
+              generateResetEv.evtType = RESET_DEVICE_NOT_AVAILABLE;
+              txRxList.next->txRxCallbackFuncP(&generateResetEv);
           	}
           	// else if(data >= 0x10 && data <= 0x90){
           	/*if the higher bit has response */
-          	else if ((((TxRxCpltEvData*)evt->data)->uartRxVal & 0xf0) != 0xf){
-          		//device is there
-          		return TRUE;
+            else if ((tempUartRxVal & 0x0f) == 0x0 && (tempUartRxVal & 0xf0) != 0xf0){
+              generateResetEv.evtType = RESET_DEVICE_AVAILABLE;
+              txRxList.next->txRxCallbackFuncP(&generateResetEv);
           	}
           	else{
-          		//unknown state
+              generateResetEv.evtType = RESET_DEVICE_UNKNOWN_ERROR;
+              txRxList.next->txRxCallbackFuncP(&generateResetEv);
           	}
-            generateResetEv.evtType = RESET_DEVICE_AVAILABLE;
-            txRxList.next->txRxCallbackFuncP(&generateResetEv);
             break;
           }
           break;
@@ -95,7 +97,7 @@ void resetAndVerifyOw(Event *evt){
 void romSearching(Event *evt){
   switch (romSearchingPrivate.state) {
     case SEND_F0:
-      evt->evtType = ROM_SEARCHING;
+      romSearchingPrivate.state = ROM_SEARCHING;
       uartTxOw(sendF0_txData1, 8);
       owSetUpRxIT(uartRxDataBuffer, 2);
       owUartTxDma(0xf0);
@@ -108,8 +110,22 @@ void romSearching(Event *evt){
 }
 
 void doRomSearch(Event *evt){
-  printf("successful%s\n");
+  switch (evt->evtType) {
+    case RESET_DEVICE_AVAILABLE:
+      printf("reset device available\n");
+      static Event romSearchEv;
+      //TODO go tom romSearching
+      break;
+    case RESET_DEVICE_NOT_AVAILABLE:
+    case RESET_DEVICE_UNKNOWN_ERROR:
+      printf("reset device error\n");
+      systemError(evt->evtType);
+      // owSetUpRxIT(uartRxDataBuffer, 2);
+      // dummy();
+      break;
+  }
 }
+
 
 int initConvertT(){
   return 0;

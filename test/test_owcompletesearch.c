@@ -163,7 +163,7 @@ void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(voi
   evt.evtType = UART_TIMEOUT;
   evt.data = NULL;
   owResetPrivate.state = REPLY_OW;
-  systemError_Expect(evt.evtType);
+  systemError_Expect(UART_TIMEOUT);
 
   resetAndVerifyOw(&evt);
 }
@@ -171,10 +171,10 @@ void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(voi
 void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCESS_expect_DEVICE_AVAILABLE(void){
   Event evt;
   TxRxCpltEvData  txRxCpltEvData;
-  *(txRxCpltEvData.uartRxVal) = 0xf0;
+  *(txRxCpltEvData.uartRxVal) = 0xe0;
   txRxCpltEvData.length = 1;
   evt.evtType = UART_RX_SUCCESS;
-  evt.data =
+  evt.data = &txRxCpltEvData;
   owResetPrivate.state = REPLY_OW;
   TxRxCallbackList txRxNext;
   TxRxCallbackList *txRxListPointer;
@@ -182,6 +182,44 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCES
   txRxListPointer->txRxCallbackFuncP = doRomSearch;
   txRxList.next = txRxListPointer;
 
+  resetAndVerifyOw(&evt);
+  //TODO test Asserts
+}
+
+void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xf0_event_UART_RX_SUCCESS_expect_DEVICE_NOT_AVAILABLE(void){
+  Event evt;
+  TxRxCpltEvData  txRxCpltEvData;
+  *(txRxCpltEvData.uartRxVal) = 0xf0;
+  txRxCpltEvData.length = 1;
+  evt.evtType = UART_RX_SUCCESS;
+  evt.data = &txRxCpltEvData;
+  owResetPrivate.state = REPLY_OW;
+
+  TxRxCallbackList txRxNext;
+  TxRxCallbackList *txRxListPointer;
+  txRxListPointer = &txRxNext;
+  txRxListPointer->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointer;
+
+  systemError_Expect(RESET_DEVICE_NOT_AVAILABLE);
+  resetAndVerifyOw(&evt);
+}
+
+void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_RX_SUCCESS_expect_DEVICE_UNKNOWN_ERROR(void){
+  Event evt;
+  TxRxCpltEvData  txRxCpltEvData;
+  *(txRxCpltEvData.uartRxVal) = 0xdf;
+  txRxCpltEvData.length = 1;
+  evt.evtType = UART_RX_SUCCESS;
+  evt.data = &txRxCpltEvData;
+  owResetPrivate.state = REPLY_OW;
+  TxRxCallbackList txRxNext;
+  TxRxCallbackList *txRxListPointer;
+  txRxListPointer = &txRxNext;
+  txRxListPointer->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointer;
+
+  systemError_Expect(RESET_DEVICE_UNKNOWN_ERROR);
   resetAndVerifyOw(&evt);
 }
 
@@ -201,6 +239,6 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
   romSearchingPrivate.state = ROM_SEARCHING;
-  evt
+  // evt
 
 }

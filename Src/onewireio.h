@@ -23,4 +23,6 @@ void uartDelay(int delay);
 void uartTxOw(uint8_t* data, int bitLength);
 
 void systemError(EventType evtType);
+
+void dummy();
 #endif // _ONEWIREIO_H
