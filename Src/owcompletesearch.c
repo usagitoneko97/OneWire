@@ -107,9 +107,26 @@ void romSearching(Event *evt){
         case UART_RX_SUCCESS:
           calcIdCmpId(((TxRxCpltEvData*)(evt->data))->uartRxVal,\
                 &romSearchingPrivate.bitSearchInformation.idBit, &romSearchingPrivate.bitSearchInformation.cmpIdBit);
-
-
+          //TODO check for lastDeviceFlag
           get1BitRom(&romSearchingPrivate);
+          printf("romNo: %d\n", *(romSearchingPrivate.romNo+7));
+          if(romSearchingPrivate.bitSearchInformation.idBitNumber > 63){
+            //move romNo inside event
+            //clear everything (free)
+            //generate event
+            //call function pointer
+            updateSearch(&romSearchingPrivate);
+            static Event generateEvt;
+            generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
+            RomSearchingEvData evData;
+            evData.romDataBuffer = romSearchingPrivate.romNo;
+            evData.lastDeviceFlag = lastDeviceFlag;
+            generateEvt.data = &evData;
+            clearGetRom(&romSearchingPrivate);
+            (txRxList.next)->txRxCallbackFuncP(&generateEvt); //go back to parent
+          }
+          owSetUpRxIT(uartRxDataBuffer, 2);
+          owUartTxDma(0xf0);
           //bitSearch();
           //BitSearchInformation
           break;
@@ -127,14 +144,31 @@ void romSearching(Event *evt){
   }
 }
 
+void updateSearch(RomSearchingPrivate *romSearchingPrivate){
+  lastDiscrepancy = (romSearchingPrivate->bitSearchInformation).lastZero;
+  if(lastDiscrepancy == 0){
+    lastDeviceFlag = TRUE;
+  }
+  (romSearchingPrivate->bitSearchInformation).searchResult = TRUE;
+}
+
 void calcIdCmpId(uint8_t *uartRxVal, int *idBitNumber, int *cmpIdBitNumber){
-  if(*uartRxVal == 0xff){
+  if(*(uartRxVal) == 0xff){
     *idBitNumber = 1;
+  }
+  else{
+    *idBitNumber = 0;
+  }
+  if(*(uartRxVal+1) == 0xff){
+    *cmpIdBitNumber = 1;
   }
   else{
     *cmpIdBitNumber = 0;
   }
+
 }
+
+
 
 void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
   (romSearchingPrivate->bitSearchInformation).lastZero = 0;
@@ -144,9 +178,10 @@ void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
   (romSearchingPrivate->bitSearchInformation).noDevice = FALSE;
 
   romSearchingPrivate->state = ROM_SEARCHING;
-  romSearchingPrivate->romNo = malloc(64);
+  romSearchingPrivate->romNo = malloc(8);
   *(romSearchingPrivate->romNo) = 0;
 }
+
 void doRomSearch(Event *evt){
   switch (evt->evtType) {
     case RESET_DEVICE_AVAILABLE:
@@ -161,7 +196,21 @@ void doRomSearch(Event *evt){
       // owSetUpRxIT(uartRxDataBuffer, 2);
       // dummy();
       break;
+    case ROM_SEARCH_SUCCESSFUL:
+      //generate event to sent to parent
+      printf("Rom Search success!\n");
   }
+}
+
+void clearGetRom(RomSearchingPrivate *romSearchingPrivate){
+  romSearchingPrivate->state = SEND_F0;
+  (romSearchingPrivate->bitSearchInformation).lastZero = 0;
+  (romSearchingPrivate->bitSearchInformation).romByteNum = 0;
+  (romSearchingPrivate->bitSearchInformation).byteMask = 1;
+  (romSearchingPrivate->bitSearchInformation).searchResult = 0;
+  (romSearchingPrivate->bitSearchInformation).noDevice = FALSE;
+  (romSearchingPrivate->bitSearchInformation).idBitNumber = 1;
+  free(romSearchingPrivate->romNo);
 }
 
 

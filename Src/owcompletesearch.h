@@ -23,6 +23,7 @@ typedef enum{
   RESET_DEVICE_AVAILABLE = 5,
   RESET_DEVICE_NOT_AVAILABLE = 6,
   RESET_DEVICE_UNKNOWN_ERROR = 7,
+  ROM_SEARCH_SUCCESSFUL = 8,
 }EventType;
 
 
@@ -86,7 +87,7 @@ typedef struct RomSearchingPrivate {
 
 typedef struct RomSearchingEvData{
   uint8_t *romDataBuffer;
-  int lastDeviceFlag; //TODO change type to boolean
+  int lastDeviceFlag;     //TODO change type to boolean
 }RomSearchingEvData;
 
 void OW_Tx_SendArray(uint8_t* data, int length);
@@ -103,6 +104,7 @@ int owHandler(EventStruct *evt);
 void resetAndVerifyOw(Event *evt);
 void initGetBitRom(RomSearchingPrivate *romSearchingPrivate);
 void romSearching(Event *evt);
+void updateSearch(RomSearchingPrivate *romSearchingPrivate);
 void doRomSearch(Event *evt);
-
+void clearGetRom(RomSearchingPrivate *romSearchingPrivate);
 #endif // _OWCOMPLETESEARCH_H

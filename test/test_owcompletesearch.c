@@ -230,7 +230,7 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_RX_SUCCES
 
 void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
   // evt->evtType =
-
+  Event evt;
   romSearchingPrivate.state = SEND_F0;
   uartTxOw_Expect(sendF0txDataTest, 8);
   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
@@ -250,13 +250,14 @@ void test_calcIdCmpId_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
   TEST_ASSERT_EQUAL(1, idBitNumber_);
   TEST_ASSERT_EQUAL(0, cmpIdBitNumber_);
 }
-void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_1_cmpIdBitNumber_0(void){
+/**
+ * NOTE this is the first bit search where the idBitNumber for first search is 1
+ */
+void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_1_cmpIdBitNumber_0_idBitNumber_1(void){
   TxRxCpltEvData txRxEvData;
   txRxEvData.uartRxVal = malloc(2);
   *(txRxEvData.uartRxVal) = 0xff;
   *(txRxEvData.uartRxVal + 1) = 0xfe;
-
-
 
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
@@ -265,13 +266,90 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
   romSearchingPrivate.bitSearchInformation.idBitNumber = 1;
 
+  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owUartTxDma_Expect(0xf0);
   romSearching(&evt);
   //TODO
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBit);
   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.cmpIdBit);
   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.idBitNumber);
   TEST_ASSERT_EQUAL(0x01, *(romSearchingPrivate.romNo));
+  free(romSearchingPrivate.romNo);
   free(txRxEvData.uartRxVal);
+  // evt.data =
+  // evt
+
+}
+
+void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_0_cmpIdBitNumber_1_idBitNumber_8(void){
+  TxRxCpltEvData txRxEvData;
+  txRxEvData.uartRxVal = malloc(2);
+  *(txRxEvData.uartRxVal) = 0xfe;
+  *(txRxEvData.uartRxVal + 1) = 0xff;
+
+  Event evt;
+  evt.evtType = UART_RX_SUCCESS;
+  evt.data = &txRxEvData;
+
+  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  romSearchingPrivate.bitSearchInformation.romByteNum = 0;
+  romSearchingPrivate.bitSearchInformation.idBitNumber = 8;
+  romSearchingPrivate.bitSearchInformation.byteMask = 128;
+
+
+  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owUartTxDma_Expect(0xf0);
+  romSearching(&evt);
+  //TODO
+  TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.idBit);
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.cmpIdBit);
+  TEST_ASSERT_EQUAL(9, romSearchingPrivate.bitSearchInformation.idBitNumber);
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.romByteNum);
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
+  TEST_ASSERT_EQUAL(0x0, *(romSearchingPrivate.romNo));
+  free(romSearchingPrivate.romNo);
+  free(txRxEvData.uartRxVal);
+  // evt.data =
+  // evt
+
+}
+/**
+ * given: the final bit
+ * expect: generate event and execute callback function to parent
+ */
+void test_romSearching_lastBit(void){
+  TxRxCpltEvData txRxEvData;
+  txRxEvData.uartRxVal = malloc(2);
+  *(txRxEvData.uartRxVal) = 0xff;
+  *(txRxEvData.uartRxVal + 1) = 0xfe;
+
+  Event evt;
+  evt.evtType = UART_RX_SUCCESS;
+  evt.data = &txRxEvData;
+
+  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  romSearchingPrivate.bitSearchInformation.romByteNum = 7;
+  romSearchingPrivate.bitSearchInformation.idBitNumber = 64; //the last bit
+  romSearchingPrivate.bitSearchInformation.byteMask = 0x80;
+
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
+
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
+
+  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owUartTxDma_Expect(0xf0);
+  romSearching(&evt);
+  //TODO
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBit);
+  TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.cmpIdBit);
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBitNumber);
+  TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romByteNum);
+  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
+  //TEST_ASSERT_EQUAL(128, *(romSearchingPrivate.romNo + 7));
+  free(txRxEvData.uartRxVal);
+  free(txRxListPointerNext);
   // evt.data =
   // evt
 

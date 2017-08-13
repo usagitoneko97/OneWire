@@ -14,7 +14,6 @@ void ListAddEmptyLinkedList (LinkedList *list, Item *item){
   list->tail = item;
   list->len = 1;
   item->next = NULL;
-
 }
 
 void ListAddLinkedList(LinkedList *list, Item *item){
@@ -86,13 +85,13 @@ Item* ListRemoveLinkedListByName(char* name, LinkedList *list){
         prevL->next = NULL;
         list->len--;
       }
-    
+
       else{
         //normal deletion
         prevL->next = currL->next;
         list->len--;
       }
-      
+
     }
 
 }

@@ -112,6 +112,7 @@ int _firstSearch(int numberOfByte) {
      bitSearchInformation->idBitNumber++;
      bitSearchInformation->byteMask <<=1;
 
+
    }
  }
 
@@ -159,6 +160,11 @@ void get1BitRom(RomSearchingPrivate *romSearchingPrivate){
     (romSearchingPrivate->bitSearchInformation).idBitNumber++;
     (romSearchingPrivate->bitSearchInformation).byteMask <<=1;
 
+    if((romSearchingPrivate->bitSearchInformation).byteMask == 0){
+      // stackDataBuffer64(romNo[bitSearchInformation.romByteNum],numberOfByte);
+      (romSearchingPrivate->bitSearchInformation).byteMask = 1;
+      (romSearchingPrivate->bitSearchInformation).romByteNum++;
+    }
   }
 }
 
@@ -205,14 +211,14 @@ int _bitSearch(int numberOfByte){
     }
     //no device found (break from idBitNumber = cmpIdBit =1)
   }
-    /*last device flag is true*/
-    if(!bitSearchInformation.searchResult){
-      lastDiscrepancy = 0;
-      lastDeviceFlag = FALSE;
-      lastFamilyDiscrepancy = 0;
-      bitSearchInformation.searchResult = FALSE;
-    }
-    return bitSearchInformation.searchResult;
+  /*last device flag is true*/
+  if(!bitSearchInformation.searchResult){
+    lastDiscrepancy = 0;
+    lastDeviceFlag = FALSE;
+    lastFamilyDiscrepancy = 0;
+    bitSearchInformation.searchResult = FALSE;
+  }
+  return bitSearchInformation.searchResult;
 }
 
 int bitSearch(){
