@@ -67,6 +67,7 @@ void resetAndVerifyOw(Event *evt){
         switch (evt->evtType){
           case UART_FRAME_ERROR:
           case UART_TIMEOUT:
+            //FIXME funcPointer go to parent, parent will call systemError
             systemError(evt->evtType);
             break;
           case UART_RX_SUCCESS:
@@ -105,30 +106,40 @@ void romSearching(Event *evt){
     case ROM_SEARCHING:
       switch (evt->evtType) {
         case UART_RX_SUCCESS:
-          calcIdCmpId(((TxRxCpltEvData*)(evt->data))->uartRxVal,\
-                &romSearchingPrivate.bitSearchInformation.idBit, &romSearchingPrivate.bitSearchInformation.cmpIdBit);
-          //TODO check for lastDeviceFlag
-          get1BitRom(&romSearchingPrivate);
-          printf("romNo: %d\n", *(romSearchingPrivate.romNo+7));
-          if(romSearchingPrivate.bitSearchInformation.idBitNumber > 63){
-            //move romNo inside event
-            //clear everything (free)
-            //generate event
-            //call function pointer
-            updateSearch(&romSearchingPrivate);
-            static Event generateEvt;
-            generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
-            static RomSearchingEvData evData;
-            evData.romDataBuffer = romSearchingPrivate.romNo;
-            evData.lastDeviceFlag = lastDeviceFlag;
-            generateEvt.data = &evData;
-            clearGetRom(&romSearchingPrivate);
-            (txRxList.next)->txRxCallbackFuncP(&generateEvt); //go back to parent
-          }
-          owSetUpRxIT(uartRxDataBuffer, 2);
-          owUartTxDma(0xf0);
-          //bitSearch();
-          //BitSearchInformation
+            calcIdCmpId(((TxRxCpltEvData*)(evt->data))->uartRxVal,\
+                  &romSearchingPrivate.bitSearchInformation.idBit, &romSearchingPrivate.bitSearchInformation.cmpIdBit);
+            //TODO check for lastDeviceFlag
+            get1BitRom(&romSearchingPrivate);
+            if(romSearchingPrivate.bitSearchInformation.noDevice == TRUE){
+              //ERROR
+              static Event generateFailEvt;
+              generateFailEvt.evtType = ROM_SEARCH_NO_DEVICE;
+              (txRxList.next)->txRxCallbackFuncP(&generateFailEvt);
+            }
+            else{
+              printf("romNo: %d\n", *(romSearchingPrivate.romNo+7));
+              if(romSearchingPrivate.bitSearchInformation.idBitNumber > 63){
+                //move romNo inside event
+                //clear everything (free)
+                //generate event
+                //call function pointer
+                updateSearch(&romSearchingPrivate);
+                static Event generateEvt;
+                generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
+                static RomSearchingEvData evData;
+                evData.romDataBuffer = romSearchingPrivate.romNo;
+                evData.lastDeviceFlag = lastDeviceFlag;
+                generateEvt.data = &evData;
+                clearGetRom(&romSearchingPrivate);
+                (txRxList.next)->txRxCallbackFuncP(&generateEvt); //go back to parent
+              }
+              else{
+                owSetUpRxIT(uartRxDataBuffer, 2);
+                owUartTxDma(0xf0);
+              }
+            }
+            //bitSearch();
+            //BitSearchInformation
           break;
         case UART_FRAME_ERROR:
         case UART_TIMEOUT:
@@ -202,6 +213,11 @@ void doRomSearch(Event *evt){
       // doRomSearchPrivate.romVal = malloc(2);
       doRomSearchPrivate.romVal = ((RomSearchingEvData*)(evt->data))->romDataBuffer;
       printf("Rom Search success!\n");
+      break;
+    case ROM_SEARCH_NO_DEVICE:
+      systemError(evt->evtType);
+      printf("Rom search no device\n");
+      break;
   }
 }
 

@@ -250,6 +250,35 @@ void test_calcIdCmpId_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
   TEST_ASSERT_EQUAL(1, idBitNumber_);
   TEST_ASSERT_EQUAL(0, cmpIdBitNumber_);
 }
+
+/**
+ * given :idBit = 1
+ *        cmpIdBit = 1
+ * expect :system error ROM_SEARCH_NO_DEVICE
+ */
+void test_romSearching_error_given_idBit1_cmpIdBit1(void){
+  TxRxCpltEvData txRxEvData;
+  txRxEvData.uartRxVal = malloc(2);
+  *(txRxEvData.uartRxVal) = 0xff;
+  *(txRxEvData.uartRxVal + 1) = 0xff;
+
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
+
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
+
+  Event evt;
+  evt.evtType = UART_RX_SUCCESS;
+  evt.data = &txRxEvData;
+
+  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  romSearchingPrivate.bitSearchInformation.idBitNumber = 1; //idBitNumber can be any value
+
+  systemError_Expect(ROM_SEARCH_NO_DEVICE);
+  romSearching(&evt);
+  free(txRxListPointerNext);
+}
 /**
  * NOTE this is the first bit search where the idBitNumber for first search is 1
  */
@@ -338,8 +367,7 @@ void test_romSearching_lastBit(void){
   txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
   txRxList.next = txRxListPointerNext;
 
-  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
-  owUartTxDma_Expect(0xf0);
+
   romSearching(&evt);
   //TODO
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBit);
@@ -355,3 +383,6 @@ void test_romSearching_lastBit(void){
   // evt
 
 }
+
+//TODO checking for idBit1 and cmpIdBit1
+//TODO checking for error while searching (lastDeviceFlag maybe?) (optional)
