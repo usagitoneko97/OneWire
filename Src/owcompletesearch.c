@@ -118,7 +118,7 @@ void romSearching(Event *evt){
             updateSearch(&romSearchingPrivate);
             static Event generateEvt;
             generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
-            RomSearchingEvData evData;
+            static RomSearchingEvData evData;
             evData.romDataBuffer = romSearchingPrivate.romNo;
             evData.lastDeviceFlag = lastDeviceFlag;
             generateEvt.data = &evData;
@@ -183,6 +183,7 @@ void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
 }
 
 void doRomSearch(Event *evt){
+  uint8_t *dataTemp;
   switch (evt->evtType) {
     case RESET_DEVICE_AVAILABLE:
       printf("reset device available\n");
@@ -198,6 +199,8 @@ void doRomSearch(Event *evt){
       break;
     case ROM_SEARCH_SUCCESSFUL:
       //generate event to sent to parent
+      // doRomSearchPrivate.romVal = malloc(2);
+      doRomSearchPrivate.romVal = ((RomSearchingEvData*)(evt->data))->romDataBuffer;
       printf("Rom Search success!\n");
   }
 }
@@ -210,7 +213,8 @@ void clearGetRom(RomSearchingPrivate *romSearchingPrivate){
   (romSearchingPrivate->bitSearchInformation).searchResult = 0;
   (romSearchingPrivate->bitSearchInformation).noDevice = FALSE;
   (romSearchingPrivate->bitSearchInformation).idBitNumber = 1;
-  free(romSearchingPrivate->romNo);
+  //TODO find a way to free it
+  //free(romSearchingPrivate->romNo);
 }
 
 

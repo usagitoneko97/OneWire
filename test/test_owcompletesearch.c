@@ -347,6 +347,7 @@ void test_romSearching_lastBit(void){
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBitNumber);
   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romByteNum);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
+  TEST_ASSERT_EQUAL(0x80, *(doRomSearchPrivate.romVal + 7));
   //TEST_ASSERT_EQUAL(128, *(romSearchingPrivate.romNo + 7));
   free(txRxEvData.uartRxVal);
   free(txRxListPointerNext);

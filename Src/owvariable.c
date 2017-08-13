@@ -15,4 +15,6 @@ TxRxCallbackList txRxList;
 OwResetPrivate owResetPrivate;
 uint8_t *uartRxDataBuffer;
 
+DoRomSearchPrivate doRomSearchPrivate;
+
 RomSearchingPrivate romSearchingPrivate;

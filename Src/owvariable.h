@@ -21,4 +21,6 @@ extern TxRxCallbackList txRxList;
 
 extern uint8_t *uartRxDataBuffer;
 extern RomSearchingPrivate romSearchingPrivate;
+
+extern DoRomSearchPrivate doRomSearchPrivate;
 #endif // _OWVARIABLE_H

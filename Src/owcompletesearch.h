@@ -47,6 +47,11 @@ typedef struct Event{
   void *data;
 }Event;
 
+/*doRomSearch parameter*/
+typedef struct DoRomSearchPrivate {
+  uint8_t *romVal;
+}DoRomSearchPrivate;
+
 /*uartTxRx Event data*/
 typedef struct TxRxCpltEvData {
   uint8_t *uartRxVal;
@@ -73,6 +78,7 @@ struct BitSearchInformation {
   unsigned char byteMask;
   int noDevice;
 };
+
 
 typedef enum {
   SEND_F0 = 0,
