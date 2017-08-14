@@ -111,7 +111,7 @@ void OW_Tx_SendArray(uint8_t* data, int length);
 void initRomSearching(EventStruct* evt, void* owdata);
 void resetOw(EventStruct *evt);
 void romSearch(EventStruct *evt);
-SearchBitType Src(uint8_t *uartRxVal);
+SearchBitType intepretSearchBit(uint8_t *uartRxVal);
 
 int isOwDeviceAvail(EventStruct *evt);
 int owHandler(EventStruct *evt);

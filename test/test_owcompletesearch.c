@@ -255,18 +255,40 @@ void test_romSearching_given_state_SEND_F0_expect_sendf0_expect_install_callback
   // TEST_ASSERT_NOT_NULL(txRxList.txRxCallbackFuncP);
 
 }
-/*void test_Src_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
+//============================================================================
+/*intepretSearchBit functino test*/
+void test_intepretSearchBit_given_uartRx_0xff_0xfe_expect_BIT_1(void){
   uint8_t uartRxVal_[2];
   uartRxVal_[0] = 0xff;
   uartRxVal_[1] = 0xfe;
 
-  int idBitNumber_, cmpIdBitNumber_;
-  Src(uartRxVal_, &idBitNumber_, &cmpIdBitNumber_);
+  TEST_ASSERT_EQUAL(BIT_1 ,intepretSearchBit(uartRxVal_));
+}
 
-  TEST_ASSERT_EQUAL(1, idBitNumber_);
-  TEST_ASSERT_EQUAL(0, cmpIdBitNumber_);
-}*/
+void test_intepretSearchBit_given_uartRx_0xfe_0xff_expect_BIT_0(void){
+  uint8_t uartRxVal_[2];
+  uartRxVal_[0] = 0xfe;
+  uartRxVal_[1] = 0xff;
 
+  TEST_ASSERT_EQUAL(BIT_0 ,intepretSearchBit(uartRxVal_));
+}
+
+void test_intepretSearchBit_given_uartRx_0xff_0xff_expect_BIT_0(void){
+  uint8_t uartRxVal_[2];
+  uartRxVal_[0] = 0xff;
+  uartRxVal_[1] = 0xff;
+
+  TEST_ASSERT_EQUAL(DEVICE_NOT_THERE ,intepretSearchBit(uartRxVal_));
+}
+
+void test_intepretSearchBit_given_uartRx_0xfe_0xfe_expect_BIT_0(void){
+  uint8_t uartRxVal_[2];
+  uartRxVal_[0] = 0xfe;
+  uartRxVal_[1] = 0xfe;
+
+  TEST_ASSERT_EQUAL(BIT_CONFLICT ,intepretSearchBit(uartRxVal_));
+}
+//===========================================================================
 /**
  * given :idBit = 1
  *        cmpIdBit = 1

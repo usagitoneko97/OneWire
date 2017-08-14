@@ -111,10 +111,9 @@ void romSearching(Event *evt){
     case ROM_SEARCHING:
       switch (evt->evtType) {
         case UART_RX_SUCCESS:
-            bsi->bitReadType = Src(evData->uartRxVal);
+            bsi->bitReadType = intepretSearchBit(evData->uartRxVal);
             //TODO check for lastDeviceFlag
             get1BitRom(bsi);
-            printf("bsi->romNo%d\n",*(bsi->romNo));
             if(romSearchingPrivate.bitSearchInformation.noDevice == TRUE){
               //ERROR
               clearGetRom(&romSearchingPrivate);
@@ -164,7 +163,7 @@ void updateSearch(RomSearchingPrivate *romSearchingPrivate){
   (romSearchingPrivate->bitSearchInformation).searchResult = TRUE;
 }
 
-SearchBitType Src(uint8_t *uartRxVal){
+SearchBitType intepretSearchBit(uint8_t *uartRxVal){
   if((*uartRxVal == 0xff) && (*(uartRxVal+1) == 0xff)){
     return DEVICE_NOT_THERE;
   }
