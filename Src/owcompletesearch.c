@@ -201,6 +201,11 @@ void initGet1BitRom(BitSearchInformation *bsi){
   bsi->searchResult = 0;
   bsi->noDevice = FALSE;
   bsi->idBitNumber = 1;
+
+  clearDataBuffer64();
+  lastDiscrepancy = 0;
+  lastDeviceFlag=FALSE;
+  lastFamilyDiscrepancy = 0;
   //TODO change the state somewhere
     // romSearchingPrivate->state = ROM_SEARCHING;
   bsi->romNo = malloc(8);

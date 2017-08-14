@@ -240,6 +240,16 @@ void targetSetupSearch(unsigned char familyCode){
     lastDeviceFlag = FALSE;
 }
 
+void targetSetupConfig(uint8_t familyCode, BitSearchInformation *bsi){
+  int i;
+  *(bsi->romNo) = familyCode;
+  for (i = 1; i < 8; i++)
+    *(bsi->romNo + i)  = 0;
+  lastDiscrepancy = 64;
+  lastFamilyDiscrepancy = 0;
+  lastDeviceFlag = FALSE;
+}
+
 /**
  * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
  * devices that have the family code that was found in the previous search.
@@ -258,6 +268,15 @@ void familySkipSetupSearch()
       lastDeviceFlag = TRUE;
 }
 
+void familySkipConfig(){
+  lastDiscrepancy = lastFamilyDiscrepancy;
+  lastFamilyDiscrepancy = 0;
+
+  // check for end of list
+  if (lastDiscrepancy == 0)
+     lastDeviceFlag = TRUE;
+}
+
 /**
  * verifies if a device with a known ROM is currently connected to the 1-Wire
  *
@@ -273,4 +292,13 @@ void verify(unsigned char *romNumbers, int Bytelength){
   int i;
   for(i = 0;i<Bytelength;i++)
     romNo[i] = *(romNumbers+i);
+}
+
+void verifyConfig(uint8_t *romNumbers, int byteLength, BitSearchInformation *bsi){
+  lastDiscrepancy = 64;
+  lastFamilyDiscrepancy = 0;
+  lastDeviceFlag = FALSE;
+  int i;
+  for(i = 0;i<byteLength;i++)
+    bsi->romNo[i] = *(romNumbers+i);
 }

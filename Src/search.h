@@ -40,6 +40,9 @@ void familySkipSetupSearch();
 void verify(unsigned char *romNumberToVerify, int Bytelength);
 void clearGet1BitRom(BitSearchInformation *bsi);
 
+void targetSetupConfig(uint8_t familyCode, BitSearchInformation *bsi);
+void verifyConfig(uint8_t *romNumbers, int byteLength, BitSearchInformation *bsi);
+void familySkipConfig();
 
 
 #endif // _SEARCH_H
