@@ -116,71 +116,68 @@ int _firstSearch(int numberOfByte) {
    }
  }
 
+#define FAMILY_CODE_RANGE             9
+ #define GET_ROM_MASK(bsi)           (1 << (bsi)->idBitNumber)
+ #define GET_CURRENT_BIT_IN_ROM(bsi) (((bsi)->romNo[(bsi)->romByteNum] &       \
+                                     GET_ROM_MASK(bsi)) > 0)
+ #define SET_ROM_BIT(bsi)            ((bsi)->romNo[(bsi)->romByteNum] |=       \
+                                     bsi->byteMask)
+ #define RESET_ROM_BIT(bsi)          ((bsi)->romNo[(bsi)->romByteNum] &=       \
+                                     ~bsi->byteMask)
+ #define UPDATE_LAST_FAMILY_DECREPANCY(bsi)                                    \
+                                     if((bsi)->lastZero <= FAMILY_CODE_RANGE)  \
+                                       lastFamilyDiscrepancy = (bsi)->lastZero;
+#define UPDATE_ROM_BYTE_MASK(bsi)    if(((bsi)->byteMask <<= 1) == 0){        \
+                                       (bsi)->byteMask = 1;                   \
+                                       (bsi)->romByteNum++;                   \
+                                      }
+#define RESET_IF_COMPLETED_BIT_SEARCHING(bsi)                                 \
+                                     if(bsi->idBitNumber > OW_LENGTH){        \
+                                       lastDiscrepancy = bsi->lastZero;       \
+                                       if(lastDiscrepancy == 0){              \
+                                         lastDeviceFlag = TRUE;               \
+                                       }                                      \
+                                       clearGet1BitRom(bsi);                  \
+                                       bsi->searchResult = TRUE;              \
+                                     }
+
 void get1BitRom(BitSearchInformation *bsi){
-
-  volatile int i = 0;
-  i++;
-  if(bsi->bitReadType == DEVICE_NOT_THERE){  //no devices
-    bsi->noDevice = TRUE;
-  }
-  else{
-    switch (bsi->bitReadType) {
-      case BIT_0:
-        bsi->searchDirection = 0;
-        break;
-      case BIT_1:
-        bsi->searchDirection = 1;
-        break;
-      case BIT_CONFLICT:
-        if(bsi->idBitNumber == lastDiscrepancy){
-          bsi->searchDirection = 1;
-        }
-        else if(bsi->idBitNumber > lastDiscrepancy){
-          bsi->searchDirection = 0;
-        }
-        else{
-          bsi->searchDirection = ((*((bsi->romNo) + bsi->romByteNum) & bsi->byteMask)>0);  //if there is "1" on any bit, load 1 to searchDirection
-        }
-        if(!bsi->searchDirection){
-          bsi->lastZero = bsi->idBitNumber;
-          if(bsi->lastZero<9){
-            lastFamilyDiscrepancy = bsi->lastZero;
-          }
-
-        }
-        break;
-    }
-
-
-    if(bsi->searchDirection == 1){
-      *((bsi->romNo) + bsi->romByteNum) |= bsi->byteMask; //set the current bit to be 1
-      write(1);
-    }
-    else{
-      *((bsi->romNo) + bsi->romByteNum) &= ~bsi->byteMask; //set current bit to be 0
-      write(0);
-    }
-
-
-    //preparation for next bit search
-    bsi->idBitNumber++;
-    bsi->byteMask <<=1;
-
-    if(bsi->byteMask == 0){
-      // stackDataBuffer64(romNo[bitSearchInformation.romByteNum],numberOfByte);
-      bsi->byteMask = 1;
-      bsi->romByteNum++;
-    }
-
-    if(bsi->idBitNumber > OW_LENGTH){
-      lastDiscrepancy = bsi->lastZero;
-      if(lastDiscrepancy == 0){
-        lastDeviceFlag = TRUE;
+  int searchDir;
+  switch (bsi->bitReadType) {
+    case BIT_0:
+      searchDir = 0;
+      break;
+    case BIT_1:
+      searchDir = 1;
+      break;
+    case BIT_CONFLICT:
+      if(bsi->idBitNumber == lastDiscrepancy){
+        searchDir = 1;
+      } else if(bsi->idBitNumber > lastDiscrepancy){
+        searchDir = 0;
+      } else{
+        searchDir = GET_CURRENT_BIT_IN_ROM(bsi);
       }
-      clearGet1BitRom(bsi);
-      bsi->searchResult = TRUE;
-    }
+
+      if(searchDir == 0){
+        // Record the last zero encountered when conflicting
+        bsi->lastZero = bsi->idBitNumber;
+        // Update last family discrepancy if in family code range
+        UPDATE_LAST_FAMILY_DECREPANCY(bsi);
+      }
+      break;
+    case DEVICE_NOT_THERE:
+      bsi->noDevice = TRUE;
+      return;
   }
+
+  searchDir == 1? SET_ROM_BIT(bsi):RESET_ROM_BIT(bsi);
+  write(searchDir);
+
+  //preparation for next bit search
+  bsi->idBitNumber++;
+  UPDATE_ROM_BYTE_MASK(bsi);
+  RESET_IF_COMPLETED_BIT_SEARCHING(bsi);
 }
 
 

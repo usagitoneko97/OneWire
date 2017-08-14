@@ -17,6 +17,13 @@ uint8_t *fakeCmpIdBits = NULL;
 #define getBytePos(x)    ((x) >> 3)
 #define getBitPos(x)     ((x) & 0x7)
 
+SearchBitType getOwBitState(int devices[][64], int bitNumber, int numberOfDevices){
+  int i;
+  for(i = 0; i< numberOfDevices; i++){
+
+  }
+}
+
 void init64BitId(uint8_t *id,uint8_t *cmp_id, uint8_t startBit) {
   fakeIdBits = id;
   fakeCmpIdBits = cmp_id;
@@ -775,42 +782,36 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      get1BitRom(&bsi);
      TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
      TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(0, bsi.searchDirection);
      TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
 
      bsi.bitReadType = BIT_1;
      get1BitRom(&bsi);
      TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
      TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(1, bsi.searchDirection);
      TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
 
      bsi.bitReadType = BIT_CONFLICT;
      get1BitRom(&bsi);
      TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
      TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(0, bsi.searchDirection);
      TEST_ASSERT_EQUAL(3, lastDiscrepancy);
      //===================================================
      bsi.bitReadType = BIT_0;
      get1BitRom(&bsi);
      TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
      TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(0, bsi.searchDirection);
      TEST_ASSERT_EQUAL(3, lastDiscrepancy);
 
      bsi.bitReadType = BIT_1;
      get1BitRom(&bsi);
      TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
      TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(1, bsi.searchDirection);
      TEST_ASSERT_EQUAL(3, lastDiscrepancy);
 
      bsi.bitReadType = BIT_CONFLICT;
      get1BitRom(&bsi);
      TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
      TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(1, bsi.searchDirection);
      TEST_ASSERT_EQUAL(0, lastDiscrepancy);
 
    }
