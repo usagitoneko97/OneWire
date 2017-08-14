@@ -18,12 +18,13 @@ uint8_t *fakeCmpIdBits = NULL;
 #define getBitPos(x)     ((x) & 0x7)
 
 SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberOfDevices){
+  int mBitNumber = (OW_LENGTH - 1) - bitNumber;
   int i;
-  int tempResult = devices[0][bitNumber];
+  int tempResult = devices[0][mBitNumber];
   printf("tempResult%d\n", tempResult);
   for(i = 1; i< numberOfDevices; i++){
-    printf("devices :%d\n",devices[i][bitNumber]);
-    if(tempResult != devices[i][bitNumber]){
+    printf("devices :%d\n",devices[i][mBitNumber]);
+    if(tempResult != devices[i][mBitNumber]){
       return BIT_CONFLICT;
     }
   }
@@ -1005,7 +1006,6 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                          {0, 0, 1, 0, 1},
                          {1, 0, 1, 0, 1}};
 
-    printf("devices::: %d\n",devices[0][1]);
     TEST_ASSERT_EQUAL(BIT_CONFLICT, getOwBitState(devices, 1, 3));
     TEST_ASSERT_EQUAL(BIT_0, getOwBitState(devices, 3, 3));
     TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 2, 3));
