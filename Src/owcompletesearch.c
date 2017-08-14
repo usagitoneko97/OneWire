@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "search.h"
 #include <stdlib.h>
+#include "linkedlist.h"
 int result_reset;
 uint8_t result ;
 uint8_t txdata;

@@ -292,6 +292,7 @@ void test_pushList_given_NULL__push_Ali_expect_itemAli(void){
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.tail);
   TEST_ASSERT_NULL(itemAli.next);
 }
+
 void test_pushList_given_ali_abu_expect_baba_ali_abu(void){
   LinkedList list;
   ListInit(&list);
@@ -304,4 +305,16 @@ void test_pushList_given_ali_abu_expect_baba_ali_abu(void){
   TEST_ASSERT_EQUAL_PTR(&itemAli, itemBaba.next);
   TEST_ASSERT_EQUAL_PTR(&itemAbu ,itemAli.next);
   TEST_ASSERT_EQUAL(3, list.len);
+}
+
+void test_push2list_expect_ali_abu(void){
+  LinkedList list;
+  ListInit(&list);
+  pushList(&list, &itemAbu);
+  pushList(&list, &itemAli);
+
+  TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
+  TEST_ASSERT_EQUAL_PTR(&itemAbu, list.tail);
+  TEST_ASSERT_EQUAL_PTR(&itemAbu, itemAli.next);
+  TEST_ASSERT_EQUAL(2, list.len);
 }

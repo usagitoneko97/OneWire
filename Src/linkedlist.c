@@ -109,3 +109,7 @@ void pushList(LinkedList *list, Item *listToAdd){
     list->len ++;
   }
 }
+
+int dummy1(){
+  return 23;
+}

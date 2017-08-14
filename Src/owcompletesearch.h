@@ -106,6 +106,7 @@ typedef struct RomSearchingEvData{
   int lastDeviceFlag;     //TODO change type to boolean
 }RomSearchingEvData;
 
+int initConvertT();
 void OW_Tx_SendArray(uint8_t* data, int length);
 
 void initRomSearching(EventStruct* evt, void* owdata);
@@ -125,5 +126,7 @@ void doRomSearch(Event *evt);
 void clearGetRom(RomSearchingPrivate *romSearchingPrivate);
 
 void initGet1BitRom(BitSearchInformation *bsi);
+
+
 
 #endif // _OWCOMPLETESEARCH_H
