@@ -151,12 +151,20 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
 void test_resetOw_given_state_REPLY_OW_event_UART_FRAME_ERROR_expect_systemError(void){
   /*Mock*/
   Event evt;
+
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
+
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
+
   evt.evtType = UART_FRAME_ERROR;
   evt.data = NULL;
   owResetPrivate.state = REPLY_OW;
   systemError_Expect(evt.evtType);
 
   resetAndVerifyOw(&evt);
+  free(txRxListPointerNext);
 }
 
 void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(void){
@@ -164,6 +172,12 @@ void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(voi
   evt.evtType = UART_TIMEOUT;
   evt.data = NULL;
   owResetPrivate.state = REPLY_OW;
+
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
+
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
   systemError_Expect(UART_TIMEOUT);
 
   resetAndVerifyOw(&evt);
@@ -381,8 +395,9 @@ void test_romSearching_lastBit(void){
   free(txRxListPointerNext);
   // evt.data =
   // evt
-
 }
+
+
 
 //TODO checking for idBit1 and cmpIdBit1
 //TODO checking for error while searching (lastDeviceFlag maybe?) (optional)

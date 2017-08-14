@@ -68,7 +68,8 @@ void resetAndVerifyOw(Event *evt){
           case UART_FRAME_ERROR:
           case UART_TIMEOUT:
             //FIXME funcPointer go to parent, parent will call systemError
-            systemError(evt->evtType);
+            generateResetEv.evtType = evt->evtType;
+            txRxList.next->txRxCallbackFuncP(&generateResetEv);
             break;
           case UART_RX_SUCCESS:
             //checking..
@@ -95,6 +96,7 @@ void resetAndVerifyOw(Event *evt){
 }
 
 void romSearching(Event *evt){
+  static Event generateFailEvt;
   switch (romSearchingPrivate.state) {
     case SEND_F0:
       initGetBitRom(&romSearchingPrivate);
@@ -112,7 +114,6 @@ void romSearching(Event *evt){
             get1BitRom(&romSearchingPrivate);
             if(romSearchingPrivate.bitSearchInformation.noDevice == TRUE){
               //ERROR
-              static Event generateFailEvt;
               generateFailEvt.evtType = ROM_SEARCH_NO_DEVICE;
               (txRxList.next)->txRxCallbackFuncP(&generateFailEvt);
             }
@@ -143,10 +144,10 @@ void romSearching(Event *evt){
           break;
         case UART_FRAME_ERROR:
         case UART_TIMEOUT:
+          generateFailEvt.evtType = evt->evtType;
+          txRxList.next->txRxCallbackFuncP(&generateFailEvt);
           //TODO
-          //report error
           //free romNo
-          //go to systemError?
           break;
 
           //TODO free romSearchingPrivate.romNo
@@ -218,6 +219,9 @@ void doRomSearch(Event *evt){
       systemError(evt->evtType);
       printf("Rom search no device\n");
       break;
+    case UART_TIMEOUT:
+    case UART_FRAME_ERROR:
+      systemError(evt->evtType);
   }
 }
 
