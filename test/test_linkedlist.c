@@ -143,7 +143,7 @@ void test_removeFirstList_ali_abu_remove_ali_expect_abu(void){
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.tail);
   TEST_ASSERT_NULL(itemAbu.next);
-    TEST_ASSERT_EQUAL(1, list.len);
+  TEST_ASSERT_EQUAL(1, list.len);
 }
 
 void test_removeFirstList_ali_remove_ali_expect_NULL(void){

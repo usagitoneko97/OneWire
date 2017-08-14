@@ -13,8 +13,8 @@ void registerCallback(void (callBack)(Event*), LinkedList *list){
   pushList(list, item);
 }
 
-void *unregisterCallback(){
-
+void unregisterCallback(LinkedList *list){
+  ListRemoveFirst(list);
 }
 
 void *getCurrentCallback(){

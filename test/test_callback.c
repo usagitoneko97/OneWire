@@ -43,3 +43,18 @@ void test_registerCallback_given_list_with_1_data(void){
   TEST_ASSERT_EQUAL(2,list.len);
   TEST_ASSERT_EQUAL_PTR(someFunction, callBackListNext->txRxCallbackFuncP);
 }
+
+void test_unregisterCallback_given_list_with2_data_expect_1Data(void){
+  LinkedList list;
+  ListInit(&list);
+  registerCallback(someFunction, &list);
+  registerCallback(anotherFunction, &list);
+
+  unregisterCallback(&list);
+
+  Item *itemHead = list.head;
+  TxRxCallbackList *callBackList5 = (TxRxCallbackList*)(itemHead->data);
+  TEST_ASSERT_EQUAL_PTR(someFunction, callBackList5->txRxCallbackFuncP);
+}
+//TODO unregisterCallback test with null
+//TODO unregisterCallback test with 1 data

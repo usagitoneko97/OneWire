@@ -35,7 +35,7 @@ void ListAddLinkedList(LinkedList *list, Item *item){
 }
 
 Item* ListRemoveFirst(LinkedList *list){
-  Item *temp;
+  Item *temp ;
   if(list->head == NULL){
     return NULL;
   }
