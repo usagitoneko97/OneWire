@@ -116,30 +116,7 @@ int _firstSearch(int numberOfByte) {
    }
  }
 
-#define FAMILY_CODE_RANGE             9
- #define GET_ROM_MASK(bsi)           (1 << (bsi)->idBitNumber)
- #define GET_CURRENT_BIT_IN_ROM(bsi) (((bsi)->romNo[(bsi)->romByteNum] &       \
-                                     GET_ROM_MASK(bsi)) > 0)
- #define SET_ROM_BIT(bsi)            ((bsi)->romNo[(bsi)->romByteNum] |=       \
-                                     bsi->byteMask)
- #define RESET_ROM_BIT(bsi)          ((bsi)->romNo[(bsi)->romByteNum] &=       \
-                                     ~bsi->byteMask)
- #define UPDATE_LAST_FAMILY_DECREPANCY(bsi)                                    \
-                                     if((bsi)->lastZero <= FAMILY_CODE_RANGE)  \
-                                       lastFamilyDiscrepancy = (bsi)->lastZero;
-#define UPDATE_ROM_BYTE_MASK(bsi)    if(((bsi)->byteMask <<= 1) == 0){        \
-                                       (bsi)->byteMask = 1;                   \
-                                       (bsi)->romByteNum++;                   \
-                                      }
-#define RESET_IF_COMPLETED_BIT_SEARCHING(bsi)                                 \
-                                     if(bsi->idBitNumber > OW_LENGTH){        \
-                                       lastDiscrepancy = bsi->lastZero;       \
-                                       if(lastDiscrepancy == 0){              \
-                                         lastDeviceFlag = TRUE;               \
-                                       }                                      \
-                                       clearGet1BitRom(bsi);                  \
-                                       bsi->searchResult = TRUE;              \
-                                     }
+
 
 void get1BitRom(BitSearchInformation *bsi){
   int searchDir;
@@ -163,7 +140,7 @@ void get1BitRom(BitSearchInformation *bsi){
         // Record the last zero encountered when conflicting
         bsi->lastZero = bsi->idBitNumber;
         // Update last family discrepancy if in family code range
-        UPDATE_LAST_FAMILY_DECREPANCY(bsi);
+        UPDATE_LAST_FAMILY_DISCREPANCY(bsi);
       }
       break;
     case DEVICE_NOT_THERE:

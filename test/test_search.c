@@ -4,7 +4,7 @@
 #include "owvariable.h"
 #include "common.h"
 #include "owcompletesearch.h"
-
+#include <stdlib.h>
 // #define NO_OF_DEVICE  4
 
 
@@ -745,76 +745,251 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  *                       |
  *         (path taken is 1 because lastDiscrepancy = 1)
  */
-   void test_FamilySkipSetup_Search(void){
-     /*first search*/
-     //----------------------------------------------------
-     uint8_t fakeIdBitVal []=       {0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 0, 1,  1, 0, 0, 0};
-     uint8_t fakeCmpIdBitVal[] =   {0, 0, 1, 0,  1, 0, 0, 1,  0, 1, 0, 0,  0, 0, 1, 1};
-     init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-     /*TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
-     TEST_ASSERT_EQUAL(1, lastFamilyDiscrepancy);
-     TEST_ASSERT_EQUAL(11, lastDiscrepancy);*/
+ void test_FamilySkipSetup_Search(void){
+   /*first search*/
+   //----------------------------------------------------
+   uint8_t fakeIdBitVal []=       {0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 0, 1,  1, 0, 0, 0};
+   uint8_t fakeCmpIdBitVal[] =   {0, 0, 1, 0,  1, 0, 0, 1,  0, 1, 0, 0,  0, 0, 1, 1};
+   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
+   /*TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
+   TEST_ASSERT_EQUAL(1, lastFamilyDiscrepancy);
+   TEST_ASSERT_EQUAL(11, lastDiscrepancy);*/
 
-     TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
-     TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-     TEST_ASSERT_EQUAL(0x6A, romNo[0]);
-     /*second search*/
-     //----------------------------------------------------
+   TEST_ASSERT_EQUAL(TRUE, _firstSearch(2));
+   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+   TEST_ASSERT_EQUAL(0x6A, romNo[0]);
+   /*second search*/
+   //----------------------------------------------------
 
-     uint8_t fakeIdBitVal_2 []=       {0, 0, 0, 0,  1, 0, 1, 1,  1, 1, 1, 1,  1, 1, 1, 0};
-     uint8_t fakeCmpIdBitVal_2[] =   {0, 1, 1, 1,  0, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0, 1};
-     init64BitId(fakeIdBitVal_2, fakeCmpIdBitVal_2, 0);
-     familySkipSetupSearch();
-     TEST_ASSERT_EQUAL(TRUE ,_bitSearch(2));
-     TEST_ASSERT_EQUAL(0x7f, romNo[1]);
-     TEST_ASSERT_EQUAL(0xd1, romNo[0]);
-   }
+   uint8_t fakeIdBitVal_2 []=       {0, 0, 0, 0,  1, 0, 1, 1,  1, 1, 1, 1,  1, 1, 1, 0};
+   uint8_t fakeCmpIdBitVal_2[] =   {0, 1, 1, 1,  0, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0, 1};
+   init64BitId(fakeIdBitVal_2, fakeCmpIdBitVal_2, 0);
+   familySkipSetupSearch();
+   TEST_ASSERT_EQUAL(TRUE ,_bitSearch(2));
+   TEST_ASSERT_EQUAL(0x7f, romNo[1]);
+   TEST_ASSERT_EQUAL(0xd1, romNo[0]);
+ }
 
-   /**
-    * data one: 1 1 0
-    * data two: 0 1 0
-    */
-   void test_get1BitRom_given_given_data_above(void){
-     owLength = 3;
-     BitSearchInformation bsi;
-     initGet1BitRom(&bsi);
-     bsi.bitReadType = BIT_0;
-     get1BitRom(&bsi);
-     TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-     TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
+ /**
+  * data one: 1 1 0
+  * data two: 0 1 0
+  */
+ void test_get1BitRom_given_given_data_above(void){
+   owLength = 3;
+   BitSearchInformation bsi;
+   initGet1BitRom(&bsi);
+   bsi.bitReadType = BIT_0;
+   get1BitRom(&bsi);
+   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
+   TEST_ASSERT_EQUAL(0, bsi.lastZero);
+   TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
 
-     bsi.bitReadType = BIT_1;
-     get1BitRom(&bsi);
-     TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
-     TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
+   bsi.bitReadType = BIT_1;
+   get1BitRom(&bsi);
+   TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
+   TEST_ASSERT_EQUAL(0, bsi.lastZero);
+   TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
 
-     bsi.bitReadType = BIT_CONFLICT;
-     get1BitRom(&bsi);
-     TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
-     TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
-     //===================================================
-     bsi.bitReadType = BIT_0;
-     get1BitRom(&bsi);
-     TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-     TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
+   bsi.bitReadType = BIT_CONFLICT;
+   get1BitRom(&bsi);
+   TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
+   TEST_ASSERT_EQUAL(0, bsi.lastZero);
+   TEST_ASSERT_EQUAL(3, lastDiscrepancy);
+   //===================================================
+   bsi.bitReadType = BIT_0;
+   get1BitRom(&bsi);
+   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
+   TEST_ASSERT_EQUAL(0, bsi.lastZero);
+   TEST_ASSERT_EQUAL(3, lastDiscrepancy);
 
-     bsi.bitReadType = BIT_1;
-     get1BitRom(&bsi);
-     TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
-     TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
+   bsi.bitReadType = BIT_1;
+   get1BitRom(&bsi);
+   TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
+   TEST_ASSERT_EQUAL(0, bsi.lastZero);
+   TEST_ASSERT_EQUAL(3, lastDiscrepancy);
 
-     bsi.bitReadType = BIT_CONFLICT;
-     get1BitRom(&bsi);
-     TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
-     TEST_ASSERT_EQUAL(0, bsi.lastZero);
-     TEST_ASSERT_EQUAL(0, lastDiscrepancy);
+   bsi.bitReadType = BIT_CONFLICT;
+   get1BitRom(&bsi);
+   TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
+   TEST_ASSERT_EQUAL(0, bsi.lastZero);
+   TEST_ASSERT_EQUAL(0, lastDiscrepancy);
 
-   }
+ }
+
+ void test_GET_CURRENT_BIT_IN_ROM(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->romNo = malloc(8);
+   bsi->romByteNum = 1;
+   bsi->byteMask = 0x04;
+   *(bsi->romNo + 1) = 0x55;
+   TEST_ASSERT_EQUAL(1, GET_CURRENT_BIT_IN_ROM(bsi));
+   free(bsi->romNo);
+   free(bsi);
+ }
+
+/**
+ * Initialize
+ * ----------------
+ * romNo[1] = 0 1 0 1 0 1 0 1
+ * byteMask = 0 0 0 0 0 0 1 0
+ * -----------------
+ * result
+ * romNo[1] = 0 1 0 1 0 1 1 1
+ */
+ void test_SET_ROM_BIT(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->romNo = malloc(8);
+   bsi->romByteNum = 1;
+   bsi->byteMask = 0x02;
+   *(bsi->romNo + 1) = 0x55;
+   TEST_ASSERT_EQUAL(0x57, SET_ROM_BIT(bsi));
+   free(bsi->romNo);
+   free(bsi);
+ }
+
+ /**
+  * Initialize
+  * ----------------
+  * romNo[1] = 0 1 0 1 0 1 0 1
+  * byteMask = 0 0 0 0 0 1 0 0
+  * -----------------
+  * result
+  * romNo[1] = 0 1 0 1 0 0 0 1
+  */
+ void test_RESET_ROM_BIT(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->romNo = malloc(8);
+   bsi->romByteNum = 1;
+   bsi->byteMask = 0x04;
+   *(bsi->romNo + 1) = 0x55;
+   TEST_ASSERT_EQUAL(0x51, RESET_ROM_BIT(bsi));
+   free(bsi->romNo);
+   free(bsi);
+ }
+
+ void test_UPDATE_LAST_FAMILY_DISCREPANCY_given_lastZero_lessThan_FAMILYCODE(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->lastZero = 3;
+   lastFamilyDiscrepancy = 0;
+   UPDATE_LAST_FAMILY_DISCREPANCY(bsi);
+   TEST_ASSERT_EQUAL(3, lastFamilyDiscrepancy);
+   free(bsi);
+ }
+
+ void test_UPDATE_LAST_FAMILY_DISCREPANCY_given_lastZero_greaterThan_FAMILYCODE(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->lastZero = 9;
+   lastFamilyDiscrepancy = 0;
+   UPDATE_LAST_FAMILY_DISCREPANCY(bsi);
+   TEST_ASSERT_EQUAL(0, lastFamilyDiscrepancy);
+   free(bsi);
+ }
+
+ void test_UPDATE_ROM_BYTE_MASK_given_mask_0x40_byteNum2_expect_byteNum2(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->byteMask = 0x40;
+   bsi->romByteNum = 2;
+   UPDATE_ROM_BYTE_MASK(bsi);
+   TEST_ASSERT_EQUAL(2, bsi->romByteNum);
+   TEST_ASSERT_EQUAL(0x80, bsi->byteMask);
+   free(bsi);
+ }
+
+ void test_UPDATE_ROM_BYTE_MASK_given_mask_0x80_byteNum2_expect_byteNum3(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->byteMask = 0x80;
+   bsi->romByteNum = 2;
+   UPDATE_ROM_BYTE_MASK(bsi);
+   TEST_ASSERT_EQUAL(3, bsi->romByteNum);
+   TEST_ASSERT_EQUAL(0x1, bsi->byteMask);
+   free(bsi);
+ }
+
+/**
+ * Given : idBitNumber = 65
+ *         owLength = 64
+ *         lastZero = 0
+ *
+ * Expect: lastDeviceFlag = TRUE
+ *         lastZero = 0;
+ *         searchResult = TRUE
+ *         lastDiscrepancy = 0
+ *         idBitNumber = 1
+ */
+ void test_RESET_IF_COMPLETED_BIT_SEARCHING_given_Expect_above(void){
+   BitSearchInformation *bsi ;
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi->lastZero = 0;
+   bsi->idBitNumber = 65;
+   owLength = 64;
+   RESET_IF_COMPLETED_BIT_SEARCHING(bsi);
+   TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
+   TEST_ASSERT_EQUAL(0, bsi->lastZero);
+   TEST_ASSERT_EQUAL(TRUE, bsi->searchResult);
+   TEST_ASSERT_EQUAL(0, lastDiscrepancy);
+   TEST_ASSERT_EQUAL(1, bsi->idBitNumber);
+   free(bsi);
+ }
+
+
+ /**
+  * Given : idBitNumber = 65
+  *         owLength = 64
+  *         lastZero = 3
+  *
+  * Expect: lastDeviceFlag = FALSE
+  *         lastZero = 0;
+  *         searchResult = TRUE
+  *         lastDiscrepancy = 3
+  *         idBitNumber = 1
+  */
+  void test_RESET_IF_COMPLETED_BIT_SEARCHING_given_LastZero_1_Expect_above(void){
+    BitSearchInformation *bsi ;
+    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+    bsi->idBitNumber = 65;
+    owLength = 64;
+    bsi->lastZero = 3;
+    lastDeviceFlag = FALSE;
+    RESET_IF_COMPLETED_BIT_SEARCHING(bsi);
+    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+    TEST_ASSERT_EQUAL(0, bsi->lastZero);
+    TEST_ASSERT_EQUAL(TRUE, bsi->searchResult);
+    TEST_ASSERT_EQUAL(3, lastDiscrepancy);
+    TEST_ASSERT_EQUAL(1, bsi->idBitNumber);
+    free(bsi);
+  }
+
+/**
+ * given: bsi->idBitNumber = 64
+ *                owLength = 63
+ * Expect: NO CHANGES
+ */
+  void test_RESET_IF_COMPLETED_BIT_SEARCHING_given_BitNumber_smallerThan_owLength(void){
+    BitSearchInformation *bsi ;
+    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+    bsi->idBitNumber = 63;
+    owLength = 63;
+    bsi->lastZero = 3;
+    lastDeviceFlag = FALSE;
+    bsi->searchResult = FALSE;
+    lastDiscrepancy = 0;
+    RESET_IF_COMPLETED_BIT_SEARCHING(bsi);
+    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+    TEST_ASSERT_EQUAL(3, bsi->lastZero);
+    TEST_ASSERT_EQUAL(FALSE, bsi->searchResult);
+    TEST_ASSERT_EQUAL(0, lastDiscrepancy);
+    free(bsi);
+  }
+
+
+
 
    //TODO the rest of targetSetup search
    //TODO test on familyskipSetup and verify
