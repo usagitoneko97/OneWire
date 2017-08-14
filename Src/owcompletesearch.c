@@ -124,8 +124,7 @@ void romSearching(Event *evt){
               (txRxList.next)->txRxCallbackFuncP(&generateFailEvt);
             }
             else{
-              if(romSearchingPrivate.bitSearchInformation.idBitNumber > 63){
-                updateSearch(&romSearchingPrivate);
+              if(romSearchingPrivate.bitSearchInformation.searchResult == TRUE){
                 static Event generateEvt;
                 generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
                 static RomSearchingEvData evData;
@@ -194,6 +193,25 @@ void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
   //insert romSearching at head
   txRxList.txRxCallbackFuncP = romSearching;
 }
+
+void initGet1BitRom(BitSearchInformation *bsi){
+  bsi->lastZero = 0;
+  bsi->romByteNum = 0;
+  bsi->byteMask = 1;
+  bsi->searchResult = 0;
+  bsi->noDevice = FALSE;
+  bsi->idBitNumber = 1;
+  //TODO change the state somewhere
+    // romSearchingPrivate->state = ROM_SEARCHING;
+  bsi->romNo = malloc(8);
+  *(bsi->romNo) = 0;
+  //move txRxlist to next
+  //insert romSearching at head
+  //TODO push the function
+  txRxList.txRxCallbackFuncP = romSearching;
+}
+
+
 
 void doRomSearch(Event *evt){
   uint8_t *dataTemp;

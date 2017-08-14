@@ -14,7 +14,7 @@ int _bitSearch(int numberOfByte);
 void targetSetupSearch(unsigned char familyCode);
 void familySkipSetupSearch();
 void verify(unsigned char *romNumberToVerify, int Bytelength);
-
+void clearGet1BitRom(BitSearchInformation *bsi);
 
 
 

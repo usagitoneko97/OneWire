@@ -18,3 +18,5 @@ uint8_t *uartRxDataBuffer;
 
 DoRomSearchPrivate doRomSearchPrivate;
 RomSearchingPrivate romSearchingPrivate;
+
+ int owLength = 64;

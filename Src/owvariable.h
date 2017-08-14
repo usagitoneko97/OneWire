@@ -24,4 +24,5 @@ extern uint8_t *uartRxDataBuffer;
 extern RomSearchingPrivate romSearchingPrivate;
 
 extern DoRomSearchPrivate doRomSearchPrivate;
+extern int owLength;
 #endif // _OWVARIABLE_H

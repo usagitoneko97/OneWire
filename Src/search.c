@@ -171,6 +171,15 @@ void get1BitRom(BitSearchInformation *bsi){
       bsi->byteMask = 1;
       bsi->romByteNum++;
     }
+
+    if(bsi->idBitNumber > OW_LENGTH){
+      lastDiscrepancy = bsi->lastZero;
+      if(lastDiscrepancy == 0){
+        lastDeviceFlag = TRUE;
+      }
+      clearGet1BitRom(bsi);
+      bsi->searchResult = TRUE;
+    }
   }
 }
 
@@ -225,6 +234,15 @@ int _bitSearch(int numberOfByte){
     bitSearchInformation.searchResult = FALSE;
   }
   return bitSearchInformation.searchResult;
+}
+
+void clearGet1BitRom(BitSearchInformation *bsi){
+  bsi->lastZero = 0;
+  bsi->romByteNum = 0;
+  bsi->byteMask = 1;
+  bsi->searchResult = 0;
+  bsi->noDevice = FALSE;
+  bsi->idBitNumber = 1;
 }
 
 int bitSearch(){

@@ -3,8 +3,11 @@
 #include "mock_onewireio.h"
 #include "owvariable.h"
 #include "common.h"
+#include "owcompletesearch.h"
 
 // #define NO_OF_DEVICE  4
+
+
 
 unsigned char bitPos = 0x01;
 int state = 0;
@@ -95,13 +98,13 @@ void test_fake_read_return_idBit_cmpIdBit(void){
 
 /********************************************************
  * Id_bit     = 0                                       *
- * cmpIdBit = 0                                       *
+ * cmpIdBit = 0                                         *
  *                                                      *
  * EXPECTED:                                            *
- * lastZero = 1                                        *
- * idBitNumber ++                                     *
- * searchDirection = idBit                            *
- * first bit of first byte of romNo = searchDirection *
+ * lastZero = 1                                         *
+ * idBitNumber ++                                       *
+ * searchDirection = idBit                              *
+ * first bit of first byte of romNo = searchDirection   *
  ********************************************************/
 void test_process1BitRom_IdBit_cmpBit_00(void){
   /*initialize test*/
@@ -125,7 +128,7 @@ void test_process1BitRom_IdBit_cmpBit_00(void){
 }
 
 /********************************************************
- * Id_bit     = 0                                       *
+ * Id_bit   = 0                                       *
  * cmpIdBit = 1                                       *
  *                                                      *
  * EXPECTED:                                            *
@@ -136,7 +139,7 @@ void test_process1BitRom_IdBit_cmpBit_00(void){
  ********************************************************/
 void test_process1BitRom_IdBit_cmpBit_01(void){
   /*initialize test*/
-  uint8_t fakeIdBitVal []=       {0};
+  uint8_t fakeIdBitVal [] =     {0};
   uint8_t fakeCmpIdBitVal[] =   {1};
   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
   BitSearchInformation innerVAR_OW;
@@ -758,8 +761,57 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      TEST_ASSERT_EQUAL(TRUE ,_bitSearch(2));
      TEST_ASSERT_EQUAL(0x7f, romNo[1]);
      TEST_ASSERT_EQUAL(0xd1, romNo[0]);
+   }
 
+   /**
+    * data one: 1 1 0
+    * data two: 0 1 0
+    */
+   void test_get1BitRom_given_given_data_above(void){
+     owLength = 3;
+     BitSearchInformation bsi;
+     initGet1BitRom(&bsi);
+     bsi.bitReadType = BIT_0;
+     get1BitRom(&bsi);
+     TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
+     TEST_ASSERT_EQUAL(0, bsi.lastZero);
+     TEST_ASSERT_EQUAL(0, bsi.searchDirection);
+     TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
 
+     bsi.bitReadType = BIT_1;
+     get1BitRom(&bsi);
+     TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
+     TEST_ASSERT_EQUAL(0, bsi.lastZero);
+     TEST_ASSERT_EQUAL(1, bsi.searchDirection);
+     TEST_ASSERT_EQUAL(lastDiscrepancy, 0);
+
+     bsi.bitReadType = BIT_CONFLICT;
+     get1BitRom(&bsi);
+     TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
+     TEST_ASSERT_EQUAL(0, bsi.lastZero);
+     TEST_ASSERT_EQUAL(0, bsi.searchDirection);
+     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
+     //===================================================
+     bsi.bitReadType = BIT_0;
+     get1BitRom(&bsi);
+     TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
+     TEST_ASSERT_EQUAL(0, bsi.lastZero);
+     TEST_ASSERT_EQUAL(0, bsi.searchDirection);
+     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
+
+     bsi.bitReadType = BIT_1;
+     get1BitRom(&bsi);
+     TEST_ASSERT_EQUAL(3, bsi.idBitNumber);
+     TEST_ASSERT_EQUAL(0, bsi.lastZero);
+     TEST_ASSERT_EQUAL(1, bsi.searchDirection);
+     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
+
+     bsi.bitReadType = BIT_CONFLICT;
+     get1BitRom(&bsi);
+     TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
+     TEST_ASSERT_EQUAL(0, bsi.lastZero);
+     TEST_ASSERT_EQUAL(1, bsi.searchDirection);
+     TEST_ASSERT_EQUAL(0, lastDiscrepancy);
 
    }
 

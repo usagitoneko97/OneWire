@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 
-
 uint8_t owRxVal;
 unsigned char bitPos = 0;
 uint8_t *fakeIdBits = NULL;
@@ -438,5 +437,6 @@ void test_romSearching_lastBit(void){
   // evt.data =
   // evt
 }
+
 
 //TODO checking for error while searching (lastDeviceFlag maybe?) (optional)

@@ -14,10 +14,10 @@ struct Student{
 };
 
 typedef struct TxRxCallbackList TxRxCallbackList;
-struct TxRxCallbackList{
-  TxRxCallbackList *next;
-  void (*txRxCallbackFuncP)(Event*);
-  void *txRxdata;
+  struct TxRxCallbackList{
+    TxRxCallbackList *next;
+    void (*txRxCallbackFuncP)(Event*);
+    void *txRxdata;
 };
 
 

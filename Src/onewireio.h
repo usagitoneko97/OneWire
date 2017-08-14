@@ -4,6 +4,14 @@
 #include <stdint.h>
 #include "common.h"
 #include "owcompletesearch.h"
+#include "owvariable.h"
+
+#ifndef TEST
+  #define OW_LENGTH 64
+#else
+  #define OW_LENGTH  owLength
+#endif
+
 /*Global variables*/
 
 

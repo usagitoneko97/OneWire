@@ -123,4 +123,7 @@ void romSearching(Event *evt);
 void updateSearch(RomSearchingPrivate *romSearchingPrivate);
 void doRomSearch(Event *evt);
 void clearGetRom(RomSearchingPrivate *romSearchingPrivate);
+
+void initGet1BitRom(BitSearchInformation *bsi);
+
 #endif // _OWCOMPLETESEARCH_H
