@@ -4,6 +4,7 @@
 #include "search.h"
 #include "mock_onewireio.h"
 #include "owvariable.h"
+#include "linkedlist.h"
 #include <stdlib.h>
 
 
@@ -164,7 +165,7 @@ void test_resetOw_given_state_REPLY_OW_event_UART_FRAME_ERROR_expect_systemError
   systemError_Expect(evt.evtType);
 
   resetAndVerifyOw(&evt);
-  free(txRxListPointerNext);
+  //free(txRxListPointerNext);
 }
 
 void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(void){
@@ -252,7 +253,7 @@ void test_romSearching_given_state_SEND_F0_expect_sendf0_expect_install_callback
   romSearching(&evt);
   TEST_ASSERT_EQUAL(ROM_SEARCHING, romSearchingPrivate.state);
   // TEST_ASSERT_NOT_NULL(txRxList.txRxCallbackFuncP);
-  
+
 }
 void test_calcIdCmpId_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
   uint8_t uartRxVal_[2];
@@ -277,11 +278,31 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
   *(txRxEvData.uartRxVal) = 0xff;
   *(txRxEvData.uartRxVal + 1) = 0xff;
 
+  //FIXME delete this function pointer
   TxRxCallbackList *txRxListPointerNext;
   txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
 
   txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
   txRxList.next = txRxListPointerNext;
+
+  /*create Item*/
+  TxRxCallbackList *doRomSearchCallb;
+  TxRxCallbackList *romSearchingCallb;
+  doRomSearchCallb = malloc(sizeof(doRomSearchCallb));
+  romSearchingCallb = malloc(sizeof(romSearchingCallb));
+  doRomSearchCallb->txRxCallbackFuncP = doRomSearch;
+  romSearchingCallb->txRxCallbackFuncP = romSearching;
+
+  Item itemDoRomSearch;
+  Item itemRomSearching;
+  itemDoRomSearch.data = doRomSearchCallb;
+  itemRomSearching.data = romSearchingCallb;
+
+  LinkedList list;
+  ListInit(&list);
+  pushList(&list, &itemDoRomSearch);
+  pushList(&list, &itemRomSearching);
+
 
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
@@ -293,11 +314,10 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
   systemError_Expect(ROM_SEARCH_NO_DEVICE);
   romSearching(&evt);
 
-  TEST_ASSERT_EQUAL(1 ,romSearchingPrivate.bitSearchInformation.idBitNumber);
+/*  TEST_ASSERT_EQUAL(1 ,romSearchingPrivate.bitSearchInformation.idBitNumber);
   TEST_ASSERT_EQUAL(FALSE ,romSearchingPrivate.bitSearchInformation.noDevice);
-  TEST_ASSERT_EQUAL(0x01, romSearchingPrivate.bitSearchInformation.byteMask);
+  TEST_ASSERT_EQUAL(0x01, romSearchingPrivate.bitSearchInformation.byteMask);*/
 
-  free(txRxListPointerNext);
 }
 /**
  * NOTE this is the first bit search where the idBitNumber for first search is 1

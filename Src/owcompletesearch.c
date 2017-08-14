@@ -95,8 +95,11 @@ void resetAndVerifyOw(Event *evt){
     }
 }
 
+
 void romSearching(Event *evt){
   static Event generateFailEvt;
+  BitSearchInformation *bsi = &romSearchingPrivate.bitSearchInformation;
+  TxRxCpltEvData *evData = (TxRxCpltEvData*)(evt->data);
   switch (romSearchingPrivate.state) {
     case SEND_F0:
       initGetBitRom(&romSearchingPrivate);
@@ -108,8 +111,7 @@ void romSearching(Event *evt){
     case ROM_SEARCHING:
       switch (evt->evtType) {
         case UART_RX_SUCCESS:
-            calcIdCmpId(((TxRxCpltEvData*)(evt->data))->uartRxVal,\
-                  &romSearchingPrivate.bitSearchInformation.idBit, &romSearchingPrivate.bitSearchInformation.cmpIdBit);
+            calcIdCmpId(evData->uartRxVal, &bsi->idBit, &bsi->cmpIdBit);
             //TODO check for lastDeviceFlag
             get1BitRom(&romSearchingPrivate);
             if(romSearchingPrivate.bitSearchInformation.noDevice == TRUE){
@@ -117,6 +119,8 @@ void romSearching(Event *evt){
               clearGetRom(&romSearchingPrivate);
               free(romSearchingPrivate.romNo);
               generateFailEvt.evtType = ROM_SEARCH_NO_DEVICE;
+              //TODO check for null
+              // ((TxRxCallbackList*)(((list.head)->next)->data))->txRxCallbackFuncP(&generateFailEvt);
               (txRxList.next)->txRxCallbackFuncP(&generateFailEvt);
             }
             else{

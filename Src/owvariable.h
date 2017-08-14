@@ -18,6 +18,7 @@ extern OwData owdata;
 extern OwResetPrivate owResetPrivate;
 
 extern TxRxCallbackList txRxList;
+extern LinkedList list;
 
 extern uint8_t *uartRxDataBuffer;
 extern RomSearchingPrivate romSearchingPrivate;

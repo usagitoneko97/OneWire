@@ -12,9 +12,9 @@ OwData owdata;
 uint8_t owRxCallBackData;
 
 TxRxCallbackList txRxList;
+LinkedList list;
 OwResetPrivate owResetPrivate;
 uint8_t *uartRxDataBuffer;
 
 DoRomSearchPrivate doRomSearchPrivate;
-
 RomSearchingPrivate romSearchingPrivate;
