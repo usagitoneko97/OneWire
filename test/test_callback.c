@@ -58,3 +58,12 @@ void test_unregisterCallback_given_list_with2_data_expect_1Data(void){
 }
 //TODO unregisterCallback test with null
 //TODO unregisterCallback test with 1 data
+
+void test_getCurrentCallback(void){
+  LinkedList list;
+  ListInit(&list);
+  registerCallback(someFunction, &list);
+  FuncP tempFuncP = getCurrentCallback();
+  TEST_ASSERT_EQUAL(someFunction, tempFuncP);
+
+}

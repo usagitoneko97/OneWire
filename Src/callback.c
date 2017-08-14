@@ -17,6 +17,8 @@ void unregisterCallback(LinkedList *list){
   ListRemoveFirst(list);
 }
 
-void *getCurrentCallback(){
-
+FuncP getCurrentCallback(LinkedList *list){
+  Item *itemHead = list->head;
+  TxRxCallbackList *callBackList5 = (TxRxCallbackList*)(itemHead->data);
+  return callBackList5->txRxCallbackFuncP;
 }
