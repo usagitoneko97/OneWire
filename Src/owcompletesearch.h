@@ -42,6 +42,13 @@ struct OwData {
   uint8_t uartRxVal;
 };
 
+typedef enum{
+  BIT_1,
+  BIT_0,
+  BIT_CONFLICT,
+  DEVICE_NOT_THERE,
+}SearchBitType;
+
 /*Generic Event*/
 typedef struct Event{
   EventType evtType;
@@ -78,6 +85,8 @@ struct BitSearchInformation {
   unsigned char searchDirection;
   unsigned char byteMask;
   int noDevice;
+  SearchBitType bitReadType;
+  uint8_t *romNo;
 };
 
 
@@ -102,7 +111,7 @@ void OW_Tx_SendArray(uint8_t* data, int length);
 void initRomSearching(EventStruct* evt, void* owdata);
 void resetOw(EventStruct *evt);
 void romSearch(EventStruct *evt);
-void calcIdCmpId(uint8_t *uartRxVal, int *idBitNumber, int *cmpIdBitNumber);
+SearchBitType Src(uint8_t *uartRxVal);
 
 int isOwDeviceAvail(EventStruct *evt);
 int owHandler(EventStruct *evt);

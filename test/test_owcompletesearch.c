@@ -255,17 +255,17 @@ void test_romSearching_given_state_SEND_F0_expect_sendf0_expect_install_callback
   // TEST_ASSERT_NOT_NULL(txRxList.txRxCallbackFuncP);
 
 }
-void test_calcIdCmpId_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
+/*void test_Src_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
   uint8_t uartRxVal_[2];
   uartRxVal_[0] = 0xff;
   uartRxVal_[1] = 0xfe;
 
   int idBitNumber_, cmpIdBitNumber_;
-  calcIdCmpId(uartRxVal_, &idBitNumber_, &cmpIdBitNumber_);
+  Src(uartRxVal_, &idBitNumber_, &cmpIdBitNumber_);
 
   TEST_ASSERT_EQUAL(1, idBitNumber_);
   TEST_ASSERT_EQUAL(0, cmpIdBitNumber_);
-}
+}*/
 
 /**
  * given :idBit = 1
@@ -339,10 +339,8 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   owUartTxDma_Expect(0xf0);
   romSearching(&evt);
   //TODO
-  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBit);
-  TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.cmpIdBit);
   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.idBitNumber);
-  TEST_ASSERT_EQUAL(0x01, *(romSearchingPrivate.romNo));
+  TEST_ASSERT_EQUAL(0x01, *(romSearchingPrivate.bitSearchInformation.romNo));
   free(romSearchingPrivate.romNo);
   free(txRxEvData.uartRxVal);
   // evt.data =
@@ -370,12 +368,10 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   owUartTxDma_Expect(0xf0);
   romSearching(&evt);
   //TODO
-  TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.idBit);
-  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.cmpIdBit);
   TEST_ASSERT_EQUAL(9, romSearchingPrivate.bitSearchInformation.idBitNumber);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.romByteNum);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
-  TEST_ASSERT_EQUAL(0x0, *(romSearchingPrivate.romNo));
+  TEST_ASSERT_EQUAL(0x0, *(romSearchingPrivate.bitSearchInformation.romNo));
   free(romSearchingPrivate.romNo);
   free(txRxEvData.uartRxVal);
   // evt.data =
@@ -410,8 +406,6 @@ void test_romSearching_lastBit(void){
 
   romSearching(&evt);
   //TODO
-  TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBit);
-  TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.cmpIdBit);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBitNumber);
   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romByteNum);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);

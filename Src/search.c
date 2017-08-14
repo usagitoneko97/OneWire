@@ -116,54 +116,60 @@ int _firstSearch(int numberOfByte) {
    }
  }
 
-void get1BitRom(RomSearchingPrivate *romSearchingPrivate){
-  printf("idBit and cmpIdBit: %d .. %d \n", (romSearchingPrivate->bitSearchInformation).idBit,
-          (romSearchingPrivate->bitSearchInformation).cmpIdBit  );
+void get1BitRom(BitSearchInformation *bsi){
+
   volatile int i = 0;
   i++;
-  if((romSearchingPrivate->bitSearchInformation).idBit == 1 && (romSearchingPrivate->bitSearchInformation).cmpIdBit == 1){  //no devices
-    (romSearchingPrivate->bitSearchInformation).noDevice = TRUE;
+  if(bsi->bitReadType == DEVICE_NOT_THERE){  //no devices
+    bsi->noDevice = TRUE;
   }
   else{
-    if((romSearchingPrivate->bitSearchInformation).idBit != (romSearchingPrivate->bitSearchInformation).cmpIdBit){
-      (romSearchingPrivate->bitSearchInformation).searchDirection = (romSearchingPrivate->bitSearchInformation).idBit;
-    }
-    else{
-      if((romSearchingPrivate->bitSearchInformation).idBitNumber == lastDiscrepancy){
-        (romSearchingPrivate->bitSearchInformation).searchDirection = 1;
-      }
-      else if((romSearchingPrivate->bitSearchInformation).idBitNumber > lastDiscrepancy){
-        (romSearchingPrivate->bitSearchInformation).searchDirection = 0;
-      }
-      else{
-        (romSearchingPrivate->bitSearchInformation).searchDirection = ((*((romSearchingPrivate->romNo) + (romSearchingPrivate->bitSearchInformation).romByteNum) & (romSearchingPrivate->bitSearchInformation).byteMask)>0);  //if there is "1" on any bit, load 1 to searchDirection
-      }
-      if(!(romSearchingPrivate->bitSearchInformation).searchDirection){
-        (romSearchingPrivate->bitSearchInformation).lastZero = (romSearchingPrivate->bitSearchInformation).idBitNumber;
-        if((romSearchingPrivate->bitSearchInformation).lastZero<9){
-          lastFamilyDiscrepancy = (romSearchingPrivate->bitSearchInformation).lastZero;
+    switch (bsi->bitReadType) {
+      case BIT_0:
+        bsi->searchDirection = 0;
+        break;
+      case BIT_1:
+        bsi->searchDirection = 1;
+        break;
+      case BIT_CONFLICT:
+        if(bsi->idBitNumber == lastDiscrepancy){
+          bsi->searchDirection = 1;
         }
+        else if(bsi->idBitNumber > lastDiscrepancy){
+          bsi->searchDirection = 0;
+        }
+        else{
+          bsi->searchDirection = ((*((bsi->romNo) + bsi->romByteNum) & bsi->byteMask)>0);  //if there is "1" on any bit, load 1 to searchDirection
+        }
+        if(!bsi->searchDirection){
+          bsi->lastZero = bsi->idBitNumber;
+          if(bsi->lastZero<9){
+            lastFamilyDiscrepancy = bsi->lastZero;
+          }
 
-      }
+        }
+        break;
     }
-    if((romSearchingPrivate->bitSearchInformation).searchDirection == 1){
-      *((romSearchingPrivate->romNo) + (romSearchingPrivate->bitSearchInformation).romByteNum) |= (romSearchingPrivate->bitSearchInformation).byteMask; //set the current bit to be 1
+
+
+    if(bsi->searchDirection == 1){
+      *((bsi->romNo) + bsi->romByteNum) |= bsi->byteMask; //set the current bit to be 1
       write(1);
     }
     else{
-      *((romSearchingPrivate->romNo) + (romSearchingPrivate->bitSearchInformation).romByteNum) &= ~(romSearchingPrivate->bitSearchInformation).byteMask; //set current bit to be 0
+      *((bsi->romNo) + bsi->romByteNum) &= ~bsi->byteMask; //set current bit to be 0
       write(0);
     }
 
 
     //preparation for next bit search
-    (romSearchingPrivate->bitSearchInformation).idBitNumber++;
-    (romSearchingPrivate->bitSearchInformation).byteMask <<=1;
+    bsi->idBitNumber++;
+    bsi->byteMask <<=1;
 
-    if((romSearchingPrivate->bitSearchInformation).byteMask == 0){
+    if(bsi->byteMask == 0){
       // stackDataBuffer64(romNo[bitSearchInformation.romByteNum],numberOfByte);
-      (romSearchingPrivate->bitSearchInformation).byteMask = 1;
-      (romSearchingPrivate->bitSearchInformation).romByteNum++;
+      bsi->byteMask = 1;
+      bsi->romByteNum++;
     }
   }
 }

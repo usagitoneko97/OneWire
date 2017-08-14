@@ -111,9 +111,10 @@ void romSearching(Event *evt){
     case ROM_SEARCHING:
       switch (evt->evtType) {
         case UART_RX_SUCCESS:
-            calcIdCmpId(evData->uartRxVal, &bsi->idBit, &bsi->cmpIdBit);
+            bsi->bitReadType = Src(evData->uartRxVal);
             //TODO check for lastDeviceFlag
-            get1BitRom(&romSearchingPrivate);
+            get1BitRom(bsi);
+            printf("bsi->romNo%d\n",*(bsi->romNo));
             if(romSearchingPrivate.bitSearchInformation.noDevice == TRUE){
               //ERROR
               clearGetRom(&romSearchingPrivate);
@@ -129,7 +130,7 @@ void romSearching(Event *evt){
                 static Event generateEvt;
                 generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
                 static RomSearchingEvData evData;
-                evData.romDataBuffer = romSearchingPrivate.romNo;
+                evData.romDataBuffer = romSearchingPrivate.bitSearchInformation.romNo;
                 evData.lastDeviceFlag = lastDeviceFlag;
                 generateEvt.data = &evData;
                 clearGetRom(&romSearchingPrivate);
@@ -163,20 +164,19 @@ void updateSearch(RomSearchingPrivate *romSearchingPrivate){
   (romSearchingPrivate->bitSearchInformation).searchResult = TRUE;
 }
 
-void calcIdCmpId(uint8_t *uartRxVal, int *idBitNumber, int *cmpIdBitNumber){
-  if(*(uartRxVal) == 0xff){
-    *idBitNumber = 1;
+SearchBitType Src(uint8_t *uartRxVal){
+  if((*uartRxVal == 0xff) && (*(uartRxVal+1) == 0xff)){
+    return DEVICE_NOT_THERE;
+  }
+  else if((*uartRxVal != 0xff) && (*(uartRxVal+1) == 0xff)){
+    return BIT_0;
+  }
+  else if ((*uartRxVal == 0xff) && (*(uartRxVal+1) != 0xff)){
+    return BIT_1;
   }
   else{
-    *idBitNumber = 0;
+    return BIT_CONFLICT;
   }
-  if(*(uartRxVal+1) == 0xff){
-    *cmpIdBitNumber = 1;
-  }
-  else{
-    *cmpIdBitNumber = 0;
-  }
-
 }
 
 
@@ -189,8 +189,8 @@ void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
   (romSearchingPrivate->bitSearchInformation).noDevice = FALSE;
 
   romSearchingPrivate->state = ROM_SEARCHING;
-  romSearchingPrivate->romNo = malloc(8);
-  *(romSearchingPrivate->romNo) = 0;
+  (romSearchingPrivate->bitSearchInformation).romNo = malloc(8);
+  *((romSearchingPrivate->bitSearchInformation).romNo) = 0;
   //move txRxlist to next
   //insert romSearching at head
   txRxList.txRxCallbackFuncP = romSearching;
