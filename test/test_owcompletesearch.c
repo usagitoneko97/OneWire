@@ -242,7 +242,7 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_RX_SUCCES
   TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
 }
 
-void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
+void test_romSearching_given_state_SEND_F0_expect_sendf0_expect_install_callback_toSelf(void){
   // evt->evtType =
   Event evt;
   romSearchingPrivate.state = SEND_F0;
@@ -251,7 +251,8 @@ void test_romSearching_given_state_SEND_F0_expect_sendf0(void){
   owUartTxDma_Expect(0xf0);
   romSearching(&evt);
   TEST_ASSERT_EQUAL(ROM_SEARCHING, romSearchingPrivate.state);
-
+  // TEST_ASSERT_NOT_NULL(txRxList.txRxCallbackFuncP);
+  
 }
 void test_calcIdCmpId_given_uartRx_0xff_0xfe_expect_idBit1_cmpIdBit0(void){
   uint8_t uartRxVal_[2];
@@ -291,6 +292,11 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
 
   systemError_Expect(ROM_SEARCH_NO_DEVICE);
   romSearching(&evt);
+
+  TEST_ASSERT_EQUAL(1 ,romSearchingPrivate.bitSearchInformation.idBitNumber);
+  TEST_ASSERT_EQUAL(FALSE ,romSearchingPrivate.bitSearchInformation.noDevice);
+  TEST_ASSERT_EQUAL(0x01, romSearchingPrivate.bitSearchInformation.byteMask);
+
   free(txRxListPointerNext);
 }
 /**
@@ -397,7 +403,4 @@ void test_romSearching_lastBit(void){
   // evt
 }
 
-
-
-//TODO checking for idBit1 and cmpIdBit1
 //TODO checking for error while searching (lastDeviceFlag maybe?) (optional)

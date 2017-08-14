@@ -114,16 +114,13 @@ void romSearching(Event *evt){
             get1BitRom(&romSearchingPrivate);
             if(romSearchingPrivate.bitSearchInformation.noDevice == TRUE){
               //ERROR
+              clearGetRom(&romSearchingPrivate);
+              free(romSearchingPrivate.romNo);
               generateFailEvt.evtType = ROM_SEARCH_NO_DEVICE;
               (txRxList.next)->txRxCallbackFuncP(&generateFailEvt);
             }
             else{
-              printf("romNo: %d\n", *(romSearchingPrivate.romNo+7));
               if(romSearchingPrivate.bitSearchInformation.idBitNumber > 63){
-                //move romNo inside event
-                //clear everything (free)
-                //generate event
-                //call function pointer
                 updateSearch(&romSearchingPrivate);
                 static Event generateEvt;
                 generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
@@ -139,8 +136,6 @@ void romSearching(Event *evt){
                 owUartTxDma(0xf0);
               }
             }
-            //bitSearch();
-            //BitSearchInformation
           break;
         case UART_FRAME_ERROR:
         case UART_TIMEOUT:
@@ -192,6 +187,9 @@ void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
   romSearchingPrivate->state = ROM_SEARCHING;
   romSearchingPrivate->romNo = malloc(8);
   *(romSearchingPrivate->romNo) = 0;
+  //move txRxlist to next
+  //insert romSearching at head
+  txRxList.txRxCallbackFuncP = romSearching;
 }
 
 void doRomSearch(Event *evt){
@@ -201,13 +199,6 @@ void doRomSearch(Event *evt){
       printf("reset device available\n");
       static Event romSearchEv;
       //TODO go tom romSearching
-      break;
-    case RESET_DEVICE_NOT_AVAILABLE:
-    case RESET_DEVICE_UNKNOWN_ERROR:
-      printf("reset device error\n");
-      systemError(evt->evtType);
-      // owSetUpRxIT(uartRxDataBuffer, 2);
-      // dummy();
       break;
     case ROM_SEARCH_SUCCESSFUL:
       //generate event to sent to parent
@@ -221,7 +212,13 @@ void doRomSearch(Event *evt){
       break;
     case UART_TIMEOUT:
     case UART_FRAME_ERROR:
-      systemError(evt->evtType);
+    case RESET_DEVICE_NOT_AVAILABLE:
+    case RESET_DEVICE_UNKNOWN_ERROR:
+    // printf("reset device error\n");
+    systemError(evt->evtType);
+    // owSetUpRxIT(uartRxDataBuffer, 2);
+    // dummy();
+    break;
   }
 }
 

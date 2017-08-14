@@ -38,4 +38,5 @@ void ListAddEmptyLinkedList (LinkedList *list, Item *item);
 void ListAddLinkedList(LinkedList *list, Item *item);
 Item* ListRemoveFirst(LinkedList *list);
 Item* ListRemoveLinkedListByName(char* name, LinkedList *list);
+void pushList(LinkedList *list, Item *listToAdd);
 #endif // _LINKEDLIST_H

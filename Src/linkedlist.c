@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "linkedlist.h"
+#include <stdlib.h>
 
 void ListInit(LinkedList *list){
   list->head = NULL;
@@ -34,6 +35,7 @@ void ListAddLinkedList(LinkedList *list, Item *item){
 }
 
 Item* ListRemoveFirst(LinkedList *list){
+  Item *temp;
   if(list->head == NULL){
     return NULL;
   }
@@ -43,9 +45,11 @@ Item* ListRemoveFirst(LinkedList *list){
       ListInit(list);
     }
     else{
-    list->head = list->head->next;
-    list->len--;
-  }
+      temp = list->head;
+      list->head = list->head->next;
+      list->len--;
+      //TODO free the deleted list
+    }
   }
 }
 Item* ListRemoveLinkedListByName(char* name, LinkedList *list){
@@ -93,5 +97,15 @@ Item* ListRemoveLinkedListByName(char* name, LinkedList *list){
       }
 
     }
+}
 
+void pushList(LinkedList *list, Item *listToAdd){
+  if(list->head == NULL){
+    ListAddEmptyLinkedList(list, listToAdd);
+  }
+  else{
+    listToAdd->next = list->head;
+    list->head = listToAdd;
+    list->len ++;
+  }
 }
