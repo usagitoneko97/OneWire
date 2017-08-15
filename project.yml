@@ -81,5 +81,11 @@
   :enabled:
     - stdout_pretty_tests_report
     - module_generator
+    - gcov
     #- fake_function_framework
+    
+:coverage:
+  :exe: arm-none-eabi-gcov
+  :args:
+  - '-b'
 ...

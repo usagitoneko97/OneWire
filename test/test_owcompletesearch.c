@@ -270,6 +270,7 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxEvData;
+  
   romSearchingPrivate.state = ROM_SEARCHING;
 
   BitSearchInformation *bsi = &romSearchingPrivate.bitSearchInformation;

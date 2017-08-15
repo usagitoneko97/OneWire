@@ -39,38 +39,30 @@ void resetAndVerifyOw(Event *evt){
         switch (evt->evtType){
           case UART_FRAME_ERROR:
           case UART_TIMEOUT:
-            generateResetEv.evtType = evt->evtType;
+            CREATE_EVENT_WITH_TYPE(generateResetEv, evt->evtType);
             unregisterCallback(&list);
-            FuncP functPToCaller;
-            functPToCaller = getCurrentCallback(list);
-            functPToCaller(&generateResetEv);
+            GET_CALLBACK(list, generateResetEv);
             break;
           case UART_RX_SUCCESS:
             //checking..
 
-            tempUartRxVal = *(((TxRxCpltEvData*)evt->data)->uartRxVal);
+            tempUartRxVal = GET_UART_RX_VAL(evt);
             if(tempUartRxVal == 0xF0){
-              generateResetEv.evtType = RESET_DEVICE_NOT_AVAILABLE;
+              CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_NOT_AVAILABLE);
               unregisterCallback(&list);
-              FuncP functPToCaller;
-              functPToCaller = getCurrentCallback(list);
-              functPToCaller(&generateResetEv);
+              GET_CALLBACK(list, generateResetEv);
           	}
           	// else if(data >= 0x10 && data <= 0x90){
           	/*if the higher bit has response */
             else if ((tempUartRxVal & 0x0f) == 0x0 && (tempUartRxVal & 0xf0) != 0xf0){
-              generateResetEv.evtType = RESET_DEVICE_AVAILABLE;
+              CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_AVAILABLE);
               unregisterCallback(&list);
-              FuncP functPToCaller;
-              functPToCaller = getCurrentCallback(list);
-              functPToCaller(&generateResetEv);
+              GET_CALLBACK(list, generateResetEv);
           	}
           	else{
-              generateResetEv.evtType = RESET_DEVICE_UNKNOWN_ERROR;
+              CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_UNKNOWN_ERROR);
               unregisterCallback(&list);
-              FuncP functPToCaller;
-              functPToCaller = getCurrentCallback(list);
-              functPToCaller(&generateResetEv);
+              GET_CALLBACK(list, generateResetEv);
           	}
             break;
           }
@@ -97,9 +89,7 @@ void romSearching(Event *evt){
       else {
         generateFailEvt.evtType = UNKNOWN_ERROR;
         //TODO check for null
-        FuncP functPToCaller;
-        functPToCaller = getCurrentCallback(&list);
-        functPToCaller(&generateFailEvt);
+        GET_CALLBACK(list, generateFailEvt)
       }
 
       break;
@@ -113,26 +103,22 @@ void romSearching(Event *evt){
               //ERROR
               clearGetRom(&romSearchingPrivate);
               free(romSearchingPrivate.romNo);
-              generateFailEvt.evtType = ROM_SEARCH_NO_DEVICE;
+              CREATE_EVENT_WITH_TYPE(generateFailEvt, ROM_SEARCH_NO_DEVICE);
               //TODO check for null
               unregisterCallback(&list);
-              FuncP functPToCaller;
-              functPToCaller = getCurrentCallback(&list);
-              functPToCaller(&generateFailEvt);
+              GET_CALLBACK(list, generateFailEvt);
             }
             else{
               if(romSearchingPrivate.bitSearchInformation.searchResult == TRUE){
                 static Event generateEvt;
-                generateEvt.evtType = ROM_SEARCH_SUCCESSFUL;
+                CREATE_EVENT_WITH_TYPE(generateEvt, ROM_SEARCH_SUCCESSFUL);
                 static RomSearchingEvData evData;
                 evData.romDataBuffer = romSearchingPrivate.bitSearchInformation.romNo;
                 evData.lastDeviceFlag = lastDeviceFlag;
                 generateEvt.data = &evData;
                 clearGetRom(&romSearchingPrivate);
                 unregisterCallback(&list);
-                FuncP functPToCaller;
-                functPToCaller = getCurrentCallback(&list);
-                functPToCaller(&generateEvt);
+                GET_CALLBACK(list, generateEvt);
               }
               else{
                 owSetUpRxIT(uartRxDataBuffer, 2);
@@ -143,8 +129,8 @@ void romSearching(Event *evt){
           break;
         case UART_FRAME_ERROR:
         case UART_TIMEOUT:
-          generateFailEvt.evtType = evt->evtType;
-          txRxList.next->txRxCallbackFuncP(&generateFailEvt);
+          CREATE_EVENT_WITH_TYPE(generateFailEvt, evt->evtType);
+          GET_CALLBACK(list, generateFailEvt);
           //TODO
           //free romNo
           break;
@@ -210,25 +196,16 @@ void doRomSearch(Event *evt){
       romSearching(&doRomSearchEv);
       break;
     case ROM_SEARCH_SUCCESSFUL:
-      //generate event to sent to parent
-      // doRomSearchPrivate.romVal = malloc(2);
       doRomSearchPrivate.romVal = ((RomSearchingEvData*)(evt->data))->romDataBuffer;
-      printf("Rom Search success!\n");
       break;
     case ROM_SEARCH_NO_DEVICE:
-      systemError(evt->evtType);
-      printf("Rom search no device\n");
-      break;
     case UART_TIMEOUT:
     case UART_FRAME_ERROR:
     case RESET_DEVICE_NOT_AVAILABLE:
     case RESET_DEVICE_UNKNOWN_ERROR:
     case UNKNOWN_ERROR:
-    // printf("reset device error\n");
       systemError(evt->evtType);
-    // owSetUpRxIT(uartRxDataBuffer, 2);
-    // dummy();
-    break;
+      break;
   }
 }
 
@@ -246,5 +223,6 @@ void clearGetRom(RomSearchingPrivate *romSearchingPrivate){
 
 
 int initConvertT(){
+  //TODO implement initConvertT command
   return 0;
 }

@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include "callback.h"
 #include "linkedlist.h"
-// #define NO_OF_DEVICE  4
-
 
 
 unsigned char bitPos = 0x01;
@@ -85,25 +83,6 @@ void init64BitId(uint8_t *id,uint8_t *cmp_id, uint8_t startBit) {
   bitPos = startBit;
 }
 
-uint8_t fakeRead(int numOfCalls){
-    uint8_t resultBit;
-    if(!lastDeviceFlag){
-      while(bitPos < 64){
-        switch (state) {
-          case 0: resultBit = fakeIdBits[bitPos];
-                  state = 1;
-                  return resultBit;
-                  break;
-          case 1: resultBit = fakeCmpIdBits[bitPos++];
-                  state = 0;
-                  return resultBit;
-                  break;
-        }
-      }
-  }
-
-
-}
 
 void fakeWrite(unsigned char byte, int numOfCalls){
 
@@ -112,7 +91,6 @@ void fakeWrite(unsigned char byte, int numOfCalls){
 
 void setUp(void)
 {
-  Read_StubWithCallback(fakeRead);
   write_StubWithCallback(fakeWrite);
 }
 
@@ -138,25 +116,7 @@ void initSearchTest(BitSearchInformation *innerVAR_OW){
   innerVAR_OW->cmpIdBit = -1;
   innerVAR_OW->searchDirection = 0;
 }
-/*Testing return value of fake_read is correct*/
-void test_fake_read_return_idBit_cmpIdBit(void){
-//  char id[]
-  uint8_t fakeIdBitVal []=       {1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1};
-  uint8_t fakeCmpIdBitVal[] =   {0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1};
-  init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
 
-  TEST_ASSERT_EQUAL(1, fakeIdBits[0]);
-  TEST_ASSERT_EQUAL(0, fakeCmpIdBits[0]);
-  lastDeviceFlag = FALSE;
-  TEST_ASSERT_EQUAL(1, fakeRead(0));
-  TEST_ASSERT_EQUAL(0, fakeRead(0));
-
-  TEST_ASSERT_EQUAL(1, fakeRead(0));
-  TEST_ASSERT_EQUAL(1, fakeRead(0));
-
-  TEST_ASSERT_EQUAL(0, fakeRead(0));
-  TEST_ASSERT_EQUAL(1, fakeRead(0));
-}
 
 /********************************************************
  * GIVEN: BIT_CONFLICT                                  *
@@ -361,21 +321,7 @@ void test_process1BitRom_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_
 
 }
 
-/**
- * idBit = 1
- * cmpIdBit = 1
- *
- * expected:
- * _firstSearch(1) return FALSE
- */
-void test_search_bit_given_idBit_cmp_idBit_11_expect_SearchFail(void)
-{
-  /*reset bit and byte pos in return value of OW  */
-  uint8_t fakeIdBitVal []=       {1, 0, 1, 0, 1, 1, 0};
-  uint8_t fakeCmpIdBitVal[] =   {1, 0, 0, 1, 0, 0, 1};
-  init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-  TEST_ASSERT_EQUAL(FALSE, _firstSearch(1));
-}
+
 
 /*Given these data
  *
@@ -609,12 +555,6 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    /*reset the variables*/
    uint8_t fakeIdBitVal []=       {0, 1, 1, 0, 0, 1, 0, 0};
    uint8_t fakeCmpIdBitVal[] =   {0, 0, 0, 1, 1, 0, 1, 1};
-   init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-
-   TEST_ASSERT_EQUAL(TRUE, _firstSearch(1));
-   TEST_ASSERT_EQUAL_INT8(0x26, romNo[0]); //0010 0110
-   TEST_ASSERT_EQUAL(1, lastDiscrepancy);
-   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
 
    owLength = 8;
    BitSearchInformation bsi;
