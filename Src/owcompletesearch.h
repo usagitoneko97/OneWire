@@ -1,6 +1,7 @@
 #ifndef _OWCOMPLETESEARCH_H
 #define _OWCOMPLETESEARCH_H
 #include <stdint.h>
+
 #define SEND_ZERO		0x0
 #define SEND_ONE		0xff
 #define RESET     0
@@ -25,6 +26,7 @@ typedef enum{
   RESET_DEVICE_UNKNOWN_ERROR = 7,
   ROM_SEARCH_SUCCESSFUL = 8,
   ROM_SEARCH_NO_DEVICE = 9,
+  INITIATE_RESET = 10,
 }EventType;
 
 

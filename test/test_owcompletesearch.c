@@ -148,6 +148,16 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
   TEST_ASSERT_EQUAL(FALSE, owHandler(&eventOw)); //callback of uartTx from reset
 }
 
+void test_resetAndVerifyOw_given_state_RESET_OW(void){
+  Event eventFromDoRomSearch;
+  eventFromDoRomSearch.evtType = INITIATE_RESET;
+  owResetPrivate.state = RESET_OW;
+  owSetUpRxIT_Expect(uartRxDataBuffer, 1);
+  owUartTxDma_Expect(0xf0);
+  owUartTxDma_Expect(0xf0);
+  resetAndVerifyOw(&eventFromDoRomSearch);
+}
+
 void test_resetOw_given_state_REPLY_OW_event_UART_FRAME_ERROR_expect_systemError(void){
   /*Mock*/
   Event evt;

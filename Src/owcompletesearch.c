@@ -5,6 +5,7 @@
 #include "search.h"
 #include <stdlib.h>
 #include "linkedlist.h"
+#include "callback.h"
 int result_reset;
 uint8_t result ;
 uint8_t txdata;
@@ -61,7 +62,9 @@ void resetAndVerifyOw(Event *evt){
     static Event generateResetEv;
     switch (owResetPrivate.state) {
       case RESET_OW:
-        //register callback
+        registerCallback(resetAndVerifyOw, &list);
+        owSetUpRxIT(uartRxDataBuffer, 1);
+        owUartTxDma(0xf0);
         break;
       case REPLY_OW:
         owResetPrivate.state = RESET_OW;
@@ -106,7 +109,8 @@ void romSearching(Event *evt){
       initGetBitRom(&romSearchingPrivate);
       uartTxOw(sendF0_txData1, 8);
       owSetUpRxIT(uartRxDataBuffer, 2);
-      owUartTxDma(0xf0);
+      owUartTxDma(0xff);
+      owUartTxDma(0xff);
 
       break;
     case ROM_SEARCHING:
@@ -137,7 +141,8 @@ void romSearching(Event *evt){
               }
               else{
                 owSetUpRxIT(uartRxDataBuffer, 2);
-                owUartTxDma(0xf0);
+                owUartTxDma(0xff);
+                owUartTxDma(0xff);
               }
             }
           break;
