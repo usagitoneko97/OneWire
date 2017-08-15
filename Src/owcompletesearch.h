@@ -27,6 +27,7 @@ typedef enum{
   ROM_SEARCH_SUCCESSFUL = 8,
   ROM_SEARCH_NO_DEVICE = 9,
   INITIATE_RESET = 10,
+  UNKNOWN_ERROR = 11,
 }EventType;
 
 

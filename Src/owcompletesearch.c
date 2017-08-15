@@ -119,11 +119,23 @@ void romSearching(Event *evt){
   TxRxCpltEvData *evData = (TxRxCpltEvData*)(evt->data);
   switch (romSearchingPrivate.state) {
     case SEND_F0:
-      initGetBitRom(&romSearchingPrivate);
-      uartTxOw(sendF0_txData1, 8);
-      owSetUpRxIT(uartRxDataBuffer, 2);
-      owUartTxDma(0xff);
-      owUartTxDma(0xff);
+      if(evt->evtType == INITIATE_RESET){
+        registerCallback(romSearching, &list);
+        initGetBitRom(&romSearchingPrivate);
+        uartTxOw(sendF0_txData1, 8);
+        owSetUpRxIT(uartRxDataBuffer, 2);
+        owUartTxDma(0xff);
+        owUartTxDma(0xff);
+      }
+      else {
+        //TODO test UNKNOWN_ERROR
+        generateFailEvt.evtType = UNKNOWN_ERROR;
+        //TODO check for null
+        unregisterCallback(&list);
+        FuncP functPToCaller;
+        functPToCaller = getCurrentCallback(list);
+        functPToCaller(&generateFailEvt);
+      }
 
       break;
     case ROM_SEARCHING:
@@ -247,8 +259,10 @@ void doRomSearch(Event *evt){
   switch (evt->evtType) {
     case RESET_DEVICE_AVAILABLE:
       printf("reset device available\n");
-      static Event romSearchEv;
+      Event romSearchEv;
       //TODO go tom romSearching
+      romSearchEv.evtType = INITIATE_RESET;
+      romSearching(&romSearchEv);
       break;
     case ROM_SEARCH_SUCCESSFUL:
       //generate event to sent to parent
@@ -264,6 +278,7 @@ void doRomSearch(Event *evt){
     case UART_FRAME_ERROR:
     case RESET_DEVICE_NOT_AVAILABLE:
     case RESET_DEVICE_UNKNOWN_ERROR:
+    case UNKNOWN_ERROR:
     // printf("reset device error\n");
     systemError(evt->evtType);
     // owSetUpRxIT(uartRxDataBuffer, 2);

@@ -199,6 +199,15 @@ void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(voi
   TEST_ASSERT_EQUAL_PTR(doRomSearch, headCallbackList->txRxCallbackFuncP);
 }
 
+/**
+ * when resetAndVerifyOw receive that the device is there, will initiate romSearching,
+ * where the first task of romSearching is sending f0
+ *
+ * Expected: registercallback of romSearching
+ *           uartTx f0
+ *           uart set up rx interrupt 2 bit
+ *           uart tx 2 bit of data
+ */
 void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCESS_expect_DEVICE_AVAILABLE(void){
   Event evt;
   TxRxCpltEvData  txRxCpltEvData;
@@ -213,8 +222,16 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCES
   registerCallback(doRomSearch, &list);
   registerCallback(resetAndVerifyOw, &list);
 
+  uartTxOw_Expect(sendF0txDataTest, 8);
+  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owUartTxDma_Expect(0xff);
+  owUartTxDma_Expect(0xff);
+
   resetAndVerifyOw(&evt);
   TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
+  Item *itemHead = list.head;
+  TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
+  TEST_ASSERT_EQUAL_PTR(romSearching, headCallbackList->txRxCallbackFuncP);
   free(txRxCpltEvData.uartRxVal);
 
   //TODO test Asserts
@@ -320,11 +337,6 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
 
   systemError_Expect(ROM_SEARCH_NO_DEVICE);
   romSearching(&evt);
-
-/*  TEST_ASSERT_EQUAL(1 ,romSearchingPrivate.bitSearchInformation.idBitNumber);
-  TEST_ASSERT_EQUAL(FALSE ,romSearchingPrivate.bitSearchInformation.noDevice);
-  TEST_ASSERT_EQUAL(0x01, romSearchingPrivate.bitSearchInformation.byteMask);*/
-
 }
 /**
  * NOTE this is the first bit search where the idBitNumber for first search is 1
