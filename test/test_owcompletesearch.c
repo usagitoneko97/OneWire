@@ -151,7 +151,7 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
 
 void test_resetAndVerifyOw_given_state_RESET_OW(void){
   Event eventFromDoRomSearch;
-  eventFromDoRomSearch.evtType = INITIATE_RESET;
+  eventFromDoRomSearch.evtType = INITIATE_COMMAND;
   owResetPrivate.state = RESET_OW;
   owSetUpRxIT_Expect(uartRxDataBuffer, 1);
   owUartTxDma_Expect(0xf0);
@@ -233,8 +233,6 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCES
   TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
   TEST_ASSERT_EQUAL_PTR(romSearching, headCallbackList->txRxCallbackFuncP);
   free(txRxCpltEvData.uartRxVal);
-
-  //TODO test Asserts
 }
 
 void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xf0_event_UART_RX_SUCCESS_expect_DEVICE_NOT_AVAILABLE(void){
@@ -429,13 +427,14 @@ void test_romSearching_lastBit(void){
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
   TEST_ASSERT_EQUAL(0x80, *(doRomSearchPrivate.romVal + 7));
   //TEST_ASSERT_EQUAL(128, *(romSearchingPrivate.romNo + 7));
+  //TODO test it generte
   free(txRxEvData.uartRxVal);
   // evt.data =
   // evt
 }
 
 /**
- * test error generated when caller didnt give INITIATE_RESET
+ * test error generated when caller didnt give INITIATE_COMMAND
  */
 void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(void){
   Event unknownEvent;
@@ -451,3 +450,108 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
   TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
   TEST_ASSERT_EQUAL_PTR(doRomSearch, headCallbackList->txRxCallbackFuncP);
 }
+
+/**
+ * final demonstration on the whole process
+ */
+ void test_doRomSearch_complete_process(){
+
+   //===========================================================
+   // clearAllState();
+   ListInit(&list);
+
+   Event initiateRomSearch;
+   initiateRomSearch.evtType = START_ROM_SEARCH;
+   owSetUpRxIT_Expect(uartRxDataBuffer, 1);
+   owUartTxDma_Expect(0xf0);
+   doRomSearch(&initiateRomSearch);
+   Item *itemHead = list.head;
+   TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
+   TEST_ASSERT_EQUAL_PTR(resetAndVerifyOw,headCallbackList->txRxCallbackFuncP);
+   TxRxCallbackList *nextCallbackList = (TxRxCallbackList*)(itemHead->next->data);
+   TEST_ASSERT_EQUAL_PTR(doRomSearch, nextCallbackList->txRxCallbackFuncP);
+   TEST_ASSERT_EQUAL(REPLY_OW, owResetPrivate.state);
+
+   //=============================================================
+   Event evt;
+   TxRxCpltEvData txRxCpltEvData;
+   (txRxCpltEvData.uartRxVal) = (uint8_t*)malloc(1);
+   *(txRxCpltEvData.uartRxVal) = 0xe0;
+   txRxCpltEvData.length = 1;
+   evt.evtType = UART_RX_SUCCESS;
+   evt.data = &txRxCpltEvData;
+   owResetPrivate.state = REPLY_OW;
+
+   uartTxOw_Expect(sendF0txDataTest, 8);
+   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+   owUartTxDma_Expect(0xff);
+   owUartTxDma_Expect(0xff);
+
+   resetAndVerifyOw(&evt);
+   Item *itemHead1 = list.head;
+   TxRxCallbackList *headCallbackList1 = (TxRxCallbackList*)(itemHead1->data);
+
+   TEST_ASSERT_EQUAL(ROM_SEARCHING, romSearchingPrivate.state);
+   TEST_ASSERT_EQUAL_PTR(romSearching, headCallbackList1->txRxCallbackFuncP);
+   TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
+   free(txRxCpltEvData.uartRxVal);
+   //================================================================
+   //Assume data 3 bits = 010  ----------- Device 1.
+   //                     011  ----------- Device 2.
+   //first interrupt correspond to the first bit [0]
+   //first bit of the both devices are conflict, therefore result in
+   //uartRxVal = 0xfe, 0xfe
+   owLength = 3; //assume size of the rom is 3 bits
+   Event romSearchingEv ;
+   romSearchingEv.evtType = UART_RX_SUCCESS;
+
+   TxRxCpltEvData txRxEvData;
+   txRxEvData.uartRxVal = malloc(2);
+   *(txRxEvData.uartRxVal) = 0xfe;
+   *(txRxEvData.uartRxVal + 1) = 0xfe;
+   romSearchingEv.data = &txRxEvData;
+   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+   owUartTxDma_Expect(0xff);
+   owUartTxDma_Expect(0xff);
+   romSearching(&romSearchingEv);
+   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.idBitNumber);
+   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.lastZero);
+   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romNo[0]);
+   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+   free(txRxEvData.uartRxVal);
+   //=====================================================================
+   //second run correspond to the second bit [1]
+   //second bit both device is 1, there is no conflict and uartRxval is
+   //0xff and 0xfe
+   romSearchingEv.evtType = UART_RX_SUCCESS;
+   txRxEvData.uartRxVal = malloc(2);
+   *(txRxEvData.uartRxVal) = 0xff;
+   *(txRxEvData.uartRxVal + 1) = 0xfe;
+   romSearchingEv.data = &txRxEvData;
+   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+   owUartTxDma_Expect(0xff);
+   owUartTxDma_Expect(0xff);
+   romSearching(&romSearchingEv);
+   TEST_ASSERT_EQUAL(3, romSearchingPrivate.bitSearchInformation.idBitNumber);
+   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.lastZero);
+   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.romNo[0]);
+   TEST_ASSERT_EQUAL(FALSE, romSearchingPrivate.bitSearchInformation.searchResult);
+   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+   free(txRxEvData.uartRxVal);
+
+   //=====================================================================
+   romSearchingEv.evtType = UART_RX_SUCCESS;
+   txRxEvData.uartRxVal = malloc(2);
+   *(txRxEvData.uartRxVal) = 0xfe;
+   *(txRxEvData.uartRxVal + 1) = 0xff;
+   romSearchingEv.data = &txRxEvData;
+
+   romSearching(&romSearchingEv);
+   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBitNumber);
+   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.lastZero);
+   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.romNo[0]);
+   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+   TEST_ASSERT_EQUAL(2, *(doRomSearchPrivate.romVal));
+   //the result (which is 2) is found
+
+ }

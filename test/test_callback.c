@@ -19,6 +19,10 @@ void anotherFunction(Event *evt){
 
 }
 
+void finalFunction(Event *evt){
+
+}
+
 void test_registerCallback_given_emptyList(void){
   LinkedList list;
   ListInit(&list);
@@ -72,4 +76,19 @@ void test_getCurrentCallback_given_NULL(void){
   ListInit(&list);
   FuncP tempFuncP = getCurrentCallback();
   TEST_ASSERT_NULL(tempFuncP);
+}
+
+void test_given_register_then_unregister_then_register(){
+  LinkedList list;
+  ListInit(&list);
+  registerCallback(someFunction, &list);
+  registerCallback(anotherFunction, &list);
+
+  unregisterCallback(&list);
+  registerCallback(finalFunction, &list);
+
+  Item *itemHead = list.head;
+  TxRxCallbackList *callBackList5 = (TxRxCallbackList*)(itemHead->data);
+  TEST_ASSERT_EQUAL_PTR(finalFunction, callBackList5->txRxCallbackFuncP);
+
 }

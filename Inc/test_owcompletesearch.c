@@ -150,7 +150,7 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
 
 void xtest_resetAndVerifyOw_given_state_RESET_OW(void){
   Event eventFromDoRomSearch;
-  eventFromDoRomSearch.evtType = INITIATE_RESET;
+  eventFromDoRomSearch.evtType = INITIATE_COMMAND;
   owResetPrivate.state = RESET_OW;
   owSetUpRxIT_Expect(uartRxDataBuffer, 1);
   owUartTxDma_Expect(0xf0);
