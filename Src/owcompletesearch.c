@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "linkedlist.h"
 #include "callback.h"
+
 int result_reset;
 uint8_t result ;
 uint8_t txdata;
@@ -62,7 +63,7 @@ void resetAndVerifyOw(Event *evt){
     static Event generateResetEv;
     switch (owResetPrivate.state) {
       case RESET_OW:
-        registerCallback(resetAndVerifyOw, &list);
+        // registerCallback(resetAndVerifyOw, &list);
         owSetUpRxIT(uartRxDataBuffer, 1);
         owUartTxDma(0xf0);
         break;
