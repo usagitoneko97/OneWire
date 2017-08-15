@@ -131,7 +131,6 @@ void romSearching(Event *evt){
         //TODO test UNKNOWN_ERROR
         generateFailEvt.evtType = UNKNOWN_ERROR;
         //TODO check for null
-        unregisterCallback(&list);
         FuncP functPToCaller;
         functPToCaller = getCurrentCallback(list);
         functPToCaller(&generateFailEvt);

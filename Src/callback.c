@@ -19,6 +19,9 @@ void unregisterCallback(LinkedList *list){
 
 FuncP getCurrentCallback(LinkedList *list){
   Item *itemHead = list->head;
+  if(itemHead == NULL){
+    return NULL;
+  }
   TxRxCallbackList *callBackList5 = (TxRxCallbackList*)(itemHead->data);
   return callBackList5->txRxCallbackFuncP;
 }

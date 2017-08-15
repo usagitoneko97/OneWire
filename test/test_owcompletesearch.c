@@ -434,5 +434,20 @@ void test_romSearching_lastBit(void){
   // evt
 }
 
+/**
+ * test error generated when caller didnt give INITIATE_RESET
+ */
+void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(void){
+  Event unknownEvent;
+  unknownEvent.evtType = UNKNOWN_ERROR;
+  romSearchingPrivate.state = SEND_F0;
 
-//TODO checking for error while searching (lastDeviceFlag maybe?) (optional)
+  ListInit(&list);
+  registerCallback(doRomSearch, &list);
+  systemError_Expect(UNKNOWN_ERROR);
+
+  romSearching(&unknownEvent);
+  Item *itemHead = list.head;
+  TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
+  TEST_ASSERT_EQUAL_PTR(doRomSearch, headCallbackList->txRxCallbackFuncP);
+}
