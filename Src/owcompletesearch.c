@@ -63,7 +63,7 @@ void resetAndVerifyOw(Event *evt){
     static Event generateResetEv;
     switch (owResetPrivate.state) {
       case RESET_OW:
-        // registerCallback(resetAndVerifyOw, &list);
+        registerCallback(resetAndVerifyOw, &list);
         owSetUpRxIT(uartRxDataBuffer, 1);
         owUartTxDma(0xf0);
         break;
@@ -74,7 +74,10 @@ void resetAndVerifyOw(Event *evt){
           case UART_TIMEOUT:
             //FIXME funcPointer go to parent, parent will call systemError
             generateResetEv.evtType = evt->evtType;
-            txRxList.next->txRxCallbackFuncP(&generateResetEv);
+            unregisterCallback(&list);
+            FuncP functPToCaller;
+            functPToCaller = getCurrentCallback(list);
+            functPToCaller(&generateResetEv);
             break;
           case UART_RX_SUCCESS:
             //checking..
@@ -82,17 +85,26 @@ void resetAndVerifyOw(Event *evt){
             tempUartRxVal = *(((TxRxCpltEvData*)evt->data)->uartRxVal);
             if(tempUartRxVal == 0xF0){
               generateResetEv.evtType = RESET_DEVICE_NOT_AVAILABLE;
-              txRxList.next->txRxCallbackFuncP(&generateResetEv);
+              unregisterCallback(&list);
+              FuncP functPToCaller;
+              functPToCaller = getCurrentCallback(list);
+              functPToCaller(&generateResetEv);
           	}
           	// else if(data >= 0x10 && data <= 0x90){
           	/*if the higher bit has response */
             else if ((tempUartRxVal & 0x0f) == 0x0 && (tempUartRxVal & 0xf0) != 0xf0){
               generateResetEv.evtType = RESET_DEVICE_AVAILABLE;
-              txRxList.next->txRxCallbackFuncP(&generateResetEv);
+              unregisterCallback(&list);
+              FuncP functPToCaller;
+              functPToCaller = getCurrentCallback(list);
+              functPToCaller(&generateResetEv);
           	}
           	else{
               generateResetEv.evtType = RESET_DEVICE_UNKNOWN_ERROR;
-              txRxList.next->txRxCallbackFuncP(&generateResetEv);
+              unregisterCallback(&list);
+              FuncP functPToCaller;
+              functPToCaller = getCurrentCallback(list);
+              functPToCaller(&generateResetEv);
           	}
             break;
           }
@@ -126,8 +138,10 @@ void romSearching(Event *evt){
               free(romSearchingPrivate.romNo);
               generateFailEvt.evtType = ROM_SEARCH_NO_DEVICE;
               //TODO check for null
-              // ((TxRxCallbackList*)(((list.head)->next)->data))->txRxCallbackFuncP(&generateFailEvt);
-              (txRxList.next)->txRxCallbackFuncP(&generateFailEvt);
+              unregisterCallback(&list);
+              FuncP functPToCaller;
+              functPToCaller = getCurrentCallback(list);
+              functPToCaller(&generateFailEvt);
             }
             else{
               if(romSearchingPrivate.bitSearchInformation.searchResult == TRUE){
@@ -138,7 +152,10 @@ void romSearching(Event *evt){
                 evData.lastDeviceFlag = lastDeviceFlag;
                 generateEvt.data = &evData;
                 clearGetRom(&romSearchingPrivate);
-                (txRxList.next)->txRxCallbackFuncP(&generateEvt); //go back to parent
+                unregisterCallback(&list);
+                FuncP functPToCaller;
+                functPToCaller = getCurrentCallback(list);
+                functPToCaller(&generateEvt);
               }
               else{
                 owSetUpRxIT(uartRxDataBuffer, 2);

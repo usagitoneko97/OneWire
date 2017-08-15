@@ -6,7 +6,6 @@
 #include "owvariable.h"
 #include "linkedlist.h"
 #include <stdlib.h>
-#include "callback.h"
 
 
 uint8_t owRxVal;
@@ -149,25 +148,25 @@ void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
   TEST_ASSERT_EQUAL(FALSE, owHandler(&eventOw)); //callback of uartTx from reset
 }
 
-void test_resetAndVerifyOw_given_state_RESET_OW(void){
+void xtest_resetAndVerifyOw_given_state_RESET_OW(void){
   Event eventFromDoRomSearch;
   eventFromDoRomSearch.evtType = INITIATE_RESET;
   owResetPrivate.state = RESET_OW;
   owSetUpRxIT_Expect(uartRxDataBuffer, 1);
   owUartTxDma_Expect(0xf0);
+  owUartTxDma_Expect(0xf0);
   resetAndVerifyOw(&eventFromDoRomSearch);
-
-  Item *itemHead = list.head;
-  TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
-  TEST_ASSERT_EQUAL_PTR(resetAndVerifyOw, headCallbackList->txRxCallbackFuncP);
 }
 
 void test_resetOw_given_state_REPLY_OW_event_UART_FRAME_ERROR_expect_systemError(void){
   /*Mock*/
   Event evt;
-  ListInit(&list);
-  registerCallback(doRomSearch, &list);
-  registerCallback(resetAndVerifyOw, &list);
+
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
+
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
 
   evt.evtType = UART_FRAME_ERROR;
   evt.data = NULL;
@@ -175,9 +174,6 @@ void test_resetOw_given_state_REPLY_OW_event_UART_FRAME_ERROR_expect_systemError
   systemError_Expect(evt.evtType);
 
   resetAndVerifyOw(&evt);
-  Item *itemHead = list.head;
-  TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
-  TEST_ASSERT_EQUAL_PTR(doRomSearch, headCallbackList->txRxCallbackFuncP);
   //free(txRxListPointerNext);
 }
 
@@ -187,35 +183,32 @@ void test_resetOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_systemError(voi
   evt.data = NULL;
   owResetPrivate.state = REPLY_OW;
 
-  ListInit(&list);
-  registerCallback(doRomSearch, &list);
-  registerCallback(resetAndVerifyOw, &list);
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
 
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
   systemError_Expect(UART_TIMEOUT);
 
   resetAndVerifyOw(&evt);
-  Item *itemHead = list.head;
-  TxRxCallbackList *headCallbackList = (TxRxCallbackList*)(itemHead->data);
-  TEST_ASSERT_EQUAL_PTR(doRomSearch, headCallbackList->txRxCallbackFuncP);
 }
 
 void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCESS_expect_DEVICE_AVAILABLE(void){
   Event evt;
   TxRxCpltEvData  txRxCpltEvData;
-  (txRxCpltEvData.uartRxVal) = (uint8_t*)malloc(1);
   *(txRxCpltEvData.uartRxVal) = 0xe0;
   txRxCpltEvData.length = 1;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxCpltEvData;
   owResetPrivate.state = REPLY_OW;
-
-  ListInit(&list);
-  registerCallback(doRomSearch, &list);
-  registerCallback(resetAndVerifyOw, &list);
+  TxRxCallbackList txRxNext;
+  TxRxCallbackList *txRxListPointer;
+  txRxListPointer = &txRxNext;
+  txRxListPointer->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointer;
 
   resetAndVerifyOw(&evt);
   TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
-  free(txRxCpltEvData.uartRxVal);
 
   //TODO test Asserts
 }
@@ -223,47 +216,57 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCES
 void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xf0_event_UART_RX_SUCCESS_expect_DEVICE_NOT_AVAILABLE(void){
   Event evt;
   TxRxCpltEvData  txRxCpltEvData;
-  (txRxCpltEvData.uartRxVal) = (uint8_t*)malloc(1);
   *(txRxCpltEvData.uartRxVal) = 0xf0;
   txRxCpltEvData.length = 1;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxCpltEvData;
   owResetPrivate.state = REPLY_OW;
 
-  ListInit(&list);
-  registerCallback(doRomSearch, &list);
-  /*resetAndVerifyOw initially will register his own self*/
-  registerCallback(resetAndVerifyOw, &list);
+  TxRxCallbackList txRxNext;
+  TxRxCallbackList *txRxListPointer;
+  txRxListPointer = &txRxNext;
+  txRxListPointer->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointer;
 
   systemError_Expect(RESET_DEVICE_NOT_AVAILABLE);
   resetAndVerifyOw(&evt);
   TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
-  free(txRxCpltEvData.uartRxVal);
 }
 
 void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_RX_SUCCESS_expect_DEVICE_UNKNOWN_ERROR(void){
   Event evt;
   TxRxCpltEvData  txRxCpltEvData;
-  (txRxCpltEvData.uartRxVal) = (uint8_t*)malloc(1);
   *(txRxCpltEvData.uartRxVal) = 0xdf;
   txRxCpltEvData.length = 1;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxCpltEvData;
   owResetPrivate.state = REPLY_OW;
-
-  ListInit(&list);
-  registerCallback(doRomSearch, &list);
-  registerCallback(resetAndVerifyOw, &list);
+  TxRxCallbackList txRxNext;
+  TxRxCallbackList *txRxListPointer;
+  txRxListPointer = &txRxNext;
+  txRxListPointer->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointer;
 
   systemError_Expect(RESET_DEVICE_UNKNOWN_ERROR);
   resetAndVerifyOw(&evt);
   TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
-  free(txRxCpltEvData.uartRxVal);
-
 }
 
+void xtest_romSearching_given_state_SEND_F0_expect_sendf0_expect_install_callback_toSelf(void){
+  // evt->evtType =
+  Event evt;
+  romSearchingPrivate.state = SEND_F0;
+  uartTxOw_Expect(sendF0txDataTest, 8);
+  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owUartTxDma_Expect(0xf0);
+  owUartTxDma_Expect(0xf0);
+  romSearching(&evt);
+  TEST_ASSERT_EQUAL(ROM_SEARCHING, romSearchingPrivate.state);
+  // TEST_ASSERT_NOT_NULL(txRxList.txRxCallbackFuncP);
+
+}
 //============================================================================
-/*intepretSearchBit function test*/
+/*intepretSearchBit functino test*/
 void test_intepretSearchBit_given_uartRx_0xff_0xfe_expect_BIT_1(void){
   uint8_t uartRxVal_[2];
   uartRxVal_[0] = 0xff;
@@ -307,9 +310,31 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
   *(txRxEvData.uartRxVal) = 0xff;
   *(txRxEvData.uartRxVal + 1) = 0xff;
 
+  //FIXME delete this function pointer
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
+
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
+
+  /*create Item*/
+  TxRxCallbackList *doRomSearchCallb;
+  TxRxCallbackList *romSearchingCallb;
+  doRomSearchCallb = malloc(sizeof(doRomSearchCallb));
+  romSearchingCallb = malloc(sizeof(romSearchingCallb));
+  doRomSearchCallb->txRxCallbackFuncP = doRomSearch;
+  romSearchingCallb->txRxCallbackFuncP = romSearching;
+
+  Item itemDoRomSearch;
+  Item itemRomSearching;
+  itemDoRomSearch.data = doRomSearchCallb;
+  itemRomSearching.data = romSearchingCallb;
+
+  LinkedList list;
   ListInit(&list);
-  registerCallback(doRomSearch, &list);
-  registerCallback(romSearching, &list);
+  pushList(&list, &itemDoRomSearch);
+  pushList(&list, &itemRomSearching);
+
 
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
@@ -406,9 +431,12 @@ void test_romSearching_lastBit(void){
   romSearchingPrivate.bitSearchInformation.idBitNumber = 64; //the last bit
   romSearchingPrivate.bitSearchInformation.byteMask = 0x80;
 
-  ListInit(&list);
-  registerCallback(doRomSearch, &list);
-  registerCallback(romSearching, &list);
+  TxRxCallbackList *txRxListPointerNext;
+  txRxListPointerNext = malloc(sizeof(txRxListPointerNext));
+
+  txRxListPointerNext->txRxCallbackFuncP = doRomSearch;
+  txRxList.next = txRxListPointerNext;
+
 
   romSearching(&evt);
   //TODO
@@ -418,9 +446,66 @@ void test_romSearching_lastBit(void){
   TEST_ASSERT_EQUAL(0x80, *(doRomSearchPrivate.romVal + 7));
   //TEST_ASSERT_EQUAL(128, *(romSearchingPrivate.romNo + 7));
   free(txRxEvData.uartRxVal);
+  free(txRxListPointerNext);
   // evt.data =
   // evt
 }
 
+void someFunction(Event *evt){
 
+}
+
+void anotherFunction(Event *evt){
+
+}
+
+
+void test_registerCallback_given_emptyList(void){
+  LinkedList list;
+  ListInit(&list);
+  registerCallback(someFunction, &list);
+  TEST_ASSERT_EQUAL_PTR(someFunction, ((TxRxCallbackList*)((list.head)->data))->txRxCallbackFuncP);
+
+  Event evt;
+  evt.evtType = UART_RX_SUCCESS;
+}
+
+void test_registerCallback_given_list_with_1_data(void){
+  LinkedList list;
+  ListInit(&list);
+  registerCallback(someFunction, &list);
+  registerCallback(anotherFunction, &list);
+
+  Item *itemHead = list.head;
+  TxRxCallbackList *callBackList5 = (TxRxCallbackList*)(itemHead->data);
+  TEST_ASSERT_EQUAL_PTR(anotherFunction, callBackList5->txRxCallbackFuncP);
+  TEST_ASSERT_NOT_NULL(list.head);
+  TxRxCallbackList *callBackListNext = (TxRxCallbackList*)(itemHead->next->data);
+  TEST_ASSERT_EQUAL(2,list.len);
+  TEST_ASSERT_EQUAL_PTR(someFunction, callBackListNext->txRxCallbackFuncP);
+}
+
+void test_unregisterCallback_given_list_with2_data_expect_1Data(void){
+  LinkedList list;
+  ListInit(&list);
+  registerCallback(someFunction, &list);
+  registerCallback(anotherFunction, &list);
+
+  unregisterCallback(&list);
+
+  Item *itemHead = list.head;
+  TxRxCallbackList *callBackList5 = (TxRxCallbackList*)(itemHead->data);
+  TEST_ASSERT_EQUAL_PTR(someFunction, callBackList5->txRxCallbackFuncP);
+}
+//TODO unregisterCallback test with null
+//TODO unregisterCallback test with 1 data
+
+void test_getCurrentCallback(void){
+  LinkedList list;
+  ListInit(&list);
+  registerCallback(someFunction, &list);
+  FuncP tempFuncP = getCurrentCallback();
+  TEST_ASSERT_EQUAL(someFunction, tempFuncP);
+
+}
 //TODO checking for error while searching (lastDeviceFlag maybe?) (optional)
