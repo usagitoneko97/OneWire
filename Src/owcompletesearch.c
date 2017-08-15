@@ -15,37 +15,13 @@ uint8_t sendF0_txData1[] = {SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ONE
 
 
 void initRomSearching(EventStruct* evt, void *owdata){
-  evt->commandFunction = romSearch;
+  // evt->commandFunction = romSearch;
   evt->data = owdata;
   evt->eventType = RESET_OW;
   evt->byteLength = 8;
 }
 
-void romSearch(EventStruct *evt){
-  setUartBaudRate(115200);
-  /*write(0);
-  write(1);
-  write(1);*/
-  writeSendArray(sendF0_txData1, 8);
-  if(_firstSearch(evt->byteLength) == FALSE){
 
-  }
-  while(lastDeviceFlag != TRUE){
-    if(_bitSearch(evt->byteLength) == FALSE){
-
-    }
-
-  }
-  	volatile int i;
-  	i++;
-
-}
-
-void resetOw(EventStruct *evt){
-    setUartBaudRate(9600);
-    //owSetUpRxIT(evt);
-    owUartTxDma(0xf0);
-}
 
 
 void resetAndVerifyOw(Event *evt){
@@ -179,13 +155,6 @@ void romSearching(Event *evt){
   }
 }
 
-void updateSearch(RomSearchingPrivate *romSearchingPrivate){
-  lastDiscrepancy = (romSearchingPrivate->bitSearchInformation).lastZero;
-  if(lastDiscrepancy == 0){
-    lastDeviceFlag = TRUE;
-  }
-  (romSearchingPrivate->bitSearchInformation).searchResult = TRUE;
-}
 
 SearchBitType intepretSearchBit(uint8_t *uartRxVal){
   if((*uartRxVal == 0xff) && (*(uartRxVal+1) == 0xff)){
@@ -203,21 +172,6 @@ SearchBitType intepretSearchBit(uint8_t *uartRxVal){
 }
 
 
-
-void initGetBitRom(RomSearchingPrivate *romSearchingPrivate){
-  (romSearchingPrivate->bitSearchInformation).lastZero = 0;
-  (romSearchingPrivate->bitSearchInformation).romByteNum = 0;
-  (romSearchingPrivate->bitSearchInformation).byteMask = 1;
-  (romSearchingPrivate->bitSearchInformation).searchResult = 0;
-  (romSearchingPrivate->bitSearchInformation).noDevice = FALSE;
-
-  romSearchingPrivate->state = ROM_SEARCHING;
-  (romSearchingPrivate->bitSearchInformation).romNo = malloc(8);
-  *((romSearchingPrivate->bitSearchInformation).romNo) = 0;
-  //move txRxlist to next
-  //insert romSearching at head
-  txRxList.txRxCallbackFuncP = romSearching;
-}
 
 void initGet1BitRom(BitSearchInformation *bsi){
   bsi->lastZero = 0;
@@ -293,47 +247,4 @@ void clearGetRom(RomSearchingPrivate *romSearchingPrivate){
 
 int initConvertT(){
   return 0;
-}
-
-int isOwDeviceAvail(EventStruct *evt){
-	if(isUartFrameError()){
-		//Throw()
-		return FALSE;
-	}
-	// data = owRxCallBackData;
-	if(((OwData*)(evt->data))->uartRxVal == 0xF0){
-		//no device response
-		// Throw();
-		return FALSE;
-	}
-	// else if(data >= 0x10 && data <= 0x90){
-	/*if the higher bit has response */
-	else if ((((OwData*)(evt->data))->uartRxVal & 0xf0) != 0xf){
-		//device is there
-		return TRUE;
-	}
-	else{
-		//unknown state
-		return FALSE;
-	}
-}
-
-int owHandler(EventStruct *evt){
-	switch(evt->eventType){
-	case RESET:
-		evt->eventType = REPLY;
-		resetOw(evt);
-		break;
-	case REPLY:
-		evt->eventType = RESET;
-		if(isOwDeviceAvail(evt)){
-			evt->commandFunction(&eventOw);
-		}
-		else{
-			return FALSE;
-		}
-		break;
-	default: return FALSE;
-	}
-	return FALSE;
 }

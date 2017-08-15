@@ -105,8 +105,8 @@ int main(void)
   //HAL_UART_Transmit_DMA(&huart1, pDataTR, 2);
   //HAL_UART_Receive_IT(&huart1, &pData, 1);
 
-  initRomSearching(&eventOw,&owdata);
-  owHandler(&eventOw);
+  /*initRomSearching(&eventOw,&owdata);
+  owHandler(&eventOw);*/
 
   //initRomSearching(&eventOw, &owdata);
 
@@ -340,7 +340,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-  owHandler(&eventOw);
+  // owHandler(&eventOw);
 }
 
 int isUartFrameError(){

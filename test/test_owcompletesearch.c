@@ -70,85 +70,6 @@ void tearDown(void){
 }
 
 
-/*void test_owcompletesearch_given_RX_F0_expect_DeviceNA(void)
-{
-  owRxVal = 0xf0;
-  TEST_ASSERT_EQUAL(DEVICE_NA, resetOW());
-}*/
-
-/**
- * Expected 1byte return result
- * ---------------------------------
- * 0 1 0 0 1 0 1 1
- *       4b
- * 1 1 1 0 0 0 1 0
- *      e2
- * 0 1 1 0 0 1 1 1
- *       67fi
- */
-void test_owcompletesearch_given_OW_presencePulse_RX_10_given_above_number(void){
-  uint8_t fakeIdBitVal []=       {0, 1, 0, 0, 0, 1, 1, 1,  0, 1, 0, 1, 0, 0, 1, 0,  0, 1, 0, 0, 0, 1, 1, 0};
-  uint8_t fakeCmpIdBitVal[] =   {0, 0, 1, 1, 1, 0, 0, 0,  0, 0, 0, 0, 1, 1, 0, 1,  0, 0, 0, 1, 1, 0, 0, 1};
-  init64BitId(fakeIdBitVal, fakeCmpIdBitVal, 0);
-
-  /*Mocking*/
-  setUartBaudRate_Expect(9600);
-  //owSetUpRxIT_Expect();
-  owUartTxDma_Expect(0xf0);
-  /*uart receive it will trigger after uart tx, data will update to below*/
-  ((OwData*)(eventOw.data))->uartRxVal = 0xe0;
-  //owRxCallBackData = 0xE0;  //data that received in interrupt
-  /*Callback from 1 wire receive*/
-  isUartFrameError_ExpectAndReturn(FALSE);
-  setUartBaudRate_Expect(115200);
-  writeSendArray_Expect(sendF0txDataTest, 8);
-  //OW_Tx_Expect(sendF0_txData);
-
-  initRomSearching(&eventOw,&owdata);
-  eventOw.byteLength = 1;
-  owHandler(&eventOw);
-  owHandler(&eventOw); //uartRxCallback will call this function
-
-  TEST_ASSERT_EQUAL(0xe2, romDataBuffer[0][0]);
-  TEST_ASSERT_EQUAL(0x4b, romDataBuffer[1][0]);
-  TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
-  TEST_ASSERT_EQUAL(0, lastDiscrepancy);
-
-}
-
-
-void test_owcompletesearch_given_OW_0xf0_expect_noDevice(void){
-  /*Mocking*/
-  setUartBaudRate_Expect(9600);
-  //owSetUpRxIT_Expect();
-  owUartTxDma_Expect(0xf0);
-  /*uart receive it will trigger after uart tx, data will update to below*/
-  ((OwData*)(eventOw.data))->uartRxVal = 0xf0;
-  //owRxCallBackData = 0xf0;  //data that received in interrupt
-  /*Callback from 1 wire receive*/
-  isUartFrameError_ExpectAndReturn(FALSE);
-
-  initRomSearching(&eventOw,&owdata);
-  eventOw.byteLength = 1;
-  owHandler(&eventOw);
-  TEST_ASSERT_EQUAL(FALSE, owHandler(&eventOw)); //callback of uartTx from reset
-}
-
-void test_owcompletesearch_given_OW_FrameError_expect_FALSE(void){
-  setUartBaudRate_Expect(9600);
-  //owSetUpRxIT_Expect();
-  owUartTxDma_Expect(0xf0);
-  /*uart receive it will trigger after uart tx, data will update to below*/
-  ((OwData*)(eventOw.data))->uartRxVal = 0xf0;
-  /*Callback from 1 wire receive*/
-  isUartFrameError_ExpectAndReturn(TRUE);
-  // OW_Rx_ExpectAndReturn(-1);
-  initRomSearching(&eventOw,&owdata);
-  eventOw.byteLength = 1;
-  owHandler(&eventOw);
-  TEST_ASSERT_EQUAL(FALSE, owHandler(&eventOw)); //callback of uartTx from reset
-}
-
 void test_resetAndVerifyOw_given_state_RESET_OW(void){
   Event eventFromDoRomSearch;
   eventFromDoRomSearch.evtType = INITIATE_COMMAND;
@@ -330,7 +251,8 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxEvData;
 
-  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  BitSearchInformation *bsi = &romSearchingPrivate.bitSearchInformation;
+  initGet1BitRom(bsi);  //end of SEND_F0 will call this function
   romSearchingPrivate.bitSearchInformation.idBitNumber = 1; //idBitNumber can be any value
 
   systemError_Expect(ROM_SEARCH_NO_DEVICE);
@@ -348,8 +270,10 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxEvData;
+  romSearchingPrivate.state = ROM_SEARCHING;
 
-  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  BitSearchInformation *bsi = &romSearchingPrivate.bitSearchInformation;
+  initGet1BitRom(bsi);  //end of SEND_F0 will call this function
   romSearchingPrivate.bitSearchInformation.idBitNumber = 1;
 
   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
@@ -376,7 +300,8 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxEvData;
 
-  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  BitSearchInformation *bsi = &romSearchingPrivate.bitSearchInformation;
+  initGet1BitRom(bsi);  //end of SEND_F0 will call this function
   romSearchingPrivate.bitSearchInformation.romByteNum = 0;
   romSearchingPrivate.bitSearchInformation.idBitNumber = 8;
   romSearchingPrivate.bitSearchInformation.byteMask = 128;
@@ -411,7 +336,8 @@ void test_romSearching_lastBit(void){
   evt.evtType = UART_RX_SUCCESS;
   evt.data = &txRxEvData;
 
-  initGetBitRom(&romSearchingPrivate);  //end of SEND_F0 will call this function
+  BitSearchInformation *bsi = &romSearchingPrivate.bitSearchInformation;
+  initGet1BitRom(bsi);  //end of SEND_F0 will call this function
   romSearchingPrivate.bitSearchInformation.romByteNum = 7;
   romSearchingPrivate.bitSearchInformation.idBitNumber = 64; //the last bit
   romSearchingPrivate.bitSearchInformation.byteMask = 0x80;
@@ -550,8 +476,8 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBitNumber);
    TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.lastZero);
    TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.romNo[0]);
-   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
    TEST_ASSERT_EQUAL(2, *(doRomSearchPrivate.romVal));
+   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
    //the result (which is 2) is found
 
  }
