@@ -60,8 +60,6 @@ void test_unregisterCallback_given_list_with2_data_expect_1Data(void){
   TxRxCallbackList *callBackList5 = (TxRxCallbackList*)(itemHead->data);
   TEST_ASSERT_EQUAL_PTR(someFunction, callBackList5->txRxCallbackFuncP);
 }
-//TODO unregisterCallback test with null
-//TODO unregisterCallback test with 1 data
 
 void test_getCurrentCallback_given_1_data(void){
   LinkedList list;

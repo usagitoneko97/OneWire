@@ -17,6 +17,13 @@ uint8_t *fakeCmpIdBits = NULL;
 #define getBytePos(x)    ((x) >> 3)
 #define getBitPos(x)     ((x) & 0x7)
 
+/**
+ * get the SearchBitType of bit bitNumber of the devices
+ * @param  devices         the n x 64bits array of the rom number of the devices
+ * @param  bitNumber       the bitNumber of the devices to get the Search
+ * @param  numberOfDevices the number of 1 wire devices
+ * @return                 SearchBitType, can either be BIT_1, BIT_0 or BIT_CONFLICT
+ */
 SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberOfDevices){
   int mBitNumber = (OW_LENGTH - 1) - bitNumber;
   int i;
@@ -36,6 +43,12 @@ SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberO
   }
 }
 
+/**
+ * get the SearchBitType (BIT_0, BIT_1, or BIT_CONFLICT)
+ * @param  fakeIdBits    the bit received
+ * @param  fakeCmpIdBits the compliment bit received
+ * @return               the type of the both bit received
+ */
 SearchBitType getSearchBitTypeFrom01(uint8_t fakeIdBits, uint8_t fakeCmpIdBits){
   uint8_t *uartRxVal = (uint8_t*)malloc(2);
   if(fakeIdBits == 1){
@@ -52,7 +65,14 @@ SearchBitType getSearchBitTypeFrom01(uint8_t fakeIdBits, uint8_t fakeCmpIdBits){
   return intepretSearchBit(uartRxVal);
 }
 
-void thrashGet1BitRom(BitSearchInformation *bsi, uint8_t *fakeIdBits, uint8_t *fakeCmpIdBits, int numberOfDevices){
+/**
+ * @NOTE for testing purpose
+ * to test out the complete rom number given in the parameter
+ * @param bsi             pointer of bitSearchInformation (contain all information aboute the bit search)
+ * @param fakeIdBits      pointer of bits received
+ * @param fakeCmpIdBits   pointer of compliment bits received
+ */
+void thrashGet1BitRom(BitSearchInformation *bsi, uint8_t *fakeIdBits, uint8_t *fakeCmpIdBits){
   int i = 0;
   while(i++ < OW_LENGTH){
     bsi->bitReadType = getSearchBitTypeFrom01(fakeIdBits[(bsi->idBitNumber-1)], fakeCmpIdBits[(bsi->idBitNumber-1)]);
@@ -365,7 +385,7 @@ void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
   bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
 
   owLength = 4;
-  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 4);
+  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
   TEST_ASSERT_EQUAL(8, (*(bsi.romNo) & 0xf));
   TEST_ASSERT_EQUAL(3, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
@@ -425,7 +445,7 @@ void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
   *(bsi.romNo) = 0x08;
 
   owLength = 4;
-  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 4);
+  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
   TEST_ASSERT_EQUAL(4, (*(bsi.romNo) & 0xf));
   TEST_ASSERT_EQUAL(2, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
@@ -479,7 +499,7 @@ void test_search_bit_expect_ThirdData_LastDisprecancy_1(void)
   *(bsi.romNo) = 0x04;
 
   owLength = 4;
-  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 4);
+  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
   TEST_ASSERT_EQUAL(2, (*(bsi.romNo) & 0xf));
   TEST_ASSERT_EQUAL(1, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
@@ -534,7 +554,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
   *(bsi.romNo) = 0x02;
 
   owLength = 4;
-  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 4);
+  thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
   TEST_ASSERT_EQUAL(1, (*(bsi.romNo) & 0xf));
   TEST_ASSERT_EQUAL(0, lastDiscrepancy);
   TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
@@ -563,7 +583,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
   //  clearGet1BitRom(&bsi);
    bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
 
-   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 4);
+   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
    TEST_ASSERT_EQUAL(0x26, (*(bsi.romNo)));
    TEST_ASSERT_EQUAL(1, lastDiscrepancy);
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
@@ -595,7 +615,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
     lastDiscrepancy=1;
     *(bsi.romNo) = 0x26;
 
-    thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 4);
+    thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
     TEST_ASSERT_EQUAL(0x59, (*(bsi.romNo)));
     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
     TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
@@ -626,7 +646,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      lastDiscrepancy=3;
      *(bsi.romNo) = 0x59;
 
-     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 4);
+     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
      TEST_ASSERT_EQUAL(0x35, (*(bsi.romNo)));
      TEST_ASSERT_EQUAL(0, lastDiscrepancy);
      TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
@@ -656,7 +676,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
 
      targetSetupConfig(0xc5, &bsi);
-     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 3);
+     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
      TEST_ASSERT_EQUAL(10, lastDiscrepancy);
      TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
      TEST_ASSERT_EQUAL(0xc5, (*(bsi.romNo)));
@@ -698,7 +718,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      bsi.romNo[0] = 0xc5; //family code
      bsi.romNo[1] = 0x05;
 
-     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 3);
+     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
      TEST_ASSERT_EQUAL(0, lastDiscrepancy);
      TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
      TEST_ASSERT_EQUAL(0xc5, (*(bsi.romNo)));
@@ -741,7 +761,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      uint8_t romNumberToVerify = 0x34;
      verifyConfig(&romNumberToVerify, 1, &bsi);
 
-     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 3);
+     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
      TEST_ASSERT_EQUAL(0x34, bsi.romNo[0]);
      free(bsi.romNo);
    }
@@ -774,7 +794,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      lastFamilyDiscrepancy = 0;
      lastDeviceFlag = FALSE;
      bsi.romNo[0] = 0xbe;
-     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 3);
+     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
      TEST_ASSERT_NOT_EQUAL(0xbe, bsi.romNo[0]);
      TEST_ASSERT_EQUAL(0x8e, bsi.romNo[0]);
    }
@@ -823,7 +843,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    initGet1BitRom(&bsi);
    clearGet1BitRom(&bsi);
    bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
-   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal, 3);
+   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
 
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
    TEST_ASSERT_EQUAL(0x6A, bsi.romNo[0]);
@@ -835,7 +855,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
 
    clearGet1BitRom(&bsi);
    familySkipConfig();
-   thrashGet1BitRom(&bsi, fakeIdBitVal_2, fakeCmpIdBitVal_2, 3);
+   thrashGet1BitRom(&bsi, fakeIdBitVal_2, fakeCmpIdBitVal_2);
 
    TEST_ASSERT_EQUAL(0x7f, bsi.romNo[1]);
    TEST_ASSERT_EQUAL(0xd1, bsi.romNo[0]);
