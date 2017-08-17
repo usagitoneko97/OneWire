@@ -322,6 +322,17 @@ void owUartTxDma(uint8_t data){
 	}
 }
 
+void owUartTxDma2(uint8_t data){
+	uint8_t *ptr = (uint8_t*)malloc(2);
+	*(ptr) = data;
+	*(ptr+1) = data;
+	//HAL_UART_AbortTransmit(&huart1);
+	while(HAL_UART_Transmit_DMA(&huart1, ptr, 1) == HAL_BUSY){
+		volatile int i = 0;
+		i++;
+	}
+}
+
 void owUartTx(uint8_t data){
 	if(HAL_UART_Transmit(&huart1, &data, 1, 50)!=HAL_OK){
 		volatile int i = 0;
@@ -353,7 +364,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   evData.uartRxVal = uartRxDataBuffer;
   evt.data = &evData;
   FuncP functPToCaller;
-  functPToCaller = getCurrentCallback((list));
+  functPToCaller = getCurrentCallback((&list));
   functPToCaller(&evt);
 }
 

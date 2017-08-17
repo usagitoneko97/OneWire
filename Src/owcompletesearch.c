@@ -29,10 +29,10 @@ void resetAndVerifyOw(Event *evt){
     static Event generateResetEv;
     switch (owResetPrivate.state) {
       case RESET_OW:
+    	  owResetPrivate.state = REPLY_OW;
           registerCallback(resetAndVerifyOw, &list);
           owSetUpRxIT(uartRxDataBuffer, 1);
           owUartTxDma(0xf0);
-          owResetPrivate.state = REPLY_OW;
           break;
       case REPLY_OW:
         owResetPrivate.state = RESET_OW;
@@ -55,7 +55,9 @@ void resetAndVerifyOw(Event *evt){
               else if (OW_DEVICE_READY(tempUartRxVal)){
                 CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_AVAILABLE);
                 unregisterCallback(&list);
-                GET_CALLBACK(list, generateResetEv);
+                FuncP functPToCaller;
+                functPToCaller = getCurrentCallback((&list));
+                functPToCaller(&(generateResetEv));
             	}
             	else{
                 CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_UNKNOWN_ERROR);
@@ -84,8 +86,8 @@ void romSearching(Event *evt){
           romSearchingPrivate.state = ROM_SEARCHING;
           uartTxOw(sendF0_txData1, 8);
           owSetUpRxIT(uartRxDataBuffer, 2);
-          owUartTxDma(0xff);
-          owUartTxDma(0xff);
+          owUartTx(0xff);
+          owUartTx(0xff);
         }
         else {
           generateFailEvt.evtType = UNKNOWN_ERROR;
@@ -196,6 +198,10 @@ void doRomSearch(Event *evt){
     case START_ROM_SEARCH:
       registerCallback(doRomSearch, &list);
       resetAndVerifyOw(&doRomSearchEv);
+      volatile FuncP fp;
+      fp = getCurrentCallback(&list);
+      volatile int i = 0;
+      i++;
       break;
     case RESET_DEVICE_AVAILABLE:
 
