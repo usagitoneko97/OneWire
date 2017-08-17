@@ -189,8 +189,8 @@ void test_resetOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_RX_SUCCES
 
   uartTxOw_Expect(sendF0txDataTest, 8);
   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
-  owUartTxDma_Expect(0xff);
-  owUartTxDma_Expect(0xff);
+  owUartTx_Expect(0xff);
+  owUartTx_Expect(0xff);
 
   resetAndVerifyOw(&evt);
   TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
@@ -431,8 +431,8 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
 
    uartTxOw_Expect(sendF0txDataTest, 8);
    owSetUpRxIT_Expect(uartRxDataBuffer, 2);
-   owUartTxDma_Expect(0xff);
-   owUartTxDma_Expect(0xff);
+   owUartTx_Expect(0xff);
+   owUartTx_Expect(0xff);
 
    resetAndVerifyOw(&evt);
    Item *itemHead1 = list.head;
