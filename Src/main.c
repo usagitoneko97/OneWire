@@ -36,6 +36,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "owcompletesearch.h"
+#include "callback.h"
 #include "onewireio.h"
 #include "search.h"
 #include "owvariable.h"
@@ -109,6 +110,11 @@ int main(void)
   owHandler(&eventOw);*/
 
   //initRomSearching(&eventOw, &owdata);
+  setUartBaudRate(9600);
+  uartRxDataBuffer = (uint8_t*)malloc(2);
+  Event evt;
+  evt.evtType = START_ROM_SEARCH;
+  doRomSearch(&evt);
 
   /* USER CODE END 2 */
 
@@ -340,7 +346,15 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-  // owHandler(&eventOw);
+  //TODO find respective callback function
+  Event evt;
+  evt.evtType = UART_RX_SUCCESS;
+  TxRxCpltEvData evData;
+  evData.uartRxVal = uartRxDataBuffer;
+  evt.data = &evData;
+  FuncP functPToCaller;
+  functPToCaller = getCurrentCallback((list));
+  functPToCaller(&evt);
 }
 
 int isUartFrameError(){
@@ -366,6 +380,12 @@ void resetUart(int baudRate){
 
 void uartDelay(int delay){
 	HAL_Delay(delay);
+}
+
+void systemError(EventType evtType){
+	while(1){
+		//TODO do something instead of while loop
+	}
 }
 /* USER CODE END 4 */
 
