@@ -18,6 +18,10 @@
 #define GET_UART_RX_VAL(evt)            *(((TxRxCpltEvData*)(evt)->data)->uartRxVal)
 
 #define CREATE_EVENT_WITH_TYPE(evt, type) evt.evtType = type;
+
+#define OW_DEVICE_READY(tempUartRxVal)  (tempUartRxVal & 0x0f) == 0x0 && (tempUartRxVal & 0xf0) != 0xf0
+
+#define OW_DEVICE_NOT_READY(tempUartRxVal)  tempUartRxVal == 0xF0
 typedef enum {
   DEVICE_AVAILABLE = 0,
   DEVICE_NA = 1

@@ -44,17 +44,15 @@ void resetAndVerifyOw(Event *evt){
             GET_CALLBACK(list, generateResetEv);
             break;
           case UART_RX_SUCCESS:
-            //checking..
-
             tempUartRxVal = GET_UART_RX_VAL(evt);
-            if(tempUartRxVal == 0xF0){
+            if(OW_DEVICE_NOT_READY(tempUartRxVal)){
               CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_NOT_AVAILABLE);
               unregisterCallback(&list);
               GET_CALLBACK(list, generateResetEv);
           	}
           	// else if(data >= 0x10 && data <= 0x90){
           	/*if the higher bit has response */
-            else if ((tempUartRxVal & 0x0f) == 0x0 && (tempUartRxVal & 0xf0) != 0xf0){
+            else if (OW_DEVICE_READY(tempUartRxVal)){
               CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_AVAILABLE);
               unregisterCallback(&list);
               GET_CALLBACK(list, generateResetEv);

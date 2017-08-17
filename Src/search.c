@@ -32,12 +32,6 @@ void clearDataBuffer64(){
 }
 
 
-/**
- * initialize to initial condition and perform bitsearching with specific
- * number of byte of rom
- * @param  numberOfByte number of byte of rom number to be search
- * @return              status of bitSearch
- */
 
 
 /**
@@ -46,10 +40,6 @@ void clearDataBuffer64(){
  * @param  bitSearchInformation structure that contain all the information
  *                              about the bit searching
  */
-
-
-
-
 void get1BitRom(BitSearchInformation *bsi){
   int searchDir;
   switch (bsi->bitReadType) {
