@@ -22,6 +22,10 @@
 #define OW_DEVICE_READY(tempUartRxVal)  (tempUartRxVal & 0x0f) == 0x0 && (tempUartRxVal & 0xf0) != 0xf0
 
 #define OW_DEVICE_NOT_READY(tempUartRxVal)  tempUartRxVal == 0xF0
+
+#define ERROR_NO_DEVICE(romSearchingPrivate) romSearchingPrivate.bitSearchInformation.noDevice == TRUE
+
+#define SEARCH_COMPLETE(romSearchingPrivate)  romSearchingPrivate.bitSearchInformation.searchResult == TRUE
 typedef enum {
   DEVICE_AVAILABLE = 0,
   DEVICE_NA = 1
