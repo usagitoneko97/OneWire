@@ -20,6 +20,44 @@ void initRomSearching(EventStruct* evt, void *owdata){
   evt->byteLength = 8;
 }
 
+/**
+ * function to perform romSearch (parent to romSearching and resetAndVerifyOw)
+ * @param evt [description]
+ */
+void doRomSearch(Event *evt){
+  uint8_t *dataTemp;
+  Event doRomSearchEv;
+  switch (evt->evtType) {
+    //event of START_ROM_SEARCH will be initialize by main
+    case START_ROM_SEARCH:
+      registerCallback(doRomSearch, &list);
+      resetAndVerifyOw(&doRomSearchEv);
+      volatile FuncP fp;
+      fp = getCurrentCallback(&list);
+      volatile int i = 0;
+      i++;
+      break;
+    //resetAndVerifyOw successfully detect 1 wire device
+    case RESET_DEVICE_AVAILABLE:
+      doRomSearchEv.evtType = INITIATE_COMMAND;
+      setUartBaudRate(115200);
+      romSearching(&doRomSearchEv);
+      break;
+    //romSearching successfully searched rom
+    case ROM_SEARCH_SUCCESSFUL:
+      doRomSearchPrivate.romVal = ((RomSearchingEvData*)(evt->data))->romDataBuffer;
+      searchCpltF = 1;
+      break;
+    case ROM_SEARCH_NO_DEVICE:
+    case UART_TIMEOUT:
+    case UART_FRAME_ERROR:
+    case RESET_DEVICE_NOT_AVAILABLE:
+    case RESET_DEVICE_UNKNOWN_ERROR:
+    case UNKNOWN_ERROR:
+      systemError(evt->evtType);
+      break;
+  }
+}
 
 
 /**
@@ -33,10 +71,10 @@ void resetAndVerifyOw(Event *evt){
     switch (owResetPrivate.state) {
       case RESET_OW:
     	  owResetPrivate.state = REPLY_OW;
-          registerCallback(resetAndVerifyOw, &list);
-          owSetUpRxIT(uartRxDataBuffer, 1);
-          owUartTxDma(0xf0);
-          break;
+        registerCallback(resetAndVerifyOw, &list);
+        owSetUpRxIT(uartRxDataBuffer, 1);
+        owUartTxDma(0xf0);
+        break;
       case REPLY_OW:
         owResetPrivate.state = RESET_OW;
         switch (evt->evtType){
@@ -154,10 +192,7 @@ void romSearching(Event *evt){
             FuncP functPToCaller;
             functPToCaller = getCurrentCallback((&list));
             functPToCaller(&(generateFailEvt));
-            //TODO
-            //free romUid
             break;
-
           //TODO free romSearchingPrivate.romUid
       }
       break;
@@ -205,46 +240,6 @@ void initGet1BitRom(BitSearchInformation *bsi){
     // romSearchingPrivate->state = ROM_SEARCHING;
   bsi->romUid = malloc(8);
   *(bsi->romUid) = 0;
-}
-
-
-/**
- * function to perform romSearch (parent to romSearching and resetAndVerifyOw)
- * @param evt [description]
- */
-void doRomSearch(Event *evt){
-  uint8_t *dataTemp;
-  Event doRomSearchEv;
-  switch (evt->evtType) {
-    //event of START_ROM_SEARCH will be initialize by main
-    case START_ROM_SEARCH:
-      registerCallback(doRomSearch, &list);
-      resetAndVerifyOw(&doRomSearchEv);
-      volatile FuncP fp;
-      fp = getCurrentCallback(&list);
-      volatile int i = 0;
-      i++;
-      break;
-    //resetAndVerifyOw successfully detect 1 wire device
-    case RESET_DEVICE_AVAILABLE:
-      doRomSearchEv.evtType = INITIATE_COMMAND;
-      setUartBaudRate(115200);
-      romSearching(&doRomSearchEv);
-      break;
-    //romSearching successfully searched rom
-    case ROM_SEARCH_SUCCESSFUL:
-      doRomSearchPrivate.romVal = ((RomSearchingEvData*)(evt->data))->romDataBuffer;
-      searchCpltF = 1;
-      break;
-    case ROM_SEARCH_NO_DEVICE:
-    case UART_TIMEOUT:
-    case UART_FRAME_ERROR:
-    case RESET_DEVICE_NOT_AVAILABLE:
-    case RESET_DEVICE_UNKNOWN_ERROR:
-    case UNKNOWN_ERROR:
-      systemError(evt->evtType);
-      break;
-  }
 }
 
 void clearGetRom(RomSearchingPrivate *romSearchingPrivate){

@@ -99,28 +99,8 @@ int main(void)
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
-
-  //HAL_HalfDuplex_EnableTransmitter(&huart1);
-  //HAL_HalfDuplex_EnableReceiver(&huart1);
   HAL_HalfDuplex_EnableTxRx(&huart1);
-  //HAL_UART_Receive_IT(&huart1, &pData, 1);
-  //HAL_UART_Transmit(&huart1, &pDataTR, 1, 100);
-
-  //HAL_UART_Transmit_DMA(&huart1, pDataTR, 2);
-  //HAL_UART_Receive_IT(&huart1, &pData, 1);
-
-  /*initRomSearching(&eventOw,&owdata);
-  owHandler(&eventOw);*/
-
-  //initRomSearching(&eventOw, &owdata);
-
-  setUartBaudRate(9600);
-  romUIDprivate = (uint8_t*)malloc(8);
-  uartRxDataBuffer = (uint8_t*)malloc(2);
-  Event evt;
-  evt.evtType = START_ROM_SEARCH;
-  doRomSearch(&evt);
-
+  owRomSearchInit();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,8 +110,8 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  //HAL_UART_Receive_IT(&huart1, &pData, 1);
-	 // HAL_UART_Transmit_DMA(&huart1,pDataTR, 1);
+
+    //callback flag is set to generate evt to send back to func in callbackList
 	  if(callBEn){
 		  Event evt;
 		  evt.evtType = UART_RX_SUCCESS;
@@ -281,6 +261,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void owRomSearchInit(){
+  setUartBaudRate(9600);
+  romUIDprivate = (uint8_t*)malloc(8);
+  uartRxDataBuffer = (uint8_t*)malloc(2);
+  Event evt;
+  evt.evtType = START_ROM_SEARCH;
+  doRomSearch(&evt);
+}
 int owSearchRomGetResult(uint8_t *romUid){
 	if(searchCpltF == 1){
 		searchCpltF = 0;

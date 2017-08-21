@@ -258,6 +258,9 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_
 void test_romSearching_error_given_idBit1_cmpIdBit1(void){
   TxRxCpltEvData txRxEvData;
   txRxEvData.uartRxVal = malloc(10);
+
+  //if idBitNumber = 1, it will get the idBit and cmpIdBit at 9th and 10th bit
+  //respectively
   *(txRxEvData.uartRxVal + 8) = 0xff;
   *(txRxEvData.uartRxVal + 9) = 0xff;
 
@@ -282,6 +285,8 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
 void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_1_cmpIdBitNumber_0_idBitNumber_1(void){
   TxRxCpltEvData txRxEvData;
   txRxEvData.uartRxVal = malloc(10);
+  //if idBitNumber = 1, it will get the idBit and cmpIdBit at 9th and 10th bit
+  //respectively
   *(txRxEvData.uartRxVal + 8) = 0xff;
   *(txRxEvData.uartRxVal + 9) = 0xfe;
 
@@ -317,6 +322,8 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   owLength = 64;
   TxRxCpltEvData txRxEvData;
   txRxEvData.uartRxVal = malloc(10);
+  //if idBitNumber = 1, it will get the idBit and cmpIdBit at 9th and 10th bit
+  //respectively
   *(txRxEvData.uartRxVal + 8) = 0xfe;
   *(txRxEvData.uartRxVal + 9) = 0xff;
 
@@ -351,6 +358,8 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
 void test_romSearching_lastBit(void){
   TxRxCpltEvData txRxEvData;
   txRxEvData.uartRxVal = malloc(3);
+  //if idBitNumber != 1, it will get the idBit and cmpIdBit at 2nd and 3rd bit
+  //respectively
   *(txRxEvData.uartRxVal + 1) = 0xff;
   *(txRxEvData.uartRxVal + 2) = 0xfe;
 
@@ -369,16 +378,11 @@ void test_romSearching_lastBit(void){
   registerCallback(romSearching, &list);
 
   romSearching(&evt);
-  //TODO
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBitNumber);
   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romByteNum);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
   TEST_ASSERT_EQUAL(0x80, *(doRomSearchPrivate.romVal + 7));
-  //TEST_ASSERT_EQUAL(128, *(romSearchingPrivate.romUid + 7));
-  //TODO test it generte
   free(txRxEvData.uartRxVal);
-  // evt.data =
-  // evt
 }
 
 /**
@@ -444,6 +448,7 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    TEST_ASSERT_EQUAL_PTR(romSearching, headCallbackList1->txRxCallbackFuncP);
    TEST_ASSERT_EQUAL(RESET_OW, owResetPrivate.state);
    free(txRxCpltEvData.uartRxVal);
+   
    //================================================================
    //Assume data 3 bits = 010  ----------- Device 1.
    //                     011  ----------- Device 2.

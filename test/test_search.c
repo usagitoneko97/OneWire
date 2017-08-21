@@ -18,10 +18,11 @@ uint8_t *fakeCmpIdBits = NULL;
 #define getBitPos(x)     ((x) & 0x7)
 
 /**
- * get the SearchBitType of bit bitNumber of the devices
+ * @brief  get the SearchBitType of bit bitNumber of the devices
  * @param  devices         the n x 64bits array of the rom number of the devices
  * @param  bitNumber       the bitNumber of the devices to get the Search
  * @param  numberOfDevices the number of 1 wire devices
+ * @test   test_getOwBitState_given_array_expect_SearchBitType
  * @return                 SearchBitType, can either be BIT_1, BIT_0 or BIT_CONFLICT
  */
 SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberOfDevices){
@@ -42,6 +43,7 @@ SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberO
     return BIT_0;
   }
 }
+
 void test_getOwBitState_given_array_expect_SearchBitType(void){
   owLength = 5;
   int devices[3][5] = {{1, 0, 1, 1, 0},
@@ -54,12 +56,14 @@ void test_getOwBitState_given_array_expect_SearchBitType(void){
 }
 
 /**
- * get the SearchBitType (BIT_0, BIT_1, or BIT_CONFLICT)
+ * @brief get the SearchBitType from raw value (BIT_0, BIT_1, or BIT_CONFLICT)
+ *        for testing's sake below
  * @param  fakeIdBits    the bit received
  * @param  fakeCmpIdBits the compliment bit received
  * @return               the type of the both bit received
+ * @test    test_getSearchBitTypeFromRawUartVal
  */
-SearchBitType getSearchBitTypeFrom01(uint8_t fakeIdBits, uint8_t fakeCmpIdBits){
+SearchBitType getSearchBitTypeFromRawUartVal(uint8_t fakeIdBits, uint8_t fakeCmpIdBits){
   uint8_t *uartRxVal = (uint8_t*)malloc(2);
   if(fakeIdBits == 1){
     *(uartRxVal) = 0xff;
@@ -75,23 +79,23 @@ SearchBitType getSearchBitTypeFrom01(uint8_t fakeIdBits, uint8_t fakeCmpIdBits){
   return intepretSearchBit(uartRxVal);
 }
 
-void test_getSearchBitTypeFrom01(void){
-  SearchBitType result = getSearchBitTypeFrom01(1, 0);
+void test_getSearchBitTypeFromRawUartVal(void){
+  SearchBitType result = getSearchBitTypeFromRawUartVal(1, 0);
   TEST_ASSERT_EQUAL(BIT_1, result);
 
-  result = getSearchBitTypeFrom01(0, 1);
+  result = getSearchBitTypeFromRawUartVal(0, 1);
   TEST_ASSERT_EQUAL(BIT_0, result);
 
-  result = getSearchBitTypeFrom01(0, 0);
+  result = getSearchBitTypeFromRawUartVal(0, 0);
   TEST_ASSERT_EQUAL(BIT_CONFLICT, result);
 
-  result = getSearchBitTypeFrom01(1, 1);
+  result = getSearchBitTypeFromRawUartVal(1, 1);
   TEST_ASSERT_EQUAL(DEVICE_NOT_THERE, result);
 }
 
 /**
  * @NOTE for testing purpose
- * to test out the complete rom number given in the parameter
+ * @brief to test out the complete rom number which bit number is specify by owLength
  * @param bsi             pointer of bitSearchInformation (contain all information aboute the bit search)
  * @param fakeIdBits      pointer of bits received
  * @param fakeCmpIdBits   pointer of compliment bits received
@@ -99,22 +103,14 @@ void test_getSearchBitTypeFrom01(void){
 void thrashGet1BitRom(BitSearchInformation *bsi, uint8_t *fakeIdBits, uint8_t *fakeCmpIdBits){
   int i = 0;
   while(i++ < OW_LENGTH){
-    bsi->bitReadType = getSearchBitTypeFrom01(fakeIdBits[(bsi->idBitNumber-1)], fakeCmpIdBits[(bsi->idBitNumber-1)]);
+    bsi->bitReadType = getSearchBitTypeFromRawUartVal(fakeIdBits[(bsi->idBitNumber-1)], fakeCmpIdBits[(bsi->idBitNumber-1)]);
     get1BitRom(bsi);
     //clearGet1BitRom(bsi);
   }
 
 }
 
-void init64BitId(uint8_t *id,uint8_t *cmp_id, uint8_t startBit) {
-  fakeIdBits = id;
-  fakeCmpIdBits = cmp_id;
-  bitPos = startBit;
-}
-
-
 void fakeWrite(unsigned char byte, int numOfCalls){
-
 }
 
 
@@ -776,7 +772,6 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    *            lastDeviceFlag = TRUE
    *            romUid[1] = 0xb
    */
-
    void test_targetSetupSearch_cont_givenAboveData_expect_dataTwo(void){
      uint8_t fakeIdBitVal []=       {0, 0, 1, 0,  0, 0, 1, 1,  1, 0, 0, 1,  0, 0, 0, 0};
      uint8_t fakeCmpIdBitVal[] =   {0, 1, 0, 1,  1, 1, 0, 0,  0, 0, 1, 0,  1, 1, 1, 1};
@@ -1193,11 +1188,3 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
     TEST_ASSERT_EQUAL(0, lastDiscrepancy);
     free(bsi);
   }
-
-  //TODO test remaining RESET_IF_COMPLETED_BIT_SEARCHING
-
-
-
-
-   //TODO the rest of targetSetup search
-   //TODO test on familyskipSetup and verify

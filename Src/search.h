@@ -17,7 +17,7 @@
                                        (bsi)->byteMask = 1;                   \
                                        (bsi)->romByteNum++;                   \
                                       }
-#define RESET_IF_COMPLETED_BIT_SEARCHING(bsi, searchDir)                                 \
+#define RESET_IF_COMPLETED_BIT_SEARCHING(bsi, searchDir)                      \
                                      if(bsi->idBitNumber > OW_LENGTH){        \
                                        lastDiscrepancy = bsi->lastZero;       \
                                        if(lastDiscrepancy == 0){              \
@@ -25,11 +25,11 @@
                                        }                                      \
                                        clearGet1BitRom(bsi);                  \
                                        bsi->searchResult = TRUE;              \
-                                     }										  \
-									 else{									  \
-										owSetUpRxIT(uartRxDataBuffer, 3);	  \
-										write(searchDir);					  \
-									 }										  \
+                                     }										                    \
+									                   else{									                  \
+										                  owSetUpRxIT(uartRxDataBuffer, 3);	      \
+										                  write(searchDir);					              \
+									                   }										                    \
 
 void stackDataBuffer64(uint8_t data, int numberOfByte);
 void clearDataBuffer64();
