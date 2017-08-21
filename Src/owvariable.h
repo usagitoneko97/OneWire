@@ -25,4 +25,5 @@ extern RomSearchingPrivate romSearchingPrivate;
 
 extern DoRomSearchPrivate doRomSearchPrivate;
 extern int owLength;
+extern int searchCpltF;
 #endif // _OWVARIABLE_H

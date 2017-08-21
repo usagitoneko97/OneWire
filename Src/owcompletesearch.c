@@ -234,6 +234,7 @@ void doRomSearch(Event *evt){
     //romSearching successfully searched rom
     case ROM_SEARCH_SUCCESSFUL:
       doRomSearchPrivate.romVal = ((RomSearchingEvData*)(evt->data))->romDataBuffer;
+      searchCpltF = 1;
       break;
     case ROM_SEARCH_NO_DEVICE:
     case UART_TIMEOUT:

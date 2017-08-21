@@ -57,6 +57,7 @@ uint8_t uartTempRx;
 uint8_t pData;
 uint8_t pDataTR[2] = {0xf0, 0x22};
 int callBEn = 0;
+uint8_t *romUIDprivate;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -112,7 +113,9 @@ int main(void)
   owHandler(&eventOw);*/
 
   //initRomSearching(&eventOw, &owdata);
+
   setUartBaudRate(9600);
+  romUIDprivate = (uint8_t*)malloc(8);
   uartRxDataBuffer = (uint8_t*)malloc(2);
   Event evt;
   evt.evtType = START_ROM_SEARCH;
@@ -138,6 +141,11 @@ int main(void)
 		  FuncP functPToCaller;
 		  functPToCaller = getCurrentCallback((&list));
 		  functPToCaller(&evt);
+	  }
+
+	  if(owSearchRomGetResult(romUIDprivate) == TRUE){
+		  volatile int i = 0;
+		  i++;
 	  }
 
   }
@@ -273,6 +281,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+int owSearchRomGetResult(uint8_t *romUid){
+	if(searchCpltF == 1){
+		searchCpltF = 0;
+		*romUid = *doRomSearchPrivate.romVal;
+		return TRUE;
+	}
+	return FALSE;
+}
 HAL_StatusTypeDef HAL_HalfDuplex_EnableTxRx(UART_HandleTypeDef *huart)
 {
   /* Process Locked */

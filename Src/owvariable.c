@@ -20,3 +20,5 @@ DoRomSearchPrivate doRomSearchPrivate;
 RomSearchingPrivate romSearchingPrivate;
 
  int owLength = 64;
+
+ int searchCpltF = 0;
