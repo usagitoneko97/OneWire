@@ -42,6 +42,16 @@ SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberO
     return BIT_0;
   }
 }
+void test_getOwBitState_given_array_expect_SearchBitType(void){
+  owLength = 5;
+  int devices[3][5] = {{1, 0, 1, 1, 0},
+                       {0, 0, 1, 0, 1},
+                       {1, 0, 1, 0, 1}};
+
+  TEST_ASSERT_EQUAL(BIT_CONFLICT, getOwBitState(devices, 1, 3));
+  TEST_ASSERT_EQUAL(BIT_0, getOwBitState(devices, 3, 3));
+  TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 2, 3));
+}
 
 /**
  * get the SearchBitType (BIT_0, BIT_1, or BIT_CONFLICT)
@@ -65,6 +75,20 @@ SearchBitType getSearchBitTypeFrom01(uint8_t fakeIdBits, uint8_t fakeCmpIdBits){
   return intepretSearchBit(uartRxVal);
 }
 
+void test_getSearchBitTypeFrom01(void){
+  SearchBitType result = getSearchBitTypeFrom01(1, 0);
+  TEST_ASSERT_EQUAL(BIT_1, result);
+
+  result = getSearchBitTypeFrom01(0, 1);
+  TEST_ASSERT_EQUAL(BIT_0, result);
+
+  result = getSearchBitTypeFrom01(0, 0);
+  TEST_ASSERT_EQUAL(BIT_CONFLICT, result);
+
+  result = getSearchBitTypeFrom01(1, 1);
+  TEST_ASSERT_EQUAL(DEVICE_NOT_THERE, result);
+}
+
 /**
  * @NOTE for testing purpose
  * to test out the complete rom number given in the parameter
@@ -81,21 +105,6 @@ void thrashGet1BitRom(BitSearchInformation *bsi, uint8_t *fakeIdBits, uint8_t *f
   }
 
 }
-
-void test_getSearchBitTypeFrom01(void){
-  SearchBitType result = getSearchBitTypeFrom01(1, 0);
-  TEST_ASSERT_EQUAL(BIT_1, result);
-
-  result = getSearchBitTypeFrom01(0, 1);
-  TEST_ASSERT_EQUAL(BIT_0, result);
-
-  result = getSearchBitTypeFrom01(0, 0);
-  TEST_ASSERT_EQUAL(BIT_CONFLICT, result);
-
-  result = getSearchBitTypeFrom01(1, 1);
-  TEST_ASSERT_EQUAL(DEVICE_NOT_THERE, result);
-}
-
 
 void init64BitId(uint8_t *id,uint8_t *cmp_id, uint8_t startBit) {
   fakeIdBits = id;
@@ -164,13 +173,13 @@ void test_process1BitRom_BIT_CONFLICT_idBit_1(void){
 }
 
 /********************************************************
- * Given: BIT_0
+ * Given: BIT_0                                         *
  *                                                      *
  * EXPECTED:                                            *
- * lastZero = 0                                        *
- * idBitNumber ++                                     *
- * searchDirection = idBit                            *
- * first bit of first byte of romNo = searchDirection *
+ * lastZero = 0                                         *
+ * idBitNumber ++                                       *
+ * searchDirection = idBit                              *
+ * first bit of first byte of romNo = searchDirection   *
  ********************************************************/
 void test_process1BitRom_IdBit_cmpBit_01(void){
   /*initialize test*/
@@ -194,10 +203,10 @@ void test_process1BitRom_IdBit_cmpBit_01(void){
  * Given: BIT_1                                         *
  *                                                      *
  * EXPECTED:                                            *
- * lastZero = 0                                        *
- * idBitNumber ++                                     *
- * searchDirection = idBit                            *
- * first bit of first byte of romNo = searchDirection *
+ * lastZero = 0                                         *
+ * idBitNumber ++                                       *
+ * searchDirection = idBit                              *
+ * first bit of first byte of romNo = searchDirection   *
  ********************************************************/
 void test_process1BitRom_BIT_1(void){
   /*initialize test*/
@@ -221,10 +230,10 @@ void test_process1BitRom_BIT_1(void){
  * Given : DEVICE_NOT_THERE                             *
  *                                                      *
  * EXPECTED:                                            *
- * lastZero = remains                                  *
- * idBitNumber = remains                              *
- * searchDirection = remains                           *
- * searchResult = FALSE                                *
+ * lastZero = remains                                   *
+ * idBitNumber = remains                                *
+ * searchDirection = remains                            *
+ * searchResult = FALSE                                 *
  ********************************************************/
 void test_process1BitRom_Given_DEVICE_NOT_THERE(void){
     /*initialize test*/
@@ -247,15 +256,15 @@ void test_process1BitRom_Given_DEVICE_NOT_THERE(void){
 
 
 /********************************************************
- * Given :BIT_CONFLICT
+ * Given :BIT_CONFLICT                                  *
  * lastDiscrepancy = 1                                  *
- * idBitNumber = 1                                    *
+ * idBitNumber = 1                                      *
  *                                                      *
  * EXPECT:                                              *
- * lastZero = 0                                        *
- * idBitNumber++                                      *
- * searchDirection = 1                                 *
- * first bit of first byte of romNo = searchDirection *
+ * lastZero = 0                                         *
+ * idBitNumber++                                        *
+ * searchDirection = 1                                  *
+ * first bit of first byte of romNo = searchDirection   *
  ********************************************************/
 void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_sameAs_IDBitNumber_expect_searchDir_1(void){
   /*initialize test*/
@@ -277,16 +286,16 @@ void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_sameAs_IDBitNumber_e
 }
 
 /********************************************************
- * Given :BIT_CONFLICT
+ * Given :BIT_CONFLICT                                  *
  * lastDiscrepancy = 3                                  *
- * idBitNumber = 1                                    *
+ * idBitNumber = 1                                      *
  * ROM[0] |= 0x01 (set bi0 if ROM[0] to 1)              *
  *                                                      *
  * expect:                                              *
- * lastZero = 0                                        *
- * idBitNumber++                                      *
- * searchDirection = 1                                 *
- * first bit of first byte of romNo = searchDirection *
+ * lastZero = 0                                         *
+ * idBitNumber++                                        *
+ * searchDirection = 1                                  *
+ * first bit of first byte of romNo = searchDirection   *
  ********************************************************/
 void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_value_eq_1(void){
   /*initialize test*/
@@ -309,16 +318,16 @@ void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_biggerThan_IDBitNumb
 }
 
 /********************************************************
- * Given : BIT_CONFLICT
+ * Given : BIT_CONFLICT                                 *
  * lastDiscrepancy = 3                                  *
- * idBitNumber = 1                                    *
+ * idBitNumber = 1                                      *
  * ROM[0] |= 0x01 (set bi0 if ROM[0] to 0)              *
  *                                                      *
  * expect:                                              *
- * lastZero = 0                                        *
- * idBitNumber++                                      *
- * searchDirection = 0                                 *
- * first bit of first byte of romNo = searchDirection *
+ * lastZero = 0                                         *
+ * idBitNumber++                                        *
+ * searchDirection = 0                                  *
+ * first bit of first byte of romNo = searchDirection   *
  ********************************************************/
 void test_process1BitRom_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_romNo_value_eq_0(void){
   /*initialize test*/
@@ -1079,16 +1088,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
     free(bsi);
   }
 
-  void test_getOwBitState_given_array_expect_SearchBitType(void){
-    owLength = 5;
-    int devices[3][5] = {{1, 0, 1, 1, 0},
-                         {0, 0, 1, 0, 1},
-                         {1, 0, 1, 0, 1}};
 
-    TEST_ASSERT_EQUAL(BIT_CONFLICT, getOwBitState(devices, 1, 3));
-    TEST_ASSERT_EQUAL(BIT_0, getOwBitState(devices, 3, 3));
-    TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 2, 3));
-  }
 
 
    //TODO the rest of targetSetup search

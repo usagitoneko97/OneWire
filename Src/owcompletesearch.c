@@ -195,6 +195,7 @@ void doRomSearch(Event *evt){
   uint8_t *dataTemp;
   Event doRomSearchEv;
   switch (evt->evtType) {
+    //event of START_ROM_SEARCH will be initialize by main
     case START_ROM_SEARCH:
       registerCallback(doRomSearch, &list);
       resetAndVerifyOw(&doRomSearchEv);
@@ -204,7 +205,6 @@ void doRomSearch(Event *evt){
       i++;
       break;
     case RESET_DEVICE_AVAILABLE:
-
       doRomSearchEv.evtType = INITIATE_COMMAND;
       romSearching(&doRomSearchEv);
       break;
