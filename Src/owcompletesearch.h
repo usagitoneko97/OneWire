@@ -10,10 +10,10 @@
 //#define SENDF0_DATA  {SEND_ONE, SEND_ONE, SEND_ONE,SEND_ONE, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO}
 //uint8_t sendF0_txData[] = {SEND_1, SEND_1, SEND_1,SEND_1, SEND_0, SEND_0, SEND_0, SEND_0};
 
-#define GET_CALLBACK(list, generateResetEv)                           \
+/*#define GET_CALLBACK(list, generateResetEv)                           \
                         FuncP functPToCaller;                         \
                         functPToCaller = getCurrentCallback((list));  \
-                        functPToCaller(&(generateResetEv));
+                        functPToCaller(&(generateResetEv));*/
 
 #define GET_UART_RX_VAL(evt)            *(((TxRxCpltEvData*)(evt)->data)->uartRxVal)
 

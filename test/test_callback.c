@@ -65,14 +65,14 @@ void test_getCurrentCallback_given_1_data(void){
   LinkedList list;
   ListInit(&list);
   registerCallback(someFunction, &list);
-  FuncP tempFuncP = getCurrentCallback();
+  FuncP tempFuncP = getCurrentCallback(&list);
   TEST_ASSERT_EQUAL(someFunction, tempFuncP);
 }
 
 void test_getCurrentCallback_given_NULL(void){
   LinkedList list;
   ListInit(&list);
-  FuncP tempFuncP = getCurrentCallback();
+  FuncP tempFuncP = getCurrentCallback(&list);
   TEST_ASSERT_NULL(tempFuncP);
 }
 

@@ -44,7 +44,9 @@ void resetAndVerifyOw(Event *evt){
           case UART_TIMEOUT:
               CREATE_EVENT_WITH_TYPE(generateResetEv, evt->evtType);
               unregisterCallback(&list);
-              GET_CALLBACK(list, generateResetEv);
+              FuncP functPToCaller;
+              functPToCaller = getCurrentCallback((&list));
+              functPToCaller(&(generateResetEv));
               break;
           case UART_RX_SUCCESS:
               tempUartRxVal = GET_UART_RX_VAL(evt);
