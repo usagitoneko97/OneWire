@@ -105,7 +105,7 @@ struct BitSearchInformation {
   unsigned char byteMask;
   int noDevice;
   SearchBitType bitReadType;
-  uint8_t *romNo;
+  uint8_t *romUid;
 };
 
 
@@ -116,7 +116,7 @@ typedef enum {
 
 typedef struct RomSearchingPrivate {
   RomSearchingState state;
-  uint8_t *romNo;
+  uint8_t *romUid;
   BitSearchInformation bitSearchInformation;
 }RomSearchingPrivate;
 

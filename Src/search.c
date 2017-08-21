@@ -36,7 +36,7 @@ void clearDataBuffer64(){
 
 /**
  * read an idBitNumber and cmpIdBit, and write to 1 wire device as well as
- * romNo bit by bit
+ * romUid bit by bit
  * @param  bitSearchInformation structure that contain all the information
  *                              about the bit searching
  */
@@ -101,9 +101,9 @@ void clearGet1BitRom(BitSearchInformation *bsi){
  */
 void targetSetupConfig(uint8_t familyCode, BitSearchInformation *bsi){
   int i;
-  *(bsi->romNo) = familyCode;
+  *(bsi->romUid) = familyCode;
   for (i = 1; i < 8; i++)
-    *(bsi->romNo + i)  = 0;
+    *(bsi->romUid + i)  = 0;
   lastDiscrepancy = 64;
   lastFamilyDiscrepancy = 0;
   lastDeviceFlag = FALSE;
@@ -139,5 +139,5 @@ void verifyConfig(uint8_t *romNumbers, int byteLength, BitSearchInformation *bsi
   lastDeviceFlag = FALSE;
   int i;
   for(i = 0;i<byteLength;i++)
-    bsi->romNo[i] = *(romNumbers+i);
+    bsi->romUid[i] = *(romNumbers+i);
 }

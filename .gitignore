@@ -1,2 +1,4 @@
 build/*
 !build/Readme.txt
+Debug/
+!Debug/sources.mk
