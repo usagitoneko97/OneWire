@@ -17,7 +17,7 @@
                                        (bsi)->byteMask = 1;                   \
                                        (bsi)->romByteNum++;                   \
                                       }
-#define RESET_IF_COMPLETED_BIT_SEARCHING(bsi)                                 \
+#define RESET_IF_COMPLETED_BIT_SEARCHING(bsi, searchDir)                                 \
                                      if(bsi->idBitNumber > OW_LENGTH){        \
                                        lastDiscrepancy = bsi->lastZero;       \
                                        if(lastDiscrepancy == 0){              \

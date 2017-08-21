@@ -75,7 +75,7 @@ void get1BitRom(BitSearchInformation *bsi){
   //preparation for next bit search
   bsi->idBitNumber++;
   UPDATE_ROM_BYTE_MASK(bsi);
-  RESET_IF_COMPLETED_BIT_SEARCHING(bsi);
+  RESET_IF_COMPLETED_BIT_SEARCHING(bsi, searchDir);
 }
 
 
