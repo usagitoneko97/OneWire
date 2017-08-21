@@ -91,8 +91,8 @@ void romSearching(Event *evt){
           registerCallback(romSearching, &list);
           initGet1BitRom(bsi);
           romSearchingPrivate.state = ROM_SEARCHING;
+          owSetUpRxIT(uartRxDataBuffer, 10);
           uartTxOw(sendF0_txData1, 8);
-          owSetUpRxIT(uartRxDataBuffer, 2);
           owUartTx(0xff);
           owUartTx(0xff);
         }
@@ -136,7 +136,6 @@ void romSearching(Event *evt){
                   functPToCaller(&(generateEvt));
                 }
                 else{
-                  owSetUpRxIT(uartRxDataBuffer, 2);
                   owUartTxDma(0xff);
                   owUartTxDma(0xff);
                 }

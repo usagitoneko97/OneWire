@@ -40,6 +40,7 @@
 #include "onewireio.h"
 #include "search.h"
 #include "owvariable.h"
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -132,7 +133,7 @@ int main(void)
 		  Event evt;
 		  evt.evtType = UART_RX_SUCCESS;
 		  TxRxCpltEvData evData;
-		  evData.uartRxVal = uartRxDataBuffer;
+		  evData.uartRxVal = uartRxDataBuffer+8;
 		  evt.data = &evData;
 		  FuncP functPToCaller;
 		  functPToCaller = getCurrentCallback((&list));
