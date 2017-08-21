@@ -51,7 +51,9 @@ void resetAndVerifyOw(Event *evt){
               if(OW_DEVICE_NOT_READY(tempUartRxVal)){
                 CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_NOT_AVAILABLE);
                 unregisterCallback(&list);
-                GET_CALLBACK(list, generateResetEv);
+                FuncP functPToCaller;
+                functPToCaller = getCurrentCallback((&list));
+                functPToCaller(&(generateResetEv));
             	}
             	// else if(data >= 0x10 && data <= 0x90){
             	/*if the higher bit has response */
@@ -65,7 +67,9 @@ void resetAndVerifyOw(Event *evt){
             	else{
                 CREATE_EVENT_WITH_TYPE(generateResetEv, RESET_DEVICE_UNKNOWN_ERROR);
                 unregisterCallback(&list);
-                GET_CALLBACK(list, generateResetEv);
+                FuncP functPToCaller;
+                functPToCaller = getCurrentCallback((&list));
+                functPToCaller(&(generateResetEv));
             	}
               break;
           }
@@ -95,7 +99,9 @@ void romSearching(Event *evt){
         else {
           generateFailEvt.evtType = UNKNOWN_ERROR;
           //TODO check for null
-          GET_CALLBACK(list, generateFailEvt)
+          FuncP functPToCaller;
+          functPToCaller = getCurrentCallback((&list));
+          functPToCaller(&(generateFailEvt));
         }
         break;
     case ROM_SEARCHING:
@@ -107,23 +113,27 @@ void romSearching(Event *evt){
               if(ERROR_NO_DEVICE(romSearchingPrivate)){
                 //ERROR
                 clearGetRom(&romSearchingPrivate);
-                free(romSearchingPrivate.romNo);
+                free(romSearchingPrivate.romUid);
                 CREATE_EVENT_WITH_TYPE(generateFailEvt, ROM_SEARCH_NO_DEVICE);
                 //TODO check for null
                 unregisterCallback(&list);
-                GET_CALLBACK(list, generateFailEvt);
+                FuncP functPToCaller;
+                functPToCaller = getCurrentCallback((&list));
+                functPToCaller(&(generateFailEvt));
               }
               else{
                 if(SEARCH_COMPLETE(romSearchingPrivate)){
                   static Event generateEvt;
                   CREATE_EVENT_WITH_TYPE(generateEvt, ROM_SEARCH_SUCCESSFUL);
                   static RomSearchingEvData evData;
-                  evData.romDataBuffer = romSearchingPrivate.bitSearchInformation.romNo;
+                  evData.romDataBuffer = romSearchingPrivate.bitSearchInformation.romUid;
                   evData.lastDeviceFlag = lastDeviceFlag;
                   generateEvt.data = &evData;
                   clearGetRom(&romSearchingPrivate);
                   unregisterCallback(&list);
-                  GET_CALLBACK(list, generateEvt);
+                  FuncP functPToCaller;
+                  functPToCaller = getCurrentCallback((&list));
+                  functPToCaller(&(generateEvt));
                 }
                 else{
                   owSetUpRxIT(uartRxDataBuffer, 2);
@@ -135,12 +145,14 @@ void romSearching(Event *evt){
         case UART_FRAME_ERROR:
         case UART_TIMEOUT:
             CREATE_EVENT_WITH_TYPE(generateFailEvt, evt->evtType);
-            GET_CALLBACK(list, generateFailEvt);
+            FuncP functPToCaller;
+            functPToCaller = getCurrentCallback((&list));
+            functPToCaller(&(generateFailEvt));
             //TODO
-            //free romNo
+            //free romUid
             break;
 
-          //TODO free romSearchingPrivate.romNo
+          //TODO free romSearchingPrivate.romUid
       }
       break;
   }
@@ -185,8 +197,8 @@ void initGet1BitRom(BitSearchInformation *bsi){
   lastFamilyDiscrepancy = 0;
   //TODO change the state somewhere
     // romSearchingPrivate->state = ROM_SEARCHING;
-  bsi->romNo = malloc(8);
-  *(bsi->romNo) = 0;
+  bsi->romUid = malloc(8);
+  *(bsi->romUid) = 0;
 }
 
 
@@ -236,7 +248,7 @@ void clearGetRom(RomSearchingPrivate *romSearchingPrivate){
   (romSearchingPrivate->bitSearchInformation).noDevice = FALSE;
   (romSearchingPrivate->bitSearchInformation).idBitNumber = 1;
   //TODO find a way to free it
-  //free(romSearchingPrivate->romNo);
+  //free(romSearchingPrivate->romUid);
 }
 
 

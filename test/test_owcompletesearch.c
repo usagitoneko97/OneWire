@@ -300,8 +300,8 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   romSearching(&evt);
   //TODO
   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.idBitNumber);
-  TEST_ASSERT_EQUAL(0x01, *(romSearchingPrivate.bitSearchInformation.romNo));
-  free(romSearchingPrivate.romNo);
+  TEST_ASSERT_EQUAL(0x01, *(romSearchingPrivate.bitSearchInformation.romUid));
+  free(romSearchingPrivate.romUid);
   free(txRxEvData.uartRxVal);
   // evt.data =
   // evt
@@ -338,8 +338,8 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   TEST_ASSERT_EQUAL(9, romSearchingPrivate.bitSearchInformation.idBitNumber);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.romByteNum);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
-  TEST_ASSERT_EQUAL(0x0, *(romSearchingPrivate.bitSearchInformation.romNo));
-  free(romSearchingPrivate.romNo);
+  TEST_ASSERT_EQUAL(0x0, *(romSearchingPrivate.bitSearchInformation.romUid));
+  free(romSearchingPrivate.romUid);
   free(txRxEvData.uartRxVal);
 
 }
@@ -373,7 +373,7 @@ void test_romSearching_lastBit(void){
   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romByteNum);
   TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.byteMask);
   TEST_ASSERT_EQUAL(0x80, *(doRomSearchPrivate.romVal + 7));
-  //TEST_ASSERT_EQUAL(128, *(romSearchingPrivate.romNo + 7));
+  //TEST_ASSERT_EQUAL(128, *(romSearchingPrivate.romUid + 7));
   //TODO test it generte
   free(txRxEvData.uartRxVal);
   // evt.data =
@@ -463,7 +463,7 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    romSearching(&romSearchingEv);
    TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.idBitNumber);
    TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.lastZero);
-   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romNo[0]);
+   TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.romUid[0]);
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
    free(txRxEvData.uartRxVal);
    //=====================================================================
@@ -481,7 +481,7 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    romSearching(&romSearchingEv);
    TEST_ASSERT_EQUAL(3, romSearchingPrivate.bitSearchInformation.idBitNumber);
    TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.lastZero);
-   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.romNo[0]);
+   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.romUid[0]);
    TEST_ASSERT_EQUAL(FALSE, romSearchingPrivate.bitSearchInformation.searchResult);
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
    free(txRxEvData.uartRxVal);
@@ -496,7 +496,7 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    romSearching(&romSearchingEv);
    TEST_ASSERT_EQUAL(1, romSearchingPrivate.bitSearchInformation.idBitNumber);
    TEST_ASSERT_EQUAL(0, romSearchingPrivate.bitSearchInformation.lastZero);
-   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.romNo[0]);
+   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.romUid[0]);
    TEST_ASSERT_EQUAL(2, *(doRomSearchPrivate.romVal));
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
    //the result (which is 2) is found

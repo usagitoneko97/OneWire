@@ -4,7 +4,7 @@
 #ifndef _OWVARIABLE_H
 #define _OWVARIABLE_H
 #define MAX_OWDEVICE  64
-extern unsigned char romNo[];
+extern unsigned char romUid[];
 extern unsigned char romDataBuffer[][8];
 extern int bufferByteNumber;
 extern int bufferDeviceNumber;

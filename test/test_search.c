@@ -134,7 +134,7 @@ void initSearchTest(BitSearchInformation *innerVAR_OW){
   lastFamilyDiscrepancy = 0;
   int i = 0;
   while(i<8){
-    romNo[i++] = 0;
+    romUid[i++] = 0;
   }
   innerVAR_OW->idBitNumber = 1;
   innerVAR_OW->lastZero = 0;
@@ -153,7 +153,7 @@ void initSearchTest(BitSearchInformation *innerVAR_OW){
  * EXPECTED:                                            *
  * lastZero = 1                                         *
  * idBitNumber ++                                       *
- * first bit of first byte of romNo = searchDirection   *
+ * first bit of first byte of romUid = searchDirection   *
  ********************************************************/
 void test_process1BitRom_BIT_CONFLICT_idBit_1(void){
   /*initialize test*/
@@ -162,14 +162,14 @@ void test_process1BitRom_BIT_CONFLICT_idBit_1(void){
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
   clearGet1BitRom(&bsi);
-  bsi.romNo = (uint8_t*)malloc(1);
-  *(bsi.romNo) = 0x01;
+  bsi.romUid = (uint8_t*)malloc(1);
+  *(bsi.romUid) = 0x01;
   get1BitRom(&bsi);
 
   TEST_ASSERT_EQUAL(1, bsi.lastZero);
   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-  TEST_ASSERT_EQUAL(0, *(bsi.romNo));
-  free(bsi.romNo);
+  TEST_ASSERT_EQUAL(0, *(bsi.romUid));
+  free(bsi.romUid);
 }
 
 /********************************************************
@@ -179,7 +179,7 @@ void test_process1BitRom_BIT_CONFLICT_idBit_1(void){
  * lastZero = 0                                         *
  * idBitNumber ++                                       *
  * searchDirection = idBit                              *
- * first bit of first byte of romNo = searchDirection   *
+ * first bit of first byte of romUid = searchDirection   *
  ********************************************************/
 void test_process1BitRom_IdBit_cmpBit_01(void){
   /*initialize test*/
@@ -188,14 +188,14 @@ void test_process1BitRom_IdBit_cmpBit_01(void){
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_0;
   clearGet1BitRom(&bsi);
-  bsi.romNo = (uint8_t*)malloc(1);
-  *(bsi.romNo) = 0x01;
+  bsi.romUid = (uint8_t*)malloc(1);
+  *(bsi.romUid) = 0x01;
   get1BitRom(&bsi);
 
   TEST_ASSERT_EQUAL(0, bsi.lastZero);
   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-  TEST_ASSERT_EQUAL(0, *(bsi.romNo));
-  free(bsi.romNo);
+  TEST_ASSERT_EQUAL(0, *(bsi.romUid));
+  free(bsi.romUid);
 
 }
 
@@ -206,7 +206,7 @@ void test_process1BitRom_IdBit_cmpBit_01(void){
  * lastZero = 0                                         *
  * idBitNumber ++                                       *
  * searchDirection = idBit                              *
- * first bit of first byte of romNo = searchDirection   *
+ * first bit of first byte of romUid = searchDirection   *
  ********************************************************/
 void test_process1BitRom_BIT_1(void){
   /*initialize test*/
@@ -215,14 +215,14 @@ void test_process1BitRom_BIT_1(void){
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_1;
   clearGet1BitRom(&bsi);
-  bsi.romNo = (uint8_t*)malloc(1);
-  *(bsi.romNo) = 0x00;
+  bsi.romUid = (uint8_t*)malloc(1);
+  *(bsi.romUid) = 0x00;
   get1BitRom(&bsi);
 
   TEST_ASSERT_EQUAL(0, bsi.lastZero);
   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-  TEST_ASSERT_EQUAL(1, *(bsi.romNo));
-  free(bsi.romNo);
+  TEST_ASSERT_EQUAL(1, *(bsi.romUid));
+  free(bsi.romUid);
 
 }
 
@@ -242,15 +242,15 @@ void test_process1BitRom_Given_DEVICE_NOT_THERE(void){
   initGet1BitRom(&bsi);
   bsi.bitReadType = DEVICE_NOT_THERE;
   clearGet1BitRom(&bsi);
-  bsi.romNo = (uint8_t*)malloc(1);
-  *(bsi.romNo) = 0x00;
+  bsi.romUid = (uint8_t*)malloc(1);
+  *(bsi.romUid) = 0x00;
   get1BitRom(&bsi);
 
   TEST_ASSERT_EQUAL(0, bsi.lastZero);
   TEST_ASSERT_EQUAL(1, bsi.idBitNumber);
-  TEST_ASSERT_EQUAL(0, *(bsi.romNo));
+  TEST_ASSERT_EQUAL(0, *(bsi.romUid));
   TEST_ASSERT_EQUAL(TRUE, bsi.noDevice);
-  free(bsi.romNo);
+  free(bsi.romUid);
 }
 
 
@@ -264,7 +264,7 @@ void test_process1BitRom_Given_DEVICE_NOT_THERE(void){
  * lastZero = 0                                         *
  * idBitNumber++                                        *
  * searchDirection = 1                                  *
- * first bit of first byte of romNo = searchDirection   *
+ * first bit of first byte of romUid = searchDirection   *
  ********************************************************/
 void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_sameAs_IDBitNumber_expect_searchDir_1(void){
   /*initialize test*/
@@ -273,16 +273,16 @@ void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_sameAs_IDBitNumber_e
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
   clearGet1BitRom(&bsi);
-  bsi.romNo = (uint8_t*)malloc(1);
-  *(bsi.romNo) = 0x00;
+  bsi.romUid = (uint8_t*)malloc(1);
+  *(bsi.romUid) = 0x00;
 
   lastDiscrepancy = 1;
   get1BitRom(&bsi);
 
   TEST_ASSERT_EQUAL(0, bsi.lastZero);
   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-  TEST_ASSERT_EQUAL(1, *(bsi.romNo));
-  free(bsi.romNo);
+  TEST_ASSERT_EQUAL(1, *(bsi.romUid));
+  free(bsi.romUid);
 }
 
 /********************************************************
@@ -295,7 +295,7 @@ void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_sameAs_IDBitNumber_e
  * lastZero = 0                                         *
  * idBitNumber++                                        *
  * searchDirection = 1                                  *
- * first bit of first byte of romNo = searchDirection   *
+ * first bit of first byte of romUid = searchDirection   *
  ********************************************************/
 void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_value_eq_1(void){
   /*initialize test*/
@@ -305,16 +305,16 @@ void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_biggerThan_IDBitNumb
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
   clearGet1BitRom(&bsi);
-  bsi.romNo = (uint8_t*)malloc(1);
-  *(bsi.romNo) |= 0x01;
+  bsi.romUid = (uint8_t*)malloc(1);
+  *(bsi.romUid) |= 0x01;
   bsi.idBitNumber = 1;
   lastDiscrepancy = 3;
   get1BitRom(&bsi);
 
   TEST_ASSERT_EQUAL(0, bsi.lastZero);
   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-  TEST_ASSERT_EQUAL(1, *(bsi.romNo) & 0x01);
-  free(bsi.romNo);
+  TEST_ASSERT_EQUAL(1, *(bsi.romUid) & 0x01);
+  free(bsi.romUid);
 }
 
 /********************************************************
@@ -327,25 +327,25 @@ void test_process1BitRom_given_BIT_CONFLICT_lastDiscrepency_biggerThan_IDBitNumb
  * lastZero = 0                                         *
  * idBitNumber++                                        *
  * searchDirection = 0                                  *
- * first bit of first byte of romNo = searchDirection   *
+ * first bit of first byte of romUid = searchDirection   *
  ********************************************************/
-void test_process1BitRom_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_romNo_value_eq_0(void){
+void test_process1BitRom_given_00_lastDiscrepency_biggerThan_IDBitNumber_expect_followBack_romUid_value_eq_0(void){
   /*initialize test*/
   owLength = 3;
   BitSearchInformation bsi;
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
   clearGet1BitRom(&bsi);
-  bsi.romNo = (uint8_t*)malloc(1);
-  *(bsi.romNo) &= 0xfe;
+  bsi.romUid = (uint8_t*)malloc(1);
+  *(bsi.romUid) &= 0xfe;
   bsi.idBitNumber = 1;
   lastDiscrepancy = 3;
   get1BitRom(&bsi);
 
   TEST_ASSERT_EQUAL(1, bsi.lastZero);
   TEST_ASSERT_EQUAL(2, bsi.idBitNumber);
-  TEST_ASSERT_EQUAL(0, *(bsi.romNo) & 0x01);
-  free(bsi.romNo);
+  TEST_ASSERT_EQUAL(0, *(bsi.romUid) & 0x01);
+  free(bsi.romUid);
 
 
 }
@@ -391,14 +391,14 @@ void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
 
-  bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+  bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
   owLength = 4;
   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-  TEST_ASSERT_EQUAL(8, (*(bsi.romNo) & 0xf));
+  TEST_ASSERT_EQUAL(8, (*(bsi.romUid) & 0xf));
   TEST_ASSERT_EQUAL(3, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-  free(bsi.romNo);
+  free(bsi.romUid);
 }
 
 
@@ -446,19 +446,19 @@ void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
 
-  bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+  bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
   /*test prequisite*/
   lastDiscrepancy = 3;
   lastDeviceFlag = FALSE;
-  *(bsi.romNo) = 0x08;
+  *(bsi.romUid) = 0x08;
 
   owLength = 4;
   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-  TEST_ASSERT_EQUAL(4, (*(bsi.romNo) & 0xf));
+  TEST_ASSERT_EQUAL(4, (*(bsi.romUid) & 0xf));
   TEST_ASSERT_EQUAL(2, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-  free(bsi.romNo);
+  free(bsi.romUid);
 }
 
 
@@ -500,19 +500,19 @@ void test_search_bit_expect_ThirdData_LastDisprecancy_1(void)
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
 
-  bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+  bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
   /*test prequisite*/
   lastDiscrepancy = 2;
   lastDeviceFlag = FALSE;
-  *(bsi.romNo) = 0x04;
+  *(bsi.romUid) = 0x04;
 
   owLength = 4;
   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-  TEST_ASSERT_EQUAL(2, (*(bsi.romNo) & 0xf));
+  TEST_ASSERT_EQUAL(2, (*(bsi.romUid) & 0xf));
   TEST_ASSERT_EQUAL(1, lastDiscrepancy);
   TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-  free(bsi.romNo);
+  free(bsi.romUid);
 }
 
 
@@ -555,19 +555,19 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
   initGet1BitRom(&bsi);
   bsi.bitReadType = BIT_CONFLICT;
 
-  bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+  bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
   /*test prequisite*/
   lastDiscrepancy = 1;
   lastDeviceFlag = FALSE;
-  *(bsi.romNo) = 0x02;
+  *(bsi.romUid) = 0x02;
 
   owLength = 4;
   thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-  TEST_ASSERT_EQUAL(1, (*(bsi.romNo) & 0xf));
+  TEST_ASSERT_EQUAL(1, (*(bsi.romUid) & 0xf));
   TEST_ASSERT_EQUAL(0, lastDiscrepancy);
   TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
-  free(bsi.romNo);
+  free(bsi.romUid);
 }
 
 /* More complex data:
@@ -590,13 +590,13 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    initGet1BitRom(&bsi);
    bsi.bitReadType = BIT_CONFLICT;
   //  clearGet1BitRom(&bsi);
-   bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+   bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
    thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-   TEST_ASSERT_EQUAL(0x26, (*(bsi.romNo)));
+   TEST_ASSERT_EQUAL(0x26, (*(bsi.romUid)));
    TEST_ASSERT_EQUAL(1, lastDiscrepancy);
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-   free(bsi.romNo);
+   free(bsi.romUid);
  }
 
  /* More complex data:
@@ -619,16 +619,16 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
     // initGet1BitRom(&bsi);
     bsi.bitReadType = BIT_CONFLICT;
     clearGet1BitRom(&bsi);
-    bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+    bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
     lastDeviceFlag = FALSE;
     lastDiscrepancy=1;
-    *(bsi.romNo) = 0x26;
+    *(bsi.romUid) = 0x26;
 
     thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-    TEST_ASSERT_EQUAL(0x59, (*(bsi.romNo)));
+    TEST_ASSERT_EQUAL(0x59, (*(bsi.romUid)));
     TEST_ASSERT_EQUAL(3, lastDiscrepancy);
     TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-    free(bsi.romNo);
+    free(bsi.romUid);
   }
 
   /* More complex data:
@@ -650,16 +650,16 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      // initGet1BitRom(&bsi);
      bsi.bitReadType = BIT_CONFLICT;
      clearGet1BitRom(&bsi);
-     bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+     bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
      lastDeviceFlag = FALSE;
      lastDiscrepancy=3;
-     *(bsi.romNo) = 0x59;
+     *(bsi.romUid) = 0x59;
 
      thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-     TEST_ASSERT_EQUAL(0x35, (*(bsi.romNo)));
+     TEST_ASSERT_EQUAL(0x35, (*(bsi.romUid)));
      TEST_ASSERT_EQUAL(0, lastDiscrepancy);
      TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
-     free(bsi.romNo);
+     free(bsi.romUid);
    }
 
    /*Target Setup search (1/3)
@@ -682,15 +682,15 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      BitSearchInformation bsi;
      // initGet1BitRom(&bsi);
      clearGet1BitRom(&bsi);
-     bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+     bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
      targetSetupConfig(0xc5, &bsi);
      thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
      TEST_ASSERT_EQUAL(10, lastDiscrepancy);
      TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-     TEST_ASSERT_EQUAL(0xc5, (*(bsi.romNo)));
-     TEST_ASSERT_EQUAL(0x05, (*(bsi.romNo + 1)));
-     free(bsi.romNo);
+     TEST_ASSERT_EQUAL(0xc5, (*(bsi.romUid)));
+     TEST_ASSERT_EQUAL(0x05, (*(bsi.romUid + 1)));
+     free(bsi.romUid);
    }
 
    /*Target Setup search (2/3)
@@ -708,7 +708,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    * that has different family code. So there is no part 3 (3/3)
    * Expected:  lastDiscrepancy = 0
    *            lastDeviceFlag = TRUE
-   *            romNo[1] = 0xb
+   *            romUid[1] = 0xb
    */
 
    void test_targetSetupSearch_cont_givenAboveData_expect_dataTwo(void){
@@ -719,20 +719,20 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      BitSearchInformation bsi;
      // initGet1BitRom(&bsi);
      clearGet1BitRom(&bsi);
-     bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+     bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
      lastDiscrepancy = 10;
      lastFamilyDiscrepancy = 0;
      lastDeviceFlag = FALSE;
-     bsi.romNo[0] = 0xc5; //family code
-     bsi.romNo[1] = 0x05;
+     bsi.romUid[0] = 0xc5; //family code
+     bsi.romUid[1] = 0x05;
 
      thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
      TEST_ASSERT_EQUAL(0, lastDiscrepancy);
      TEST_ASSERT_EQUAL(TRUE, lastDeviceFlag);
-     TEST_ASSERT_EQUAL(0xc5, (*(bsi.romNo)));
-     TEST_ASSERT_EQUAL(0xb, (*(bsi.romNo + 1)));
-     free(bsi.romNo);
+     TEST_ASSERT_EQUAL(0xc5, (*(bsi.romUid)));
+     TEST_ASSERT_EQUAL(0xb, (*(bsi.romUid + 1)));
+     free(bsi.romUid);
    }
 
 /**
@@ -745,7 +745,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  * Test on 8 bit
  * -------------
  * Given:
- * romNo:   0011 0100
+ * romUid:   0011 0100
  *          0x34
  * other devices :
  *          0111  1011
@@ -765,22 +765,22 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      BitSearchInformation bsi;
      // initGet1BitRom(&bsi);
      clearGet1BitRom(&bsi);
-     bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+     bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
 
      uint8_t romNumberToVerify = 0x34;
      verifyConfig(&romNumberToVerify, 1, &bsi);
 
      thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-     TEST_ASSERT_EQUAL(0x34, bsi.romNo[0]);
-     free(bsi.romNo);
+     TEST_ASSERT_EQUAL(0x34, bsi.romUid[0]);
+     free(bsi.romUid);
    }
 /**
- * Verify certain romNo but given different romNo
+ * Verify certain romUid but given different romUid
  * ------------
  * Test on 8 bitPos
  * ------------
  * Given:
- * romNo to search: 1011 1110
+ * romUid to search: 1011 1110
  *                   0xbe
  *Given devices:    0110 1101
  *                  0x6d
@@ -798,14 +798,14 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      BitSearchInformation bsi;
      // initGet1BitRom(&bsi);
      clearGet1BitRom(&bsi);
-     bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+     bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
      lastDiscrepancy = 8;
      lastFamilyDiscrepancy = 0;
      lastDeviceFlag = FALSE;
-     bsi.romNo[0] = 0xbe;
+     bsi.romUid[0] = 0xbe;
      thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
-     TEST_ASSERT_NOT_EQUAL(0xbe, bsi.romNo[0]);
-     TEST_ASSERT_EQUAL(0x8e, bsi.romNo[0]);
+     TEST_ASSERT_NOT_EQUAL(0xbe, bsi.romUid[0]);
+     TEST_ASSERT_EQUAL(0x8e, bsi.romUid[0]);
    }
 /**
  * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
@@ -851,11 +851,11 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    BitSearchInformation bsi;
    initGet1BitRom(&bsi);
    clearGet1BitRom(&bsi);
-   bsi.romNo = (uint8_t*)malloc(OW_LENGTH);
+   bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
    thrashGet1BitRom(&bsi, fakeIdBitVal, fakeCmpIdBitVal);
 
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
-   TEST_ASSERT_EQUAL(0x6A, bsi.romNo[0]);
+   TEST_ASSERT_EQUAL(0x6A, bsi.romUid[0]);
    /*second search*/
    //----------------------------------------------------
 
@@ -866,8 +866,8 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    familySkipConfig();
    thrashGet1BitRom(&bsi, fakeIdBitVal_2, fakeCmpIdBitVal_2);
 
-   TEST_ASSERT_EQUAL(0x7f, bsi.romNo[1]);
-   TEST_ASSERT_EQUAL(0xd1, bsi.romNo[0]);
+   TEST_ASSERT_EQUAL(0x7f, bsi.romUid[1]);
+   TEST_ASSERT_EQUAL(0xd1, bsi.romUid[0]);
  }
 
  /**
@@ -919,54 +919,54 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  void test_GET_CURRENT_BIT_IN_ROM(void){
    BitSearchInformation *bsi ;
    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
-   bsi->romNo = malloc(8);
+   bsi->romUid = malloc(8);
    bsi->romByteNum = 1;
    bsi->byteMask = 0x04;
-   *(bsi->romNo + 1) = 0x55;
+   *(bsi->romUid + 1) = 0x55;
    TEST_ASSERT_EQUAL(1, GET_CURRENT_BIT_IN_ROM(bsi));
-   free(bsi->romNo);
+   free(bsi->romUid);
    free(bsi);
  }
 
 /**
  * Initialize
  * ----------------
- * romNo[1] = 0 1 0 1 0 1 0 1
+ * romUid[1] = 0 1 0 1 0 1 0 1
  * byteMask = 0 0 0 0 0 0 1 0
  * -----------------
  * result
- * romNo[1] = 0 1 0 1 0 1 1 1
+ * romUid[1] = 0 1 0 1 0 1 1 1
  */
  void test_SET_ROM_BIT(void){
    BitSearchInformation *bsi ;
    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
-   bsi->romNo = malloc(8);
+   bsi->romUid = malloc(8);
    bsi->romByteNum = 1;
    bsi->byteMask = 0x02;
-   *(bsi->romNo + 1) = 0x55;
+   *(bsi->romUid + 1) = 0x55;
    TEST_ASSERT_EQUAL(0x57, SET_ROM_BIT(bsi));
-   free(bsi->romNo);
+   free(bsi->romUid);
    free(bsi);
  }
 
  /**
   * Initialize
   * ----------------
-  * romNo[1] = 0 1 0 1 0 1 0 1
+  * romUid[1] = 0 1 0 1 0 1 0 1
   * byteMask = 0 0 0 0 0 1 0 0
   * -----------------
   * result
-  * romNo[1] = 0 1 0 1 0 0 0 1
+  * romUid[1] = 0 1 0 1 0 0 0 1
   */
  void test_RESET_ROM_BIT(void){
    BitSearchInformation *bsi ;
    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
-   bsi->romNo = malloc(8);
+   bsi->romUid = malloc(8);
    bsi->romByteNum = 1;
    bsi->byteMask = 0x04;
-   *(bsi->romNo + 1) = 0x55;
+   *(bsi->romUid + 1) = 0x55;
    TEST_ASSERT_EQUAL(0x51, RESET_ROM_BIT(bsi));
-   free(bsi->romNo);
+   free(bsi->romUid);
    free(bsi);
  }
 

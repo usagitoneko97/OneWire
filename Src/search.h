@@ -4,11 +4,11 @@
 #include <stdint.h>
 
 #define FAMILY_CODE_RANGE             8
-#define GET_CURRENT_BIT_IN_ROM(bsi) (((bsi)->romNo[(bsi)->romByteNum] &       \
+#define GET_CURRENT_BIT_IN_ROM(bsi) (((bsi)->romUid[(bsi)->romByteNum] &       \
                                    bsi->byteMask) > 0)
-#define SET_ROM_BIT(bsi)            ((bsi)->romNo[(bsi)->romByteNum] |=       \
+#define SET_ROM_BIT(bsi)            ((bsi)->romUid[(bsi)->romByteNum] |=       \
                                    bsi->byteMask)
-#define RESET_ROM_BIT(bsi)          ((bsi)->romNo[(bsi)->romByteNum] &=       \
+#define RESET_ROM_BIT(bsi)          ((bsi)->romUid[(bsi)->romByteNum] &=       \
                                    ~bsi->byteMask)
 #define UPDATE_LAST_FAMILY_DISCREPANCY(bsi)                                    \
                                    if((bsi)->lastZero <= FAMILY_CODE_RANGE)  \

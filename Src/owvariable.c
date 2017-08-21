@@ -1,5 +1,5 @@
 #include "owvariable.h"
-unsigned char romNo[8];
+unsigned char romUid[8];
 unsigned char romDataBuffer[MAX_OWDEVICE][8];
 int bufferByteNumber;
 int bufferDeviceNumber;
