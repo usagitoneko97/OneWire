@@ -15,7 +15,6 @@ uint8_t sendF0_txData1[] = {SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ZERO, SEND_ONE
 
 
 void initRomSearching(EventStruct* evt, void *owdata){
-  // evt->commandFunction = romSearch;
   evt->data = owdata;
   evt->eventType = RESET_OW;
   evt->byteLength = 8;
@@ -23,7 +22,11 @@ void initRomSearching(EventStruct* evt, void *owdata){
 
 
 
-
+/**
+ * perform reset operation by issues a reset pulse and verify presence pulse
+ * by 1 wire
+ * @param evt event that contain message and event data from parent who called this function
+ */
 void resetAndVerifyOw(Event *evt){
     uint8_t tempUartRxVal;
     static Event generateResetEv;
@@ -204,10 +207,12 @@ void doRomSearch(Event *evt){
       volatile int i = 0;
       i++;
       break;
+    //resetAndVerifyOw successfully detect 1 wire device
     case RESET_DEVICE_AVAILABLE:
       doRomSearchEv.evtType = INITIATE_COMMAND;
       romSearching(&doRomSearchEv);
       break;
+    //romSearching successfully searched rom
     case ROM_SEARCH_SUCCESSFUL:
       doRomSearchPrivate.romVal = ((RomSearchingEvData*)(evt->data))->romDataBuffer;
       break;
