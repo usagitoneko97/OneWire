@@ -188,8 +188,8 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_
   registerCallback(resetAndVerifyOw, &list);
 
   setUartBaudRate_Expect(115200);
+  owSetUpRxIT_Expect(uartRxDataBuffer, 10);
   uartTxOw_Expect(sendF0txDataTest, 8);
-  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
   owUartTx_Expect(0xff);
   owUartTx_Expect(0xff);
 
@@ -257,9 +257,9 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_
  */
 void test_romSearching_error_given_idBit1_cmpIdBit1(void){
   TxRxCpltEvData txRxEvData;
-  txRxEvData.uartRxVal = malloc(2);
-  *(txRxEvData.uartRxVal) = 0xff;
-  *(txRxEvData.uartRxVal + 1) = 0xff;
+  txRxEvData.uartRxVal = malloc(10);
+  *(txRxEvData.uartRxVal + 8) = 0xff;
+  *(txRxEvData.uartRxVal + 9) = 0xff;
 
   ListInit(&list);
   registerCallback(doRomSearch, &list);
@@ -281,9 +281,9 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
  */
 void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_1_cmpIdBitNumber_0_idBitNumber_1(void){
   TxRxCpltEvData txRxEvData;
-  txRxEvData.uartRxVal = malloc(2);
-  *(txRxEvData.uartRxVal) = 0xff;
-  *(txRxEvData.uartRxVal + 1) = 0xfe;
+  txRxEvData.uartRxVal = malloc(10);
+  *(txRxEvData.uartRxVal + 8) = 0xff;
+  *(txRxEvData.uartRxVal + 9) = 0xfe;
 
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
@@ -295,7 +295,7 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   initGet1BitRom(bsi);  //end of SEND_F0 will call this function
   romSearchingPrivate.bitSearchInformation.idBitNumber = 1;
 
-  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owSetUpRxIT_Expect(uartRxDataBuffer, 3);
   owUartTxDma_Expect(0xff);
   owUartTxDma_Expect(0xff);
   romSearching(&evt);
@@ -316,9 +316,9 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
 void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_idBitNumber_0_cmpIdBitNumber_1_idBitNumber_8(void){
   owLength = 64;
   TxRxCpltEvData txRxEvData;
-  txRxEvData.uartRxVal = malloc(2);
-  *(txRxEvData.uartRxVal) = 0xfe;
-  *(txRxEvData.uartRxVal + 1) = 0xff;
+  txRxEvData.uartRxVal = malloc(10);
+  *(txRxEvData.uartRxVal + 8) = 0xfe;
+  *(txRxEvData.uartRxVal + 9) = 0xff;
 
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
@@ -331,7 +331,7 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   romSearchingPrivate.bitSearchInformation.byteMask = 128;
 
 
-  owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+  owSetUpRxIT_Expect(uartRxDataBuffer, 3);
   owUartTxDma_Expect(0xff);
   owUartTxDma_Expect(0xff);
   romSearching(&evt);
@@ -350,9 +350,9 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
  */
 void test_romSearching_lastBit(void){
   TxRxCpltEvData txRxEvData;
-  txRxEvData.uartRxVal = malloc(2);
-  *(txRxEvData.uartRxVal) = 0xff;
-  *(txRxEvData.uartRxVal + 1) = 0xfe;
+  txRxEvData.uartRxVal = malloc(3);
+  *(txRxEvData.uartRxVal + 1) = 0xff;
+  *(txRxEvData.uartRxVal + 2) = 0xfe;
 
   Event evt;
   evt.evtType = UART_RX_SUCCESS;
@@ -431,8 +431,8 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    owResetPrivate.state = REPLY_OW;
 
    setUartBaudRate_Expect(115200);
+   owSetUpRxIT_Expect(uartRxDataBuffer, 10);
    uartTxOw_Expect(sendF0txDataTest, 8);
-   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
    owUartTx_Expect(0xff);
    owUartTx_Expect(0xff);
 
@@ -455,11 +455,11 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    romSearchingEv.evtType = UART_RX_SUCCESS;
 
    TxRxCpltEvData txRxEvData;
-   txRxEvData.uartRxVal = malloc(2);
-   *(txRxEvData.uartRxVal) = 0xfe;
-   *(txRxEvData.uartRxVal + 1) = 0xfe;
+   txRxEvData.uartRxVal = malloc(10);
+   *(txRxEvData.uartRxVal + 8) = 0xfe;
+   *(txRxEvData.uartRxVal + 9) = 0xfe;
    romSearchingEv.data = &txRxEvData;
-   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+   owSetUpRxIT_Expect(uartRxDataBuffer, 3);
    owUartTxDma_Expect(0xff);
    owUartTxDma_Expect(0xff);
    romSearching(&romSearchingEv);
@@ -473,11 +473,11 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    //second bit both device is 1, there is no conflict and uartRxval is
    //0xff and 0xfe
    romSearchingEv.evtType = UART_RX_SUCCESS;
-   txRxEvData.uartRxVal = malloc(2);
-   *(txRxEvData.uartRxVal) = 0xff;
-   *(txRxEvData.uartRxVal + 1) = 0xfe;
+   txRxEvData.uartRxVal = malloc(3);
+   *(txRxEvData.uartRxVal + 1) = 0xff;
+   *(txRxEvData.uartRxVal + 2) = 0xfe;
    romSearchingEv.data = &txRxEvData;
-   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
+   owSetUpRxIT_Expect(uartRxDataBuffer, 3);
    owUartTxDma_Expect(0xff);
    owUartTxDma_Expect(0xff);
    romSearching(&romSearchingEv);
@@ -491,8 +491,8 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    //=====================================================================
    romSearchingEv.evtType = UART_RX_SUCCESS;
    txRxEvData.uartRxVal = malloc(2);
-   *(txRxEvData.uartRxVal) = 0xfe;
-   *(txRxEvData.uartRxVal + 1) = 0xff;
+   *(txRxEvData.uartRxVal + 1) = 0xfe;
+   *(txRxEvData.uartRxVal + 2) = 0xff;
    romSearchingEv.data = &txRxEvData;
 
    romSearching(&romSearchingEv);

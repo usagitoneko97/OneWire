@@ -133,7 +133,7 @@ int main(void)
 		  Event evt;
 		  evt.evtType = UART_RX_SUCCESS;
 		  TxRxCpltEvData evData;
-		  evData.uartRxVal = uartRxDataBuffer+8;
+		  evData.uartRxVal = uartRxDataBuffer;
 		  evt.data = &evData;
 		  FuncP functPToCaller;
 		  functPToCaller = getCurrentCallback((&list));

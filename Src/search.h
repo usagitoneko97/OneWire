@@ -25,7 +25,11 @@
                                        }                                      \
                                        clearGet1BitRom(bsi);                  \
                                        bsi->searchResult = TRUE;              \
-                                     }
+                                     }										  \
+									 else{									  \
+										owSetUpRxIT(uartRxDataBuffer, 3);	  \
+										write(searchDir);					  \
+									 }										  \
 
 void stackDataBuffer64(uint8_t data, int numberOfByte);
 void clearDataBuffer64();

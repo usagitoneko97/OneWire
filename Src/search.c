@@ -41,7 +41,7 @@ void clearDataBuffer64(){
  *                              about the bit searching
  */
 void get1BitRom(BitSearchInformation *bsi){
-  int searchDir;
+  int searchDir = 0;
   switch (bsi->bitReadType) {
     case BIT_0:
       searchDir = 0;
@@ -69,9 +69,8 @@ void get1BitRom(BitSearchInformation *bsi){
       bsi->noDevice = TRUE;
       return;
   }
-
   searchDir == 1? SET_ROM_BIT(bsi):RESET_ROM_BIT(bsi);
-  write(searchDir);
+
 
   //preparation for next bit search
   bsi->idBitNumber++;
