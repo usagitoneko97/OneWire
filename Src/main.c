@@ -40,6 +40,7 @@
 #include "onewireio.h"
 #include "search.h"
 #include "owvariable.h"
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -370,7 +371,6 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   //TODO find respective callback function
   callBEn = 1;
-
 }
 
 int isUartFrameError(){

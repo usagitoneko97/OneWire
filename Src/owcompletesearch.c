@@ -93,8 +93,8 @@ void romSearching(Event *evt){
           registerCallback(romSearching, &list);
           initGet1BitRom(bsi);
           romSearchingPrivate.state = ROM_SEARCHING;
+          owSetUpRxIT(uartRxDataBuffer, 10);
           uartTxOw(sendF0_txData1, 8);
-          owSetUpRxIT(uartRxDataBuffer, 2);
           owUartTx(0xff);
           owUartTx(0xff);
         }
@@ -109,40 +109,44 @@ void romSearching(Event *evt){
     case ROM_SEARCHING:
       switch (evt->evtType) {
         case UART_RX_SUCCESS:
-              bsi->bitReadType = intepretSearchBit(evData->uartRxVal);
-              //TODO check for lastDeviceFlag
-              get1BitRom(bsi);
-              if(ERROR_NO_DEVICE(romSearchingPrivate)){
-                //ERROR
+        	  if(bsi->idBitNumber == 1){
+        		  bsi->bitReadType = intepretSearchBit((evData->uartRxVal)+8);
+        	  }
+        	  else{
+        		  bsi->bitReadType = intepretSearchBit((evData->uartRxVal)+1);
+        	  }
+            //TODO check for lastDeviceFlag
+            get1BitRom(bsi);
+            if(ERROR_NO_DEVICE(romSearchingPrivate)){
+              //ERROR
+              clearGetRom(&romSearchingPrivate);
+              free(romSearchingPrivate.romUid);
+              CREATE_EVENT_WITH_TYPE(generateFailEvt, ROM_SEARCH_NO_DEVICE);
+              //TODO check for null
+              unregisterCallback(&list);
+              FuncP functPToCaller;
+              functPToCaller = getCurrentCallback((&list));
+              functPToCaller(&(generateFailEvt));
+            }
+            else{
+              if(SEARCH_COMPLETE(romSearchingPrivate)){
+                static Event generateEvt;
+                CREATE_EVENT_WITH_TYPE(generateEvt, ROM_SEARCH_SUCCESSFUL);
+                static RomSearchingEvData evData;
+                evData.romDataBuffer = romSearchingPrivate.bitSearchInformation.romUid;
+                evData.lastDeviceFlag = lastDeviceFlag;
+                generateEvt.data = &evData;
                 clearGetRom(&romSearchingPrivate);
-                free(romSearchingPrivate.romUid);
-                CREATE_EVENT_WITH_TYPE(generateFailEvt, ROM_SEARCH_NO_DEVICE);
-                //TODO check for null
                 unregisterCallback(&list);
                 FuncP functPToCaller;
                 functPToCaller = getCurrentCallback((&list));
-                functPToCaller(&(generateFailEvt));
+                functPToCaller(&(generateEvt));
               }
               else{
-                if(SEARCH_COMPLETE(romSearchingPrivate)){
-                  static Event generateEvt;
-                  CREATE_EVENT_WITH_TYPE(generateEvt, ROM_SEARCH_SUCCESSFUL);
-                  static RomSearchingEvData evData;
-                  evData.romDataBuffer = romSearchingPrivate.bitSearchInformation.romUid;
-                  evData.lastDeviceFlag = lastDeviceFlag;
-                  generateEvt.data = &evData;
-                  clearGetRom(&romSearchingPrivate);
-                  unregisterCallback(&list);
-                  FuncP functPToCaller;
-                  functPToCaller = getCurrentCallback((&list));
-                  functPToCaller(&(generateEvt));
-                }
-                else{
-                  owSetUpRxIT(uartRxDataBuffer, 2);
-                  owUartTxDma(0xff);
-                  owUartTxDma(0xff);
-                }
+                owUartTxDma(0xff);
+                owUartTxDma(0xff);
               }
+            }
             break;
         case UART_FRAME_ERROR:
         case UART_TIMEOUT:
