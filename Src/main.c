@@ -55,6 +55,7 @@ uint8_t uartRx;
 uint8_t uartTempRx;
 uint8_t pData;
 uint8_t pDataTR[2] = {0xf0, 0x22};
+int callBEn = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -127,6 +128,16 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	  //HAL_UART_Receive_IT(&huart1, &pData, 1);
 	 // HAL_UART_Transmit_DMA(&huart1,pDataTR, 1);
+	  if(callBEn){
+		  Event evt;
+		  evt.evtType = UART_RX_SUCCESS;
+		  TxRxCpltEvData evData;
+		  evData.uartRxVal = uartRxDataBuffer;
+		  evt.data = &evData;
+		  FuncP functPToCaller;
+		  functPToCaller = getCurrentCallback((&list));
+		  functPToCaller(&evt);
+	  }
 
   }
   /* USER CODE END 3 */
@@ -358,14 +369,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   //TODO find respective callback function
-  Event evt;
-  evt.evtType = UART_RX_SUCCESS;
-  TxRxCpltEvData evData;
-  evData.uartRxVal = uartRxDataBuffer;
-  evt.data = &evData;
-  FuncP functPToCaller;
-  functPToCaller = getCurrentCallback((&list));
-  functPToCaller(&evt);
+  callBEn = 1;
+
 }
 
 int isUartFrameError(){

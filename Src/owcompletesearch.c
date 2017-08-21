@@ -222,6 +222,7 @@ void doRomSearch(Event *evt){
     //resetAndVerifyOw successfully detect 1 wire device
     case RESET_DEVICE_AVAILABLE:
       doRomSearchEv.evtType = INITIATE_COMMAND;
+      setUartBaudRate(115200);
       romSearching(&doRomSearchEv);
       break;
     //romSearching successfully searched rom

@@ -187,6 +187,7 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_
   registerCallback(doRomSearch, &list);
   registerCallback(resetAndVerifyOw, &list);
 
+  setUartBaudRate_Expect(115200);
   uartTxOw_Expect(sendF0txDataTest, 8);
   owSetUpRxIT_Expect(uartRxDataBuffer, 2);
   owUartTx_Expect(0xff);
@@ -429,6 +430,7 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    evt.data = &txRxCpltEvData;
    owResetPrivate.state = REPLY_OW;
 
+   setUartBaudRate_Expect(115200);
    uartTxOw_Expect(sendF0txDataTest, 8);
    owSetUpRxIT_Expect(uartRxDataBuffer, 2);
    owUartTx_Expect(0xff);
