@@ -1,12 +1,12 @@
 #include <stdint.h>
 #include "unity.h"
-#include "OwCompleteSearch.h"
-#include "Search.h"
-#include "mock_OneWireio.h"
-#include "OwVariable.h"
-#include "LinkedList.h"
+#include "owcompletesearch.h"
+#include "search.h"
+#include "mock_onewireio.h"
+#include "owvariable.h"
+#include "linkedlist.h"
 #include <stdlib.h>
-#include "Callback.h"
+#include "callback.h"
 
 
 uint8_t owRxVal;

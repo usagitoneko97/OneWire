@@ -1,12 +1,12 @@
 #include "unity.h"
-#include "Search.h"
-#include "mock_OneWireio.h"
-#include "OwVariable.h"
+#include "search.h"
+#include "mock_onewireio.h"
+#include "owvariable.h"
 #include "common.h"
-#include "OwCompleteSearch.h"
+#include "owcompletesearch.h"
 #include <stdlib.h>
-#include "Callback.h"
-#include "LinkedList.h"
+#include "callback.h"
+#include "linkedlist.h"
 
 void muteConflictDevice(int **devices, int numberOfDevices, int bitNumber, int searchDir);
 void resetDeviceListTo1();
