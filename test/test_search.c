@@ -1,12 +1,12 @@
 #include "unity.h"
-#include "Search.h"
-#include "mock_OneWireio.h"
-#include "OwVariable.h"
+#include "search.h"
+#include "mock_onewireio.h"
+#include "owvariable.h"
 #include "common.h"
-#include "OwCompleteSearch.h"
+#include "owcompletesearch.h"
 #include <stdlib.h>
-#include "Callback.h"
-#include "LinkedList.h"
+#include "callback.h"
+#include "linkedlist.h"
 
 void muteConflictDevice(int devices[][OW_LENGTH], int numberOfDevices, int bitNumber, int searchDir);
 void resetDeviceListTo1();
@@ -956,7 +956,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      TEST_ASSERT_NOT_EQUAL(0x6d, bsi.romUid[0]);
      TEST_ASSERT_EQUAL(TRUE, bsi.noDevice);
    }
-   
+
 /**
  * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
  * devices that have the family code that was found in the previous search.

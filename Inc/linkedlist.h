@@ -2,7 +2,7 @@
 #define _LINKEDLIST_H
 
 
-#include "OwCompleteSearch.h"
+#include "owcompletesearch.h"
 
 typedef struct Item Item;
 typedef struct LinkedList LinkedList;

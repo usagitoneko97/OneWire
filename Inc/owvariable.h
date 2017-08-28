@@ -1,6 +1,6 @@
 #include <stdint.h>
-#include "OwCompleteSearch.h"
-#include "LinkedList.h"
+#include "owcompletesearch.h"
+#include "linkedlist.h"
 #ifndef _OWVARIABLE_H
 #define _OWVARIABLE_H
 #define MAX_OWDEVICE  64

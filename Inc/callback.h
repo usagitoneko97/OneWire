@@ -1,7 +1,7 @@
 #ifndef _CALLBACK_H
 #define _CALLBACK_H
-#include "OwCompleteSearch.h"
-#include "LinkedList.h"
+#include "owcompletesearch.h"
+#include "linkedlist.h"
 
 typedef void (*FuncP)(Event*);
 #define CALL(x)   if(x != NULL) (x)

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include "common.h"
-#include "OwCompleteSearch.h"
+#include "owCompletesearch.h"
 #include "OwVariable.h"
 
 #ifndef TEST
