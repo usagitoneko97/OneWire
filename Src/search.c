@@ -76,7 +76,13 @@ void get1BitRom(BitSearchInformation *bsi){
   //preparation for next bit search
   bsi->idBitNumber++;
   UPDATE_ROM_BYTE_MASK(bsi);
-  RESET_IF_COMPLETED_BIT_SEARCHING(bsi, searchDir);
+  // Is it the last bit (index exceeding the OneWire ROM ID length)?
+  if(bsi->idBitNumber > OW_LENGTH){
+    RESET_BIT_SEARCHING(bsi);           // Reset the bit searching
+  }
+  else{
+   owSendSearchBit(searchDir);
+  }
 }
 
 

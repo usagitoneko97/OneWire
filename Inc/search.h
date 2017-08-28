@@ -18,7 +18,7 @@ extern int searchDir;
                                        (bsi)->byteMask = 1;                   \
                                        (bsi)->romByteNum++;                   \
                                       }
-#define RESET_IF_COMPLETED_BIT_SEARCHING(bsi, searchDir)                      \
+#define RESET_IF_COMPLETED_BIT_SEARCHINGx(bsi, searchDir)                      \
                                      if(bsi->idBitNumber > OW_LENGTH){        \
                                        lastDiscrepancy = bsi->lastZero;       \
                                        if(lastDiscrepancy == 0){              \
@@ -30,7 +30,21 @@ extern int searchDir;
 									                   else{									                  \
 										                  owSetUpRxIT(uartRxDataBuffer, 3);	      \
 										                  write(searchDir);					              \
-									                   }										                    \
+									                   }
+#define RESET_BIT_SEARCHING(bsi)                                              \
+                                    do {                                      \
+                                      lastDiscrepancy = bsi->lastZero;        \
+                                      if(lastDiscrepancy == 0){               \
+                                        lastDeviceFlag = TRUE;                \
+                                      }                                       \
+                                      clearGet1BitRom(bsi);                   \
+                                      bsi->searchResult = TRUE;               \
+                                    } while(0)
+
+
+
+
+
 
 void stackDataBuffer64(uint8_t data, int numberOfByte);
 void clearDataBuffer64();

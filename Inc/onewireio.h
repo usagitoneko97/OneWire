@@ -32,5 +32,6 @@ void uartTxOw(uint8_t* data, int bitLength);
 
 void systemError(EventType evtType);
 
+void owSendSearchBit(int searchDir);
 void dummy();
 #endif // _ONEWIREIO_H
