@@ -819,6 +819,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    }
 
    /*Target Setup search (2/3)
+   * this is the continue of the search on previous test, no targetSetupConfig() is called
    *Given these data
    * 000...0 1 0 1  1 1 0 0 0 1 0 1 --> dataOne
    * 000...1 0 1 1  1 1 0 0 0 1 0 1--> dataTwo  <=====choosen second
@@ -877,13 +878,15 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  * Test on 8 bit
  * -------------
  * Given:
- * romUid:   0011 0100
+ * devices: 0011 0100
  *          0x34
- * other devices :
  *          0111  1011
  *          0x7b
  *          1011  1000
  *          0xb9
+ *
+ * RomUid to search : 0011 0100
+ *                    0x34
  * --------------
  * MOCK data: idBit    :00001100
  *            cmp-id-bit:01010011
@@ -920,9 +923,9 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  * Test on 8 bitPos
  * ------------
  * Given:
- * romUid to search: 1011 1110
+ * romUid to search: 1011 1111
  *                   0xbe
- *Given devices:    0110 1101
+ *Given devices:    0110 1100
  *                  0x6d
  *                  1000 1110
  *                  0x8e
@@ -940,21 +943,20 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
      // initGet1BitRom(&bsi);
      initGet1BitRom(&bsi);
      bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
-     lastDiscrepancy = 8;
-     lastFamilyDiscrepancy = 0;
-     lastDeviceFlag = FALSE;
-     bsi.romUid[0] = 0xbe;
 
-     int count = 0;
-     //set up received interrupt, but didnt setup when reading final bits
-     for(count = 0; count <(owLength-1) ;count++){
-       owSetUpRxIT_Expect(uartRxDataBuffer, 3);
-     }
+     uint8_t romNumberToVerify = 0xbe;
+     verifyConfig(&romNumberToVerify, 1, &bsi);
 
-     get1BitRomLoop(&bsi, devices, 3);
-     TEST_ASSERT_NOT_EQUAL(0xbe, bsi.romUid[0]);
-     TEST_ASSERT_EQUAL(0x8e, bsi.romUid[0]);
+     //result should not be either 1 of the devices above, and should receive DEVICE_NOT_THERE flag
+     bsi.bitReadType = DEVICE_NOT_THERE;
+     get1BitRom(&bsi);
+
+     TEST_ASSERT_EQUAL(0xbe, bsi.romUid[0]);
+     TEST_ASSERT_NOT_EQUAL(0x8e, bsi.romUid[0]);
+     TEST_ASSERT_NOT_EQUAL(0x6d, bsi.romUid[0]);
+     TEST_ASSERT_EQUAL(TRUE, bsi.noDevice);
    }
+   
 /**
  * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
  * devices that have the family code that was found in the previous search.
@@ -982,12 +984,6 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  *           path taken  :0101 0110 1001 1000
  *
  * 1wire familySkipSetupSearch -------------> (2nd)
- *MOCK data:  idBit    :0000 1011 1111 1110
- *            cmpIdBit:0111 0100 0000 0001
- *            path taken:1000 1011 1111 1110
- *                       ^
- *                       |
- *         (path taken is 1 because lastDiscrepancy = 1)
  */
  void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_1(void){
    /*first search*/
@@ -1057,12 +1053,6 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
   *           path taken  :0101 0110 1001 1000
   *
   * 1wire familySkipSetupSearch -------------> (2nd)
-  *MOCK data:  idBit    :0000 1011 1111 1110
-  *            cmpIdBit:0111 0100 0000 0001
-  *            path taken:1000 1011 1111 1110
-  *                       ^
-  *                       |
-  *         (path taken is 1 because lastDiscrepancy = 1)
   */
 void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_8(void){
   int devices[3][16] = {{0, 0, 1, 1,  1, 0, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
@@ -1130,12 +1120,6 @@ void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_8(void){
  *           path taken  :0101 0110 1001 1000
  *
  * 1wire familySkipSetupSearch -------------> (2nd)
- *MOCK data:  idBit    :0000 1011 1111 1110
- *            cmpIdBit:0111 0100 0000 0001
- *            path taken:1000 1011 1111 1110
- *                       ^
- *                       |
- *         (path taken is 1 because lastDiscrepancy = 1)
  */
 void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_5(void){
  int devices[3][16] = {{0, 0, 1, 1,  1, 0, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
