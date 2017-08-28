@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "linkedlist.h"
+#include "LinkedList.h"
 #include <stdlib.h>
 
 void listInit(LinkedList *list){

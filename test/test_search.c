@@ -1,12 +1,12 @@
 #include "unity.h"
-#include "search.h"
-#include "mock_onewireio.h"
-#include "owvariable.h"
+#include "Search.h"
+#include "mock_OneWireio.h"
+#include "OwVariable.h"
 #include "common.h"
-#include "owcompletesearch.h"
+#include "OwCompleteSearch.h"
 #include <stdlib.h>
-#include "callback.h"
-#include "linkedlist.h"
+#include "Callback.h"
+#include "LinkedList.h"
 
 void muteConflictDevice(int devices[][OW_LENGTH], int numberOfDevices, int bitNumber, int searchDir);
 void resetDeviceListTo1();
@@ -42,10 +42,8 @@ SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberO
   }
   // if(deviceList[0] == 1)
     // int tempResult = devices[0][mBitNumber];
-  printf("firstResult%d\n", firstResult);
   for(i = firstResultDvNumber; i< numberOfDevices; i++){
     if(deviceList[i] == 1){
-      printf("devices :%d\n",devices[i][mBitNumber]);
       if(firstResult != devices[i][mBitNumber]){
         return BIT_CONFLICT;
       }
@@ -139,7 +137,6 @@ void test_muteConflictDevice_given_101_searchDir_0_expect_data1_and_data2_muted(
                        {1, 0, 0, 1}};
 
   resetDeviceListTo1();
-  printf("deviceList[0] = %d\n", deviceList[2]);
   muteConflictDevice(devices, 3, 3, 0);
   TEST_ASSERT_EQUAL_INT(0, deviceList[0]);
   TEST_ASSERT_EQUAL_INT(1, deviceList[1]);

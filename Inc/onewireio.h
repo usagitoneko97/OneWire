@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include "common.h"
-#include "owcompletesearch.h"
-#include "owvariable.h"
+#include "OwCompleteSearch.h"
+#include "OwVariable.h"
 
 #ifndef TEST
   #define OW_LENGTH 64

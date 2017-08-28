@@ -1,6 +1,6 @@
 #ifndef _SEARCH_H
 #define _SEARCH_H
-#include "owcompletesearch.h"
+#include "OwCompleteSearch.h"
 #include <stdint.h>
 
 extern int searchDir;

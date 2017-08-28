@@ -35,11 +35,11 @@
 #include "stm32l0xx_hal.h"
 
 /* USER CODE BEGIN Includes */
-#include "owcompletesearch.h"
-#include "callback.h"
-#include "onewireio.h"
-#include "search.h"
-#include "owvariable.h"
+#include "OwCompleteSearch.h"
+#include "Callback.h"
+#include "OneWireio.h"
+#include "Search.h"
+#include "OwVariable.h"
 #include <stdlib.h>
 /* USER CODE END Includes */
 

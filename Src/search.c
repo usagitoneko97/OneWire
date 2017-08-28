@@ -1,6 +1,6 @@
-#include "search.h"
-#include "onewireio.h"
-#include "owvariable.h"
+#include "Search.h"
+#include "OneWireio.h"
+#include "OwVariable.h"
 #include <stdio.h>
 
 int searchDir = 0;

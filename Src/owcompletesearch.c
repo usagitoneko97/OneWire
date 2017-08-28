@@ -1,11 +1,11 @@
-#include "owcompletesearch.h"
-#include "onewireio.h"
-#include "owvariable.h"
+#include "OwCompleteSearch.h"
+#include "OneWireio.h"
+#include "OwVariable.h"
 #include <stdio.h>
-#include "search.h"
+#include "Search.h"
 #include <stdlib.h>
-#include "linkedlist.h"
-#include "callback.h"
+#include "LinkedList.h"
+#include "Callback.h"
 
 int result_reset;
 uint8_t result ;
