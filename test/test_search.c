@@ -33,7 +33,7 @@ int deviceList[255] = {[0 ... 254] = 1};  //initialize all to 1
  * @xtest   xtest_getOwBitState_given_array_expect_SearchBitType
  * @return                 SearchBitType, can either be BIT_1, BIT_0 or BIT_CONFLICT
  */
-SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberOfDevices){
+SearchBitType getOwBitState(int bitNumber, int numberOfDevices){
   int mBitNumber = (OW_LENGTH - 1) - bitNumber;
   int firstResultDvNumber;
   int firstResult;
@@ -41,7 +41,7 @@ SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberO
   //get the first bit number
   for(firstResultDvNumber = 0; firstResultDvNumber<numberOfDevices; firstResultDvNumber++){
     if(deviceList[firstResultDvNumber] == 1){
-      firstResult = devices[firstResultDvNumber][mBitNumber];
+      firstResult = owDevices[firstResultDvNumber][mBitNumber];
       break;
     }
   }
@@ -49,7 +49,7 @@ SearchBitType getOwBitState(int devices[][OW_LENGTH], int bitNumber, int numberO
     // int tempResult = devices[0][mBitNumber];
   for(i = firstResultDvNumber; i< numberOfDevices; i++){
     if(deviceList[i] == 1){
-      if(firstResult != devices[i][mBitNumber]){
+      if(firstResult != owDevices[i][mBitNumber]){
         return BIT_CONFLICT;
       }
     }
@@ -93,7 +93,7 @@ void get1BitRomLoop(BitSearchInformation *bsi, int devices[][OW_LENGTH], int num
   bitIndex = 0;
   int mBitNumber;
   while(bitIndex < OW_LENGTH){
-    bsi->bitReadType = getOwBitState(devices, bitIndex, numberOfDevices);
+    bsi->bitReadType = getOwBitState(bitIndex, numberOfDevices);
     get1BitRom(bsi);
     bitIndex++;
   }
@@ -160,10 +160,10 @@ void xtest_getOwBitState_given_array_expect_SearchBitType(void){
 
   resetDeviceListTo1();
   deviceList[0] = 0;  //mute the 0th device
-  TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 0, 3));
+  TEST_ASSERT_EQUAL(BIT_1, getOwBitState(0, 3));
   deviceList[0] = 1;
   deviceList[1] = 0;
-  TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 4, 3));
+  TEST_ASSERT_EQUAL(BIT_1, getOwBitState(4, 3));
   // TEST_ASSERT_EQUAL(BIT_0, getOwBitState(devices, 3, 3));
   // TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 2, 3));
 }
@@ -481,18 +481,15 @@ void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
   *(owDevices+1) = devices[1];
   *(owDevices+2) = devices[2];
   *(owDevices+3) = devices[3];
-  printf("%d\n", (*owDevices+2)[2]);
   //reset the device list to 1 (unmute all device)
   resetDeviceListTo1();
   BitSearchInformation bsi;
   initGet1BitRom(&bsi);
   bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
   owLength = 4;
-  int count = 0;
-  //set up received interrupt, but didnt setup when reading final bits
-  for(count = 0; count <(owLength-1) ;count++){
-    owSetUpRxIT_Expect(uartRxDataBuffer, 3);
-  }
+  numberOfDevices = 4;
+  bitIndex = 0;
+
   get1BitRomLoop(&bsi, devices, 4);
   TEST_ASSERT_EQUAL(8, (*(bsi.romUid) & 0xf));
   TEST_ASSERT_EQUAL(3, lastDiscrepancy);
