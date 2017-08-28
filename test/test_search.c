@@ -77,6 +77,56 @@ void resetDeviceListTo1(){
   }
 }
 
+
+
+/**
+ * @NOTE for testing purpose
+ * @brief to test out the complete rom number which bit number is specify by owLength
+ * @param bsi               pointer of bitSearchInformation (contain all information aboute the bit search)
+ * @param devices           2d arrays of rom UID
+ * @param numberOfDevices   number of devices in the bus
+ */
+void get1BitRomLoop(BitSearchInformation *bsi, int devices[][OW_LENGTH], int numberOfDevices){
+  int i = 0;
+  int mBitNumber;
+  while(i < OW_LENGTH){
+    bsi->bitReadType = getOwBitState(devices, i, numberOfDevices);
+    get1BitRom(bsi);
+    muteConflictDevice(devices, numberOfDevices, i, searchDir);
+    i++;
+  }
+}
+
+void fakeWrite(unsigned char byte, int numOfCalls){
+}
+
+
+void setUp(void)
+{
+  write_StubWithCallback(fakeWrite);
+}
+
+void tearDown(void) {
+}
+
+void initSearchTest(BitSearchInformation *innerVAR_OW){
+  lastDiscrepancy = 0;
+  lastDeviceFlag=FALSE;
+  lastFamilyDiscrepancy = 0;
+  int i = 0;
+  while(i<8){
+    romUid[i++] = 0;
+  }
+  innerVAR_OW->idBitNumber = 1;
+  innerVAR_OW->lastZero = 0;
+  innerVAR_OW->romByteNum = 0;
+  innerVAR_OW->byteMask = 1;
+  innerVAR_OW->searchResult = 0;
+  innerVAR_OW->idBit = -1;
+  innerVAR_OW->cmpIdBit = -1;
+  innerVAR_OW->searchDirection = 0;
+}
+
 /**
  * given data : 1 0 1 1
  *            : 0 1 1 0
@@ -110,104 +160,6 @@ void test_getOwBitState_given_array_expect_SearchBitType(void){
   TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 4, 3));
   // TEST_ASSERT_EQUAL(BIT_0, getOwBitState(devices, 3, 3));
   // TEST_ASSERT_EQUAL(BIT_1, getOwBitState(devices, 2, 3));
-}
-
-/**
- * @brief get the SearchBitType from raw value (BIT_0, BIT_1, or BIT_CONFLICT)
- *        for testing's sake below
- * @param  fakeIdBits    the bit received
- * @param  fakeCmpIdBits the compliment bit received
- * @return               the type of the both bit received
- * @test    test_getSearchBitTypeFromRawUartVal
- */
-SearchBitType getSearchBitTypeFromRawUartVal(uint8_t fakeIdBits, uint8_t fakeCmpIdBits){
-  uint8_t *uartRxVal = (uint8_t*)malloc(2);
-  if(fakeIdBits == 1){
-    *(uartRxVal) = 0xff;
-  } else{
-    *(uartRxVal) = 0xef;
-  }
-
-  if(fakeCmpIdBits == 1){
-    *(uartRxVal + 1) = 0xff;
-  } else{
-    *(uartRxVal + 1) = 0xef;
-  }
-  return intepretSearchBit(uartRxVal);
-}
-
-void test_getSearchBitTypeFromRawUartVal(void){
-  SearchBitType result = getSearchBitTypeFromRawUartVal(1, 0);
-  TEST_ASSERT_EQUAL(BIT_1, result);
-
-  result = getSearchBitTypeFromRawUartVal(0, 1);
-  TEST_ASSERT_EQUAL(BIT_0, result);
-
-  result = getSearchBitTypeFromRawUartVal(0, 0);
-  TEST_ASSERT_EQUAL(BIT_CONFLICT, result);
-
-  result = getSearchBitTypeFromRawUartVal(1, 1);
-  TEST_ASSERT_EQUAL(DEVICE_NOT_THERE, result);
-}
-
-/**
- * @NOTE for testing purpose
- * @brief to test out the complete rom number which bit number is specify by owLength
- * @param bsi             pointer of bitSearchInformation (contain all information aboute the bit search)
- * @param fakeIdBits      pointer of bits received
- * @param fakeCmpIdBits   pointer of compliment bits received
- */
-void thrashGet1BitRom(BitSearchInformation *bsi, uint8_t *fakeIdBits, uint8_t *fakeCmpIdBits){
-  int i = 0;
-  while(i++ < OW_LENGTH){
-    bsi->bitReadType = getSearchBitTypeFromRawUartVal(fakeIdBits[(bsi->idBitNumber-1)], fakeCmpIdBits[(bsi->idBitNumber-1)]);
-    get1BitRom(bsi);
-    //clearGet1BitRom(bsi);
-  }
-
-}
-
-void get1BitRomLoop(BitSearchInformation *bsi, int devices[][OW_LENGTH], int numberOfDevices){
-  int i = 0;
-  int mBitNumber;
-  while(i < OW_LENGTH){
-    bsi->bitReadType = getOwBitState(devices, i, numberOfDevices);
-    get1BitRom(bsi);
-    muteConflictDevice(devices, numberOfDevices, i, searchDir);
-    i++;
-  }
-}
-
-void fakeWrite(unsigned char byte, int numOfCalls){
-}
-
-
-void setUp(void)
-{
-  write_StubWithCallback(fakeWrite);
-}
-
-void tearDown(void) {
-  fakeIdBits = NULL;
-  fakeCmpIdBits = NULL;
-}
-
-void initSearchTest(BitSearchInformation *innerVAR_OW){
-  lastDiscrepancy = 0;
-  lastDeviceFlag=FALSE;
-  lastFamilyDiscrepancy = 0;
-  int i = 0;
-  while(i<8){
-    romUid[i++] = 0;
-  }
-  innerVAR_OW->idBitNumber = 1;
-  innerVAR_OW->lastZero = 0;
-  innerVAR_OW->romByteNum = 0;
-  innerVAR_OW->byteMask = 1;
-  innerVAR_OW->searchResult = 0;
-  innerVAR_OW->idBit = -1;
-  innerVAR_OW->cmpIdBit = -1;
-  innerVAR_OW->searchDirection = 0;
 }
 
 /**
@@ -1040,7 +992,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  *                       |
  *         (path taken is 1 because lastDiscrepancy = 1)
  */
- void test_FamilySkipSetup_Search(void){
+ void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_1(void){
    /*first search*/
    //----------------------------------------------------
    int devices[3][16] = {{0, 0, 1, 1,  1, 0, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
@@ -1063,6 +1015,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
 
    TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
    TEST_ASSERT_EQUAL(0x6A, bsi.romUid[0]);
+   TEST_ASSERT_EQUAL(1, lastFamilyDiscrepancy);
    /*second search*/
    //----------------------------------------------------
    resetDeviceListTo1();
@@ -1079,6 +1032,153 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    TEST_ASSERT_EQUAL(0x7f, bsi.romUid[1]);
    TEST_ASSERT_EQUAL(0xd1, bsi.romUid[0]);
  }
+
+ /**
+  * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
+  * devices that have the family code that was found in the previous search.
+  *
+  * given data:
+  *            0011 1001 0110 1010       -> same family code   -->data no.1
+  *            1110 0101 0110 1010       ---|                  -->data no.2
+  *            0111 1111 1110 1010                             -->data no.3
+  *
+  * Flow of process:
+  * ->first we perform 1wire first search, and it will found data no.1
+  * ->perform familySkipSetupSearch and it will found data no.3 instead of data no.2
+  *
+  *                          ...(after the first search)
+  *            0011 1001 0110 1010       -> same family code   -->data no.1
+  *            1110 0101 0110 1010       ---|                  -->data no.2
+  *            0111 1111 1110 1010                             -->data no.3 -------> this data will chosen in next search
+  *                      ^
+  *                      |
+  *             lastFamilyDiscrepancy
+  * 1wire firstSearch -------------> (1st)
+  * ------------------
+  * MOCK data: idBit     :0101 0110 1001 1000
+  *           cmpIdBit  :0010 1001 0100 0011
+  *           path taken  :0101 0110 1001 1000
+  *
+  * 1wire familySkipSetupSearch -------------> (2nd)
+  *MOCK data:  idBit    :0000 1011 1111 1110
+  *            cmpIdBit:0111 0100 0000 0001
+  *            path taken:1000 1011 1111 1110
+  *                       ^
+  *                       |
+  *         (path taken is 1 because lastDiscrepancy = 1)
+  */
+void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_8(void){
+  int devices[3][16] = {{0, 0, 1, 1,  1, 0, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
+                        {1, 1, 1, 0,  0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
+                        {0, 1, 1, 1,  1, 1, 1, 1,  1, 1, 1, 0,  1, 0, 1, 0 }};
+  resetDeviceListTo1();
+
+  owLength = 16;
+  BitSearchInformation bsi;
+  initGet1BitRom(&bsi);
+  bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
+
+  int count = 0;
+  //set up received interrupt, but didnt setup when reading final bits
+  for(count = 0; count <(owLength-1) ;count++){
+    owSetUpRxIT_Expect(uartRxDataBuffer, 3);
+  }
+
+  get1BitRomLoop(&bsi, devices, 3);
+
+  TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+  TEST_ASSERT_EQUAL(0x6A, bsi.romUid[0]);
+  TEST_ASSERT_EQUAL(8, lastFamilyDiscrepancy);
+  /*second search*/
+  //----------------------------------------------------
+  resetDeviceListTo1();
+  clearGet1BitRom(&bsi);
+  searchDir = 0;
+  familySkipConfig();
+
+  for(count = 0; count <(owLength-1) ;count++){
+    owSetUpRxIT_Expect(uartRxDataBuffer, 3);
+  }
+
+  get1BitRomLoop(&bsi, devices, 3);
+
+  TEST_ASSERT_EQUAL(0x7f, bsi.romUid[1]);
+  TEST_ASSERT_EQUAL(0xea, bsi.romUid[0]);
+}
+
+/**
+ * The 'FAMILY SKIP SETUP' operation sets the search state to skip all of the
+ * devices that have the family code that was found in the previous search.
+ *
+ * given data:
+ *            0011 1001 0110 1010       -> same family code   -->data no.1
+ *            1110 0101 0110 1010       ---|                  -->data no.2
+ *            0111 1111 1110 1010                             -->data no.3
+ *
+ * Flow of process:
+ * ->first we perform 1wire first search, and it will found data no.1
+ * ->perform familySkipSetupSearch and it will found data no.3 instead of data no.2
+ *
+ *                          ...(after the first search)
+ *            0011 1001 0110 1010       -> same family code   -->data no.1
+ *            1110 0101 0110 1010       ---|                  -->data no.2
+ *            0111 1111 1111 1010                             -->data no.3 -------> this data will chosen in next search
+ *                         ^
+ *                         |
+ *                lastFamilyDiscrepancy
+ * 1wire firstSearch -------------> (1st)
+ * ------------------
+ * MOCK data: idBit     :0101 0110 1001 1000
+ *           cmpIdBit  :0010 1001 0100 0011
+ *           path taken  :0101 0110 1001 1000
+ *
+ * 1wire familySkipSetupSearch -------------> (2nd)
+ *MOCK data:  idBit    :0000 1011 1111 1110
+ *            cmpIdBit:0111 0100 0000 0001
+ *            path taken:1000 1011 1111 1110
+ *                       ^
+ *                       |
+ *         (path taken is 1 because lastDiscrepancy = 1)
+ */
+void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_5(void){
+ int devices[3][16] = {{0, 0, 1, 1,  1, 0, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
+                       {1, 1, 1, 0,  0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
+                       {0, 1, 1, 1,  1, 1, 1, 1,  1, 1, 1, 1,  1, 0, 1, 0 }};
+ resetDeviceListTo1();
+
+ owLength = 16;
+ BitSearchInformation bsi;
+ initGet1BitRom(&bsi);
+ bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
+
+ int count = 0;
+ //set up received interrupt, but didnt setup when reading final bits
+ for(count = 0; count <(owLength-1) ;count++){
+   owSetUpRxIT_Expect(uartRxDataBuffer, 3);
+ }
+
+ get1BitRomLoop(&bsi, devices, 3);
+
+ TEST_ASSERT_EQUAL(FALSE, lastDeviceFlag);
+ TEST_ASSERT_EQUAL(0x6A, bsi.romUid[0]);
+ TEST_ASSERT_EQUAL(5, lastFamilyDiscrepancy);
+ /*second search*/
+ //----------------------------------------------------
+ resetDeviceListTo1();
+ clearGet1BitRom(&bsi);
+ searchDir = 0;
+ familySkipConfig();
+
+ for(count = 0; count <(owLength-1) ;count++){
+   owSetUpRxIT_Expect(uartRxDataBuffer, 3);
+ }
+
+ get1BitRomLoop(&bsi, devices, 3);
+
+ TEST_ASSERT_EQUAL(0x7f, bsi.romUid[1]);
+ TEST_ASSERT_EQUAL(0xfa, bsi.romUid[0]);
+}
+
 
 
 
@@ -1098,6 +1198,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  }
 
 /**
+ * test macro in specify in .h file
  * Initialize
  * ----------------
  * romUid[1] = 0 1 0 1 0 1 0 1
@@ -1119,6 +1220,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  }
 
  /**
+  * test macro in specify in .h file
   * Initialize
   * ----------------
   * romUid[1] = 0 1 0 1 0 1 0 1
@@ -1138,7 +1240,9 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    free(bsi->romUid);
    free(bsi);
  }
-
+/**
+ * test macro in specify in .h file
+ */
  void test_UPDATE_LAST_FAMILY_DISCREPANCY_given_lastZero_lessThan_FAMILYCODE(void){
    BitSearchInformation *bsi ;
    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
@@ -1149,6 +1253,9 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    free(bsi);
  }
 
+ /**
+  * test macro in specify in .h file
+  */
  void test_UPDATE_LAST_FAMILY_DISCREPANCY_given_lastZero_greaterThan_FAMILYCODE(void){
    BitSearchInformation *bsi ;
    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
@@ -1159,6 +1266,9 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    free(bsi);
  }
 
+ /**
+  * test macro in specify in .h file
+  */
  void test_UPDATE_ROM_BYTE_MASK_given_mask_0x40_byteNum2_expect_byteNum2(void){
    BitSearchInformation *bsi ;
    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
@@ -1170,6 +1280,9 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    free(bsi);
  }
 
+ /**
+  * test macro in specify in .h file
+  */
  void test_UPDATE_ROM_BYTE_MASK_given_mask_0x80_byteNum2_expect_byteNum3(void){
    BitSearchInformation *bsi ;
    bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
@@ -1182,6 +1295,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
  }
 
 /**
+ * test macro in specify in .h file
  * Given : idBitNumber = 65
  *         owLength = 64
  *         lastZero = 0
@@ -1210,6 +1324,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
 
 
  /**
+  * test macro in specify in .h file
   * Given : idBitNumber = 65
   *         owLength = 64
   *         lastZero = 3
@@ -1238,6 +1353,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
   }
 
 /**
+ * test macro in specify in .h file
  * Test search process not yet complete
  * given: bsi->idBitNumber = 63
  *                owLength = 63
