@@ -2,6 +2,8 @@
 #include "onewireio.h"
 #include "owvariable.h"
 #include <stdio.h>
+
+int searchDir = 0;
 /**
  * store 1 byte of data in a
  * @param data         1 byte of data that need to store
@@ -41,7 +43,6 @@ void clearDataBuffer64(){
  *                              about the bit searching
  */
 void get1BitRom(BitSearchInformation *bsi){
-  int searchDir = 0;
   switch (bsi->bitReadType) {
     case BIT_0:
       searchDir = 0;

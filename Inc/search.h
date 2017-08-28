@@ -3,6 +3,7 @@
 #include "owcompletesearch.h"
 #include <stdint.h>
 
+extern int searchDir;
 #define FAMILY_CODE_RANGE             8
 #define GET_CURRENT_BIT_IN_ROM(bsi) (((bsi)->romUid[(bsi)->romByteNum] &       \
                                    bsi->byteMask) > 0)

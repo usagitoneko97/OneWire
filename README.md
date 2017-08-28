@@ -1,19 +1,3 @@
-# 1 wire algorithm implementation using UART
- tail-end recursion method is used to perform the task
-## Usage
-initiate rom search command by:
-```C
-owRomSearchInit();
-```
-get the result of rom searching by either :
-
-* polling
-```C
-uint8_t *romUID = getResultRomUid();
-```
-* non-blocking
-```C
-if(owSearchRomGetResult(ptrToRomUid)){
-    //romUid is ready here
-}
-```
+# 1-wire protocol implementation
+ 1-wire protocol is used to communicate with certain device that support 1-wire
+ such as *ds1820b temperature sensor*.
