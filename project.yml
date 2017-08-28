@@ -28,6 +28,8 @@
     - -:test/support
   :source:
     - src/**
+  :include:
+    - inc/**
   :support:
     - test/support
 
@@ -83,7 +85,7 @@
     - module_generator
     - gcov
     #- fake_function_framework
-    
+
 :coverage:
   :exe: arm-none-eabi-gcov
   :args:
