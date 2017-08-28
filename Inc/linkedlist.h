@@ -34,11 +34,11 @@ struct LinkedList{
   int len;
 };
 
-void ListInit(LinkedList *list);
-void ListAddEmptyLinkedList (LinkedList *list, Item *item);
-void ListAddLinkedList(LinkedList *list, Item *item);
-Item* ListRemoveFirst(LinkedList *list);
-Item* ListRemoveLinkedListByName(char* name, LinkedList *list);
+void listInit(LinkedList *list);
+void listAddEmptyLinkedList (LinkedList *list, Item *item);
+void listAddLinkedList(LinkedList *list, Item *item);
+Item* listRemoveFirst(LinkedList *list);
+Item* listRemoveLinkedListByName(char* name, LinkedList *list);
 void pushList(LinkedList *list, Item *listToAdd);
 int dummy1();
 

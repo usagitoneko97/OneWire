@@ -14,7 +14,7 @@ void registerCallback(void (callBack)(Event*), LinkedList *list){
 }
 
 void unregisterCallback(LinkedList *list){
-  ListRemoveFirst(list);
+  listRemoveFirst(list);
 }
 
 FuncP getCurrentCallback(LinkedList *list){

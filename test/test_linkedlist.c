@@ -52,7 +52,7 @@ void test_Listlinit_ensure_initialize_to_NULL_and_0(void){
     (Item*)-1,
     10};
 
-  ListInit(&list);
+  listInit(&list);
   TEST_ASSERT_NULL(list.head);
   TEST_ASSERT_NULL(list.tail);
   TEST_ASSERT_EQUAL(0, list.len);
@@ -71,15 +71,15 @@ void test_ListAdd_with_emptyList_(void){
     (Item *)342523452,  //next
     (void *)&ali       //data
   };
-  ListInit(&list);
-  ListAddEmptyLinkedList(&list, &itemAli);
+  listInit(&list);
+  listAddEmptyLinkedList(&list, &itemAli);
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.tail);
   TEST_ASSERT_EQUAL(1, list.len);
   TEST_ASSERT_NULL(itemAli.next);
 }
 
-void test_ListAddLinkedList_2_addwith_1(void){
+void test_listAddLinkedList_2_addwith_1(void){
   LinkedList list;
   list.head = &itemAli;
   list.tail = &itemAli;
@@ -87,7 +87,7 @@ void test_ListAddLinkedList_2_addwith_1(void){
   itemAli.next = NULL;
   itemBaba.next = (Item *)-1; //item needed to add
 
-  ListAddLinkedList(&list, &itemBaba);
+  listAddLinkedList(&list, &itemBaba);
 
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemBaba, list.tail);
@@ -100,14 +100,14 @@ void test_ListAddLinkedList_2_addwith_1(void){
   TEST_ASSERT_EQUAL_PTR(&baba, itemBaba.data);
 }
 
-void test_ListAddLinkedList_3_addwith_1(void){
+void test_listAddLinkedList_3_addwith_1(void){
   LinkedList list;
   list.head = &itemAli;
   list.tail = &itemBaba;
   list.len = 2;
   itemAli.next = &itemBaba;
   itemBaba.next = NULL; //item needed to add
-  ListAddLinkedList(&list, &itemAbu);
+  listAddLinkedList(&list, &itemAbu);
 
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.tail);
@@ -122,11 +122,11 @@ void test_ListAddLinkedList_3_addwith_1(void){
 
 void test_removeFirstList_ali_abu_baba_remove_ali_expect_abu_baba(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
-  ListAddLinkedList(&list, &itemBaba);
-  ListRemoveFirst(&list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
+  listAddLinkedList(&list, &itemBaba);
+  listRemoveFirst(&list);
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemBaba, list.tail);
   TEST_ASSERT_EQUAL_PTR(&itemBaba, itemAbu.next);
@@ -136,10 +136,10 @@ void test_removeFirstList_ali_abu_baba_remove_ali_expect_abu_baba(void){
 
 void test_removeFirstList_ali_abu_remove_ali_expect_abu(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
-  ListRemoveFirst(&list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
+  listRemoveFirst(&list);
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.tail);
   TEST_ASSERT_NULL(itemAbu.next);
@@ -148,9 +148,9 @@ void test_removeFirstList_ali_abu_remove_ali_expect_abu(void){
 
 void test_removeFirstList_ali_remove_ali_expect_NULL(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListRemoveFirst(&list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listRemoveFirst(&list);
   TEST_ASSERT_NULL(list.head);
   TEST_ASSERT_NULL(list.tail);
   TEST_ASSERT_EQUAL(0, list.len);
@@ -161,8 +161,8 @@ no data attempts to remove data
 */
 void test_removeLinkedList_NULL_remove_ali_expect_NULL(void){
   LinkedList list;
-  ListInit(&list);
-  ListRemoveLinkedListByName("ali", &list);
+  listInit(&list);
+  listRemoveLinkedListByName("ali", &list);
 
   TEST_ASSERT_NULL(list.head);
   TEST_ASSERT_NULL(list.tail);
@@ -173,10 +173,10 @@ wrong input of name
 */
 void test_removeLinkedList_abu_baba_remove_wrong_name_expect_abu_baba(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAbu);
-  ListAddLinkedList(&list, &itemBaba);
-  ListRemoveLinkedListByName("wrong_name", &list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAbu);
+  listAddLinkedList(&list, &itemBaba);
+  listRemoveLinkedListByName("wrong_name", &list);
 
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemBaba, list.tail);
@@ -190,9 +190,9 @@ void test_removeLinkedList_abu_baba_remove_wrong_name_expect_abu_baba(void){
 */
 void test_removeLinkedList_ali_remove_ali_expect_NULL(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListRemoveLinkedListByName("ali", &list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listRemoveLinkedListByName("ali", &list);
 
   TEST_ASSERT_NULL(list.head);
   TEST_ASSERT_NULL(list.tail);
@@ -204,10 +204,10 @@ void test_removeLinkedList_ali_remove_ali_expect_NULL(void){
 */
 void test_removeLinkedList_ali_abu_remove_ali_expect_abu(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
-  ListRemoveLinkedListByName("ali", &list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
+  listRemoveLinkedListByName("ali", &list);
 
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.tail);
@@ -220,10 +220,10 @@ void test_removeLinkedList_ali_abu_remove_ali_expect_abu(void){
 */
 void test_removeLinkedList_ali_abu_remove_abu_expect_ali(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
-  ListRemoveLinkedListByName("abu", &list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
+  listRemoveLinkedListByName("abu", &list);
 
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
   TEST_ASSERT_NULL(itemAli.next);
@@ -237,11 +237,11 @@ void test_removeLinkedList_ali_abu_remove_abu_expect_ali(void){
 */
 void test_removeLinkedList_removeFirst_ali_abu_baba_remove_ali_expect_abu_baba(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
-  ListAddLinkedList(&list, &itemBaba);
-  ListRemoveLinkedListByName("ali", &list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
+  listAddLinkedList(&list, &itemBaba);
+  listRemoveLinkedListByName("ali", &list);
 
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemBaba, list.tail);
@@ -255,11 +255,11 @@ void test_removeLinkedList_removeFirst_ali_abu_baba_remove_ali_expect_abu_baba(v
 */
 void test_removeLinkedList_ali_abu_baba_remove_abu_expect_ali_baba(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
-  ListAddLinkedList(&list, &itemBaba);
-  ListRemoveLinkedListByName("abu", &list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
+  listAddLinkedList(&list, &itemBaba);
+  listRemoveLinkedListByName("abu", &list);
   TEST_ASSERT_EQUAL_PTR(&itemBaba, itemAli.next); //Ali next is baba
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemBaba, list.tail);
@@ -271,11 +271,11 @@ void test_removeLinkedList_ali_abu_baba_remove_abu_expect_ali_baba(void){
 */
 void test_removeLinkedList_removeFirst_ali_abu_baba_remove_baba_expect_ali_abu(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
-  ListAddLinkedList(&list, &itemBaba);
-  ListRemoveLinkedListByName("baba", &list);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
+  listAddLinkedList(&list, &itemBaba);
+  listRemoveLinkedListByName("baba", &list);
 
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemAbu, list.tail);
@@ -286,7 +286,7 @@ void test_removeLinkedList_removeFirst_ali_abu_baba_remove_baba_expect_ali_abu(v
 
 void test_pushList_given_NULL__push_Ali_expect_itemAli(void){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   pushList(&list, &itemAli);
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.head);
   TEST_ASSERT_EQUAL_PTR(&itemAli, list.tail);
@@ -295,9 +295,9 @@ void test_pushList_given_NULL__push_Ali_expect_itemAli(void){
 
 void test_pushList_given_ali_abu_expect_baba_ali_abu(void){
   LinkedList list;
-  ListInit(&list);
-  ListAddLinkedList(&list, &itemAli);
-  ListAddLinkedList(&list, &itemAbu);
+  listInit(&list);
+  listAddLinkedList(&list, &itemAli);
+  listAddLinkedList(&list, &itemAbu);
   pushList(&list, &itemBaba);
 
   TEST_ASSERT_EQUAL_PTR(&itemBaba, list.head);
@@ -309,7 +309,7 @@ void test_pushList_given_ali_abu_expect_baba_ali_abu(void){
 
 void test_push2list_expect_ali_abu(void){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   pushList(&list, &itemAbu);
   pushList(&list, &itemAli);
 

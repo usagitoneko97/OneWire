@@ -127,7 +127,7 @@ void test_resetAndVerifyOw_given_state_RESET_OW(void){
 void test_resetAndVerifyOw_given_state_REPLY_OW_event_UART_FRAME_ERROR_expect_systemError(void){
   /*Mock*/
   Event evt;
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   registerCallback(resetAndVerifyOw, &list);
 
@@ -152,7 +152,7 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_event_UART_TIMEOUT_expect_system
   evt.data = NULL;
   owResetPrivate.state = REPLY_OW;
 
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   registerCallback(resetAndVerifyOw, &list);
 
@@ -183,7 +183,7 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_given_uartRxVal_0xe0_event_UART_
   evt.data = &txRxCpltEvData;
   owResetPrivate.state = REPLY_OW;
 
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   registerCallback(resetAndVerifyOw, &list);
 
@@ -214,7 +214,7 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_given_uartRxVal_0xf0_event_UART_
   evt.data = &txRxCpltEvData;
   owResetPrivate.state = REPLY_OW;
 
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   /*resetAndVerifyOw initially will register his own self*/
   registerCallback(resetAndVerifyOw, &list);
@@ -239,7 +239,7 @@ void test_resetAndVerifyOw_given_state_REPLY_OW_given_uartRxVal_0xdf_event_UART_
   evt.data = &txRxCpltEvData;
   owResetPrivate.state = REPLY_OW;
 
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   registerCallback(resetAndVerifyOw, &list);
 
@@ -264,7 +264,7 @@ void test_romSearching_error_given_idBit1_cmpIdBit1(void){
   *(txRxEvData.uartRxVal + 8) = 0xff;
   *(txRxEvData.uartRxVal + 9) = 0xff;
 
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   registerCallback(romSearching, &list);
 
@@ -373,7 +373,7 @@ void test_romSearching_lastBit(void){
   romSearchingPrivate.bitSearchInformation.idBitNumber = 64; //the last bit
   romSearchingPrivate.bitSearchInformation.byteMask = 0x80;
 
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   registerCallback(romSearching, &list);
 
@@ -393,7 +393,7 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
   unknownEvent.evtType = UNKNOWN_ERROR;
   romSearchingPrivate.state = SEND_F0;
 
-  ListInit(&list);
+  listInit(&list);
   registerCallback(doRomSearch, &list);
   systemError_Expect(UNKNOWN_ERROR);
 
@@ -410,7 +410,7 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
 
    //===========================================================
    // clearAllState();
-   ListInit(&list);
+   listInit(&list);
 
    Event initiateRomSearch;
    initiateRomSearch.evtType = START_ROM_SEARCH;

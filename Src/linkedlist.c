@@ -3,21 +3,21 @@
 #include "linkedlist.h"
 #include <stdlib.h>
 
-void ListInit(LinkedList *list){
+void listInit(LinkedList *list){
   list->head = NULL;
   list->tail = NULL;
   list->len = 0;
 
 }
 
-void ListAddEmptyLinkedList (LinkedList *list, Item *item){
+void listAddEmptyLinkedList(LinkedList *list, Item *item){
   list->head = item;
   list->tail = item;
   list->len = 1;
   item->next = NULL;
 }
 
-void ListAddLinkedList(LinkedList *list, Item *item){
+void listAddLinkedList(LinkedList *list, Item *item){
   if(list->head==NULL){
     //empty list
     list->head = item;
@@ -34,7 +34,7 @@ void ListAddLinkedList(LinkedList *list, Item *item){
   }
 }
 
-Item* ListRemoveFirst(LinkedList *list){
+Item* listRemoveFirst(LinkedList *list){
   Item *temp ;
   if(list->head == NULL){
     return NULL;
@@ -42,7 +42,7 @@ Item* ListRemoveFirst(LinkedList *list){
   else{
     if(list->head == list->tail){
       //only 1 data
-      ListInit(list);
+      listInit(list);
     }
     else{
       temp = list->head;
@@ -52,7 +52,7 @@ Item* ListRemoveFirst(LinkedList *list){
     }
   }
 }
-Item* ListRemoveLinkedListByName(char* name, LinkedList *list){
+Item* listRemoveLinkedListByName(char* name, LinkedList *list){
   //preserve the head
 
   Item *prevL = NULL;
@@ -81,7 +81,7 @@ Item* ListRemoveLinkedListByName(char* name, LinkedList *list){
     {
       if(prevL == NULL){
         //data to be deleted is head
-        ListRemoveFirst(list);
+        listRemoveFirst(list);
       }
       else if(currL == list->tail){
         //data to be deletd is tail
@@ -101,7 +101,7 @@ Item* ListRemoveLinkedListByName(char* name, LinkedList *list){
 
 void pushList(LinkedList *list, Item *listToAdd){
   if(list->head == NULL){
-    ListAddEmptyLinkedList(list, listToAdd);
+    listAddEmptyLinkedList(list, listToAdd);
   }
   else{
     listToAdd->next = list->head;

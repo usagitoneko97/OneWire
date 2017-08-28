@@ -25,7 +25,7 @@ void finalFunction(Event *evt){
 
 void test_registerCallback_given_emptyList(void){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   registerCallback(someFunction, &list);
   TEST_ASSERT_EQUAL_PTR(someFunction, ((TxRxCallbackList*)((list.head)->data))->txRxCallbackFuncP);
 
@@ -35,7 +35,7 @@ void test_registerCallback_given_emptyList(void){
 
 void test_registerCallback_given_list_with_1_data(void){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   registerCallback(someFunction, &list);
   registerCallback(anotherFunction, &list);
 
@@ -50,7 +50,7 @@ void test_registerCallback_given_list_with_1_data(void){
 
 void test_unregisterCallback_given_list_with2_data_expect_1Data(void){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   registerCallback(someFunction, &list);
   registerCallback(anotherFunction, &list);
 
@@ -63,7 +63,7 @@ void test_unregisterCallback_given_list_with2_data_expect_1Data(void){
 
 void test_getCurrentCallback_given_1_data(void){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   registerCallback(someFunction, &list);
   FuncP tempFuncP = getCurrentCallback(&list);
   TEST_ASSERT_EQUAL(someFunction, tempFuncP);
@@ -71,14 +71,14 @@ void test_getCurrentCallback_given_1_data(void){
 
 void test_getCurrentCallback_given_NULL(void){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   FuncP tempFuncP = getCurrentCallback(&list);
   TEST_ASSERT_NULL(tempFuncP);
 }
 
 void test_given_register_then_unregister_then_register(){
   LinkedList list;
-  ListInit(&list);
+  listInit(&list);
   registerCallback(someFunction, &list);
   registerCallback(anotherFunction, &list);
 
