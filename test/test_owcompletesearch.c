@@ -41,6 +41,21 @@ uint8_t fakeRead(int numOfCalls){
   }
 }
 
+/**
+ * blank because we didnt need to fake it, we only need to test the event
+ */
+void fakeOwSendSearchBit(int searchDir, int numOfCalls){
+}
+
+void fakeResetBitSearching(BitSearchInformation *bsi, int numOfCalls){
+	lastDiscrepancy = bsi->lastZero;        
+	if(lastDiscrepancy == 0){              
+		lastDeviceFlag = TRUE;                
+	}                                       
+	clearGet1BitRom(bsi);                   
+	bsi->searchResult = TRUE; 
+}
+
 void fakeWrite(unsigned char byte, int numOfCalls){
 }
 
@@ -58,6 +73,8 @@ void setUp(void){
   Read_StubWithCallback(fakeRead);
   write_StubWithCallback(fakeWrite);
   writeSendArray_StubWithCallback(fakewriteSendArray);
+  resetBitSearching_StubWithCallback(fakeResetBitSearching);
+  owSendSearchBit_StubWithCallback(fakeOwSendSearchBit);
   eventOw.data = &owdata;
 
 }
@@ -299,10 +316,9 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   BitSearchInformation *bsi = &romSearchingPrivate.bitSearchInformation;
   initGet1BitRom(bsi);  //end of SEND_F0 will call this function
   romSearchingPrivate.bitSearchInformation.idBitNumber = 1;
+  owUartTxDma_Expect(0xff);
+  owUartTxDma_Expect(0xff);
 
-  owSetUpRxIT_Expect(uartRxDataBuffer, 3);
-  owUartTxDma_Expect(0xff);
-  owUartTxDma_Expect(0xff);
   romSearching(&evt);
   //TODO
   TEST_ASSERT_EQUAL(2, romSearchingPrivate.bitSearchInformation.idBitNumber);
@@ -338,7 +354,6 @@ void test_romSearching_given_state_ROM_SEARCHING_event_UART_RX_SUCCESS_expect_id
   romSearchingPrivate.bitSearchInformation.byteMask = 128;
 
 
-  owSetUpRxIT_Expect(uartRxDataBuffer, 3);
   owUartTxDma_Expect(0xff);
   owUartTxDma_Expect(0xff);
   romSearching(&evt);
@@ -464,7 +479,6 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    *(txRxEvData.uartRxVal + 8) = 0xfe;
    *(txRxEvData.uartRxVal + 9) = 0xfe;
    romSearchingEv.data = &txRxEvData;
-   owSetUpRxIT_Expect(uartRxDataBuffer, 3);
    owUartTxDma_Expect(0xff);
    owUartTxDma_Expect(0xff);
    romSearching(&romSearchingEv);
@@ -482,7 +496,6 @@ void test_romSearching_given_state_SEND_F0_UNKNOWN_COMMAND_expect_systemError(vo
    *(txRxEvData.uartRxVal + 1) = 0xff;
    *(txRxEvData.uartRxVal + 2) = 0xfe;
    romSearchingEv.data = &txRxEvData;
-   owSetUpRxIT_Expect(uartRxDataBuffer, 3);
    owUartTxDma_Expect(0xff);
    owUartTxDma_Expect(0xff);
    romSearching(&romSearchingEv);

@@ -240,7 +240,6 @@ void initGet1BitRom(BitSearchInformation *bsi){
     // romSearchingPrivate->state = ROM_SEARCHING;
   bsi->romUid = malloc(8);
   *(bsi->romUid) = 0;
-  searchDir = 0;
 }
 
 void clearGetRom(RomSearchingPrivate *romSearchingPrivate){
