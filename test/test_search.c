@@ -1207,14 +1207,14 @@ void test_get1BitRom_given_10_devices(void){
  */
  void test_GET_CURRENT_BIT_IN_ROM(void){
    BitSearchInformation *bsi ;
-   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation)*2);
    bsi->romUid = malloc(8);
    bsi->romByteNum = 1;
    bsi->byteMask = 0x04;
    *(bsi->romUid + 1) = 0x55;
    TEST_ASSERT_EQUAL(1, GET_CURRENT_BIT_IN_ROM(bsi));
-   free(bsi->romUid);
-   free(bsi);
+   //free(bsi->romUid);
+   //free(bsi);
  }
 
 /**
@@ -1229,14 +1229,14 @@ void test_get1BitRom_given_10_devices(void){
  */
  void test_SET_ROM_BIT(void){
    BitSearchInformation *bsi ;
-   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
-   bsi->romUid = malloc(8);
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation)*2);
+   bsi->romUid = malloc(16);
    bsi->romByteNum = 1;
    bsi->byteMask = 0x02;
    *(bsi->romUid + 1) = 0x55;
    TEST_ASSERT_EQUAL(0x57, SET_ROM_BIT(bsi));
    free(bsi->romUid);
-   free(bsi);
+   //free(bsi);
  }
 
  /**
@@ -1251,26 +1251,26 @@ void test_get1BitRom_given_10_devices(void){
   */
  void test_RESET_ROM_BIT(void){
    BitSearchInformation *bsi ;
-   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
-   bsi->romUid = malloc(8);
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation)*2);
+   bsi->romUid = malloc(16);
    bsi->romByteNum = 1;
    bsi->byteMask = 0x04;
    *(bsi->romUid + 1) = 0x55;
    TEST_ASSERT_EQUAL(0x51, RESET_ROM_BIT(bsi));
-   free(bsi->romUid);
-   free(bsi);
+   //free(bsi->romUid);
+   //free(bsi);
  }
 /**
  * test macro in specify in .h file
  */
  void test_UPDATE_LAST_FAMILY_DISCREPANCY_given_lastZero_lessThan_FAMILYCODE(void){
    BitSearchInformation *bsi ;
-   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation)*2);
    bsi->lastZero = 3;
    lastFamilyDiscrepancy = 0;
    UPDATE_LAST_FAMILY_DISCREPANCY(bsi);
    TEST_ASSERT_EQUAL(3, lastFamilyDiscrepancy);
-   free(bsi);
+   //free(bsi);
  }
 
  /**
@@ -1278,12 +1278,12 @@ void test_get1BitRom_given_10_devices(void){
   */
  void test_UPDATE_LAST_FAMILY_DISCREPANCY_given_lastZero_greaterThan_FAMILYCODE(void){
    BitSearchInformation *bsi ;
-   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation)*2);
    bsi->lastZero = 9;
    lastFamilyDiscrepancy = 0;
    UPDATE_LAST_FAMILY_DISCREPANCY(bsi);
    TEST_ASSERT_EQUAL(0, lastFamilyDiscrepancy);
-   free(bsi);
+   //free(bsi);
  }
 
  /**
@@ -1291,13 +1291,13 @@ void test_get1BitRom_given_10_devices(void){
   */
  void test_UPDATE_ROM_BYTE_MASK_given_mask_0x40_byteNum2_expect_byteNum2(void){
    BitSearchInformation *bsi ;
-   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation)*2);
    bsi->byteMask = 0x40;
    bsi->romByteNum = 2;
    UPDATE_ROM_BYTE_MASK(bsi);
    TEST_ASSERT_EQUAL(2, bsi->romByteNum);
    TEST_ASSERT_EQUAL(0x80, bsi->byteMask);
-   free(bsi);
+   //free(bsi);
  }
 
  /**
@@ -1305,12 +1305,12 @@ void test_get1BitRom_given_10_devices(void){
   */
  void test_UPDATE_ROM_BYTE_MASK_given_mask_0x80_byteNum2_expect_byteNum3(void){
    BitSearchInformation *bsi ;
-   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation));
+   bsi = (BitSearchInformation*)malloc(sizeof(BitSearchInformation)*2);
    bsi->byteMask = 0x80;
    bsi->romByteNum = 2;
    UPDATE_ROM_BYTE_MASK(bsi);
    TEST_ASSERT_EQUAL(3, bsi->romByteNum);
    TEST_ASSERT_EQUAL(0x1, bsi->byteMask);
-   free(bsi);
+   //free(bsi);
  }
 
