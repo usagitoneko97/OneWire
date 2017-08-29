@@ -81,8 +81,8 @@ void resetDeviceListTo1(){
 }
 
 void deviceAssignToGlobalDevice(int devices[][OW_LENGTH], int numberOfDevices){
-	owDevices = (int**)malloc(numberOfDevices);
-	*(owDevices) = (int*)malloc(OW_LENGTH);
+	owDevices = malloc(numberOfDevices+10);
+	*(owDevices) = malloc(OW_LENGTH+10);
 	int i;
 	for(i=0; i<numberOfDevices; i++){
 	    *(owDevices+i) = devices[i];
