@@ -3,7 +3,7 @@
 #include "owcompletesearch.h"
 #include <stdint.h>
 
-extern int searchDir;
+
 #define FAMILY_CODE_RANGE             8
 #define GET_CURRENT_BIT_IN_ROM(bsi) (((bsi)->romUid[(bsi)->romByteNum] &       \
                                    bsi->byteMask) > 0)
@@ -18,28 +18,6 @@ extern int searchDir;
                                        (bsi)->byteMask = 1;                   \
                                        (bsi)->romByteNum++;                   \
                                       }
-#define RESET_IF_COMPLETED_BIT_SEARCHINGx(bsi, searchDir)                      \
-                                     if(bsi->idBitNumber > OW_LENGTH){        \
-                                       lastDiscrepancy = bsi->lastZero;       \
-                                       if(lastDiscrepancy == 0){              \
-                                         lastDeviceFlag = TRUE;               \
-                                       }                                      \
-                                       clearGet1BitRom(bsi);                  \
-                                       bsi->searchResult = TRUE;              \
-                                     }										                    \
-									                   else{									                  \
-										                  owSetUpRxIT(uartRxDataBuffer, 3);	      \
-										                  write(searchDir);					              \
-									                   }
-#define RESET_BIT_SEARCHING(bsi)                                              \
-                                    do {                                      \
-                                      lastDiscrepancy = bsi->lastZero;        \
-                                      if(lastDiscrepancy == 0){               \
-                                        lastDeviceFlag = TRUE;                \
-                                      }                                       \
-                                      clearGet1BitRom(bsi);                   \
-                                      bsi->searchResult = TRUE;               \
-                                    } while(0)
 
 
 
@@ -59,6 +37,7 @@ void clearGet1BitRom(BitSearchInformation *bsi);
 void targetSetupConfig(uint8_t familyCode, BitSearchInformation *bsi);
 void verifyConfig(uint8_t *romNumbers, int byteLength, BitSearchInformation *bsi);
 void familySkipConfig();
+void resetBitSearching(BitSearchInformation *bsi);
 
 
 #endif // _SEARCH_H

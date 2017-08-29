@@ -3,7 +3,7 @@
 #include "owvariable.h"
 #include <stdio.h>
 
-int searchDir = 0;
+
 /**
  * store 1 byte of data in a
  * @param data         1 byte of data that need to store
@@ -43,6 +43,7 @@ void clearDataBuffer64(){
  *                              about the bit searching
  */
 void get1BitRom(BitSearchInformation *bsi){
+  int searchDir = 0;
   switch (bsi->bitReadType) {
     case BIT_0:
       searchDir = 0;
@@ -78,7 +79,7 @@ void get1BitRom(BitSearchInformation *bsi){
   UPDATE_ROM_BYTE_MASK(bsi);
   // Is it the last bit (index exceeding the OneWire ROM ID length)?
   if(bsi->idBitNumber > OW_LENGTH){
-    RESET_BIT_SEARCHING(bsi);           // Reset the bit searching
+	resetBitSearching(bsi);     // Reset the bit searching
   }
   else{
    owSendSearchBit(searchDir);

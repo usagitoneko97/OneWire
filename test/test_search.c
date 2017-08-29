@@ -110,6 +110,18 @@ void get1BitRomLoop(BitSearchInformation *bsi, int numberOfDevices){
 void fakeWrite(unsigned char byte, int numOfCalls){
 }
 
+
+void fakeResetBitSearching(BitSearchInformation *bsi, int numOfCalls){
+	lastDiscrepancy = bsi->lastZero;        
+	if(lastDiscrepancy == 0){              
+		lastDeviceFlag = TRUE;                
+	}                                       
+	clearGet1BitRom(bsi);                   
+	bsi->searchResult = TRUE; 
+	//reset the device cross list whenver reset bit searching is called
+	resetDeviceListTo1();
+}
+
 void fakeOwSendSearchBit(int searchDir, int numOfCalls){
   muteConflictDevice(owDevices, numberOfDevices, bitIndex, searchDir);
 }
@@ -119,6 +131,7 @@ void setUp(void)
 {
   write_StubWithCallback(fakeWrite);
   owSendSearchBit_StubWithCallback(fakeOwSendSearchBit);
+  resetBitSearching_StubWithCallback(fakeResetBitSearching);
 }
 
 void tearDown(void) {
@@ -999,7 +1012,6 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
    //----------------------------------------------------
    resetDeviceListTo1();
    clearGet1BitRom(&bsi);
-   searchDir = 0;
    familySkipConfig();
 
    get1BitRomLoop(&bsi, 3);
@@ -1058,7 +1070,6 @@ void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_8(void){
   //----------------------------------------------------
   resetDeviceListTo1();
   clearGet1BitRom(&bsi);
-  searchDir = 0;
   familySkipConfig();
 
   get1BitRomLoop(&bsi, 3);
@@ -1117,7 +1128,6 @@ void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_5(void){
 	 //----------------------------------------------------
 	 resetDeviceListTo1();
 	 clearGet1BitRom(&bsi);
-	 searchDir = 0;
 	 familySkipConfig();
 
 	 get1BitRomLoop(&bsi, 3);

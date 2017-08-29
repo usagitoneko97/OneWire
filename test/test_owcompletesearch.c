@@ -47,6 +47,14 @@ uint8_t fakeRead(int numOfCalls){
 void fakeOwSendSearchBit(int searchDir, int numOfCalls){
 }
 
+void fakeResetBitSearching(BitSearchInformation *bsi, int numOfCalls){
+	lastDiscrepancy = bsi->lastZero;        
+	if(lastDiscrepancy == 0){              
+		lastDeviceFlag = TRUE;                
+	}                                       
+	clearGet1BitRom(bsi);                   
+	bsi->searchResult = TRUE; 
+}
 
 void fakeWrite(unsigned char byte, int numOfCalls){
 }
@@ -65,6 +73,7 @@ void setUp(void){
   Read_StubWithCallback(fakeRead);
   write_StubWithCallback(fakeWrite);
   writeSendArray_StubWithCallback(fakewriteSendArray);
+  resetBitSearching_StubWithCallback(fakeResetBitSearching);
   owSendSearchBit_StubWithCallback(fakeOwSendSearchBit);
   eventOw.data = &owdata;
 
