@@ -487,7 +487,7 @@ void test_search_bit_expect_firstdata_LastDisprecancy_3(void)
   numberOfDevices = 4;
   deviceAssignToGlobalDevice(devices, 4);
   //reset the device list to 1 (unmute all device)
-  resetDeviceListTo1();
+  //resetDeviceListTo1();
   
   BitSearchInformation bsi;
   initGet1BitRom(&bsi);
@@ -549,7 +549,7 @@ void test_search_bit_expect_SecondData_LastDisprecancy_2(void)
   bitIndex = 0;			
   numberOfDevices = 4;
   deviceAssignToGlobalDevice(devices, 4);					   
-  resetDeviceListTo1();
+  //resetDeviceListTo1();
   BitSearchInformation bsi;
   initGet1BitRom(&bsi);
   bsi.romUid = (uint8_t*)malloc(OW_LENGTH);
@@ -605,7 +605,7 @@ void test_search_bit_expect_ThirdData_LastDisprecancy_1(void)
   bitIndex = 0;			
   numberOfDevices = 4;  
   deviceAssignToGlobalDevice(devices, 4);
-  resetDeviceListTo1();
+  //resetDeviceListTo1();
 
   BitSearchInformation bsi;
   initGet1BitRom(&bsi);
@@ -665,7 +665,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
   numberOfDevices = 4;					   
   bitIndex = 0;					 
   deviceAssignToGlobalDevice(devices, 4);					   
-  resetDeviceListTo1();
+  //resetDeviceListTo1();
 
   BitSearchInformation bsi;
   initGet1BitRom(&bsi);
@@ -699,7 +699,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                         {0, 1, 0, 1, 1, 0, 0, 1},
                         {0, 0, 1, 0, 0, 1, 1, 0}};
    deviceAssignToGlobalDevice(devices, 3);						
-   resetDeviceListTo1();
+   //resetDeviceListTo1();
    numberOfDevices = 3;
    bitIndex = 0;
    
@@ -733,7 +733,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                          {0, 1, 0, 1, 1, 0, 0, 1},
                          {0, 0, 1, 0, 0, 1, 1, 0}};
     deviceAssignToGlobalDevice(devices, 3);						 
-    resetDeviceListTo1();
+    //resetDeviceListTo1();
 
 	numberOfDevices = 3;
     bitIndex = 0;
@@ -767,7 +767,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                           {0, 1, 0, 1, 1, 0, 0, 1},
                           {0, 0, 1, 0, 0, 1, 1, 0}};
      deviceAssignToGlobalDevice(devices, 3);						  
-     resetDeviceListTo1();
+     //resetDeviceListTo1();
 	 numberOfDevices = 3;
      bitIndex = 0;
 
@@ -804,7 +804,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                            {0, 0, 0, 0,  1, 0, 1, 1,  1, 1, 0, 0,  0, 1, 0, 1},
                            {0, 0, 0, 0,  1, 0, 0, 1,  0, 0, 1, 0,  0, 1, 1, 0}};
      deviceAssignToGlobalDevice(devices, 3);						   
-     resetDeviceListTo1();
+     //resetDeviceListTo1();
 	 numberOfDevices = 3;
      bitIndex = 0;
      BitSearchInformation bsi;
@@ -846,7 +846,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                            {0, 0, 0, 0,  1, 0, 1, 1,  1, 1, 0, 0,  0, 1, 0, 1},
                            {0, 0, 0, 0,  1, 0, 0, 1,  0, 0, 1, 0,  0, 1, 1, 0}};
      deviceAssignToGlobalDevice(devices, 3);						   
-     resetDeviceListTo1();
+     //resetDeviceListTo1();
 	 numberOfDevices = 3;
      bitIndex = 0;
      BitSearchInformation bsi;
@@ -898,7 +898,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                            {0, 1, 1, 1,  1, 0, 1, 1},
                            {1, 0, 1, 1,  1, 0, 0, 0}};
      deviceAssignToGlobalDevice(devices, 3);						   
-     resetDeviceListTo1();
+     //resetDeviceListTo1();
 	 numberOfDevices = 3;
      bitIndex = 0;
   
@@ -936,7 +936,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                           {1, 0, 0, 0,  1, 1, 1, 0}};
 						  
      deviceAssignToGlobalDevice(devices, 2);						  
-     resetDeviceListTo1();
+     //resetDeviceListTo1();
 	 numberOfDevices = 2;
      bitIndex = 0;
 
@@ -995,7 +995,7 @@ void test_search_bit_expect_ForthData_LastDisprecancy_0(void)
                          {0, 1, 1, 1,  1, 1, 1, 1,  1, 1, 0, 1,  0, 0, 0, 1}};
 						 
    deviceAssignToGlobalDevice(devices, 3);						 
-   resetDeviceListTo1();
+   //resetDeviceListTo1();
    numberOfDevices = 3;
    bitIndex = 0;
 
@@ -1054,7 +1054,7 @@ void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_8(void){
                         {1, 1, 1, 0,  0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
                         {0, 1, 1, 1,  1, 1, 1, 1,  1, 1, 1, 0,  1, 0, 1, 0 }};
   deviceAssignToGlobalDevice(devices, 3);						
-  resetDeviceListTo1();
+  //resetDeviceListTo1();
   numberOfDevices = 3;
   bitIndex = 0;
   BitSearchInformation bsi;
@@ -1112,7 +1112,7 @@ void test_FamilySkipSetup_Search_given_lastFamilyDiscrepancy_5(void){
 						   {1, 1, 1, 0,  0, 1, 0, 1,  0, 1, 1, 0,  1, 0, 1, 0},
 						   {0, 1, 1, 1,  1, 1, 1, 1,  1, 1, 1, 1,  1, 0, 1, 0 }};
 	 deviceAssignToGlobalDevice(devices, 3);					   
-	 resetDeviceListTo1();
+	 //resetDeviceListTo1();
      numberOfDevices = 3;
      bitIndex = 0;
 	 BitSearchInformation bsi;
